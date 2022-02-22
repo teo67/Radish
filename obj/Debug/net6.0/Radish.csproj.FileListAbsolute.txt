@@ -1,0 +1,15 @@
+C:\Users\006co\Desktop\Code\Radish\bin\Debug\net6.0\Radish.exe
+C:\Users\006co\Desktop\Code\Radish\bin\Debug\net6.0\Radish.deps.json
+C:\Users\006co\Desktop\Code\Radish\bin\Debug\net6.0\Radish.runtimeconfig.json
+C:\Users\006co\Desktop\Code\Radish\bin\Debug\net6.0\Radish.dll
+C:\Users\006co\Desktop\Code\Radish\bin\Debug\net6.0\ref\Radish.dll
+C:\Users\006co\Desktop\Code\Radish\bin\Debug\net6.0\Radish.pdb
+C:\Users\006co\Desktop\Code\Radish\obj\Debug\net6.0\Radish.csproj.AssemblyReference.cache
+C:\Users\006co\Desktop\Code\Radish\obj\Debug\net6.0\Radish.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\006co\Desktop\Code\Radish\obj\Debug\net6.0\Radish.AssemblyInfoInputs.cache
+C:\Users\006co\Desktop\Code\Radish\obj\Debug\net6.0\Radish.AssemblyInfo.cs
+C:\Users\006co\Desktop\Code\Radish\obj\Debug\net6.0\Radish.csproj.CoreCompileInputs.cache
+C:\Users\006co\Desktop\Code\Radish\obj\Debug\net6.0\Radish.dll
+C:\Users\006co\Desktop\Code\Radish\obj\Debug\net6.0\ref\Radish.dll
+C:\Users\006co\Desktop\Code\Radish\obj\Debug\net6.0\Radish.pdb
+C:\Users\006co\Desktop\Code\Radish\obj\Debug\net6.0\Radish.genruntimeconfig.cache
