@@ -1,17 +1,31 @@
 using System.Globalization;
 namespace Tools {
     static class Operators {
-        public static Dictionary<string, Operator> O;
+        public static Dictionary<string, ProtoOperator> O;
+        public static ProtoOperator Function;
         static Operators() {
-            O = new Dictionary<string, Operator>() {
-                { "+", new Operator(
-                    new List<TokenTypes>() { TokenTypes.NUMBER, TokenTypes.NUMBER }, 
-                    (List<LexEntry> args) => {
-                        return new LexEntry(TokenTypes.NUMBER, $"{float.Parse(args[0].Val, CultureInfo.InvariantCulture) + float.Parse(args[1].Val, CultureInfo.InvariantCulture)}");
-                    }, 
-                    1
-                ) }
+            O = new Dictionary<string, ProtoOperator>() {
+                { "Program", new ProtoOperator(
+                    (AbstractSyntaxNode viewing) => {
+                        return viewing.Val.Type == TokenTypes.ENDPROGRAM;
+                    }, -1 // infinity
+                )},
+                { "Line", new ProtoOperator(
+                    (AbstractSyntaxNode viewing) => {
+                        return viewing.Val.Type == TokenTypes.END && viewing.Val.Val == "r";
+                    }, 2
+                )},
+                { "+", new ProtoOperator(
+                    (AbstractSyntaxNode viewing) => {
+                        return true;
+                    }, 2
+                )}
             };
+            Function = new ProtoOperator(
+                (AbstractSyntaxNode viewing) => {
+                    return viewing.Val.Type == TokenTypes.OPERATOR && viewing.Val.Val == "(";
+                }, 1
+            );
         }
     } 
 }

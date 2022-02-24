@@ -7,6 +7,10 @@ namespace Tools {
         NUMBER,
         OPERATOR,
         BOOLEAN,
-        ENDLINE
+        END, // ends a given statement - these are always single character
+        KEYWORD, 
+        PROGRAM, // represents the entire program
+        LINE, // represents a single line of the program
+        ENDPROGRAM // specific end char, must have its own type
     }
 }
