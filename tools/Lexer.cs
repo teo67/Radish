@@ -6,10 +6,9 @@ namespace Tools {
             dot,
             quotes,
             hashtags, 
-            whitespace, 
-            end,
+            whitespace,
             operators,
-            singlecharoperators, // these cant be chained and are immediately parsed when added
+            symbols, // these cant be chained and are immediately parsed when added
         }
         static Dictionary<char, CharTypes> dict;
         static char dotChar;
@@ -30,17 +29,13 @@ namespace Tools {
             for(int i = 0; i < numbers.Length; i++) {
                 dict.Add(numbers[i], CharTypes.digit);
             }
-            string ops = "+-/*=<>|&";
+            string ops = "+-/*=<>|&!";
             for(int i = 0; i < ops.Length; i++) {
                 dict.Add(ops[i], CharTypes.operators);
             }
-            string singlecharops = "(";
-            for(int i = 0; i < singlecharops.Length; i++) {
-                dict.Add(singlecharops[i], CharTypes.singlecharoperators);
-            }
-            string enders = ")r";
-            for(int i = 0; i < enders.Length; i++) {
-                dict.Add(enders[i], CharTypes.end);
+            string symbols = "(){}[]r";
+            for(int i = 0; i < symbols.Length; i++) {
+                dict.Add(symbols[i], CharTypes.symbols);
             }
             dict.Add(dotChar, CharTypes.dot);
             dict.Add(' ', CharTypes.whitespace);
@@ -79,49 +74,51 @@ namespace Tools {
                     return (current == TokenTypes.NUMBER) ? TokenTypes.SAME : TokenTypes.NUMBER;
                 case CharTypes.dot:
                     return (current == TokenTypes.NUMBER && currentRaw.IndexOf(dotChar) == -1) ? TokenTypes.SAME : TokenTypes.OPERATOR; // if youre already in a number with no decimal points yet, consider this a decimal point : otherwise, its punctuation
-                case CharTypes.singlecharoperators:
-                    return TokenTypes.OPERATOR;
+                case CharTypes.symbols:
+                    return TokenTypes.SYMBOL;
                 case CharTypes.operators:
                     return (current == TokenTypes.OPERATOR) ? TokenTypes.SAME : TokenTypes.OPERATOR;
-                case CharTypes.end:
-                    return TokenTypes.END;
                 default:
                     throw new Exception("Something went wrong in the lex phase.");
             }
         }
 
-        public static List<LexEntry> Run(string fileName) {
-            StreamReader reader = new StreamReader(fileName);
-            List<LexEntry> returning = new List<LexEntry>();
+        private static LexEntry Convert(TokenTypes current, string currentRaw) {
+            if(current == TokenTypes.KEYWORD) {
+                TokenTypes type = TokenTypes.KEYWORD;
+                if(currentRaw == "true" || currentRaw == "false") {
+                    type = TokenTypes.BOOLEAN;
+                }
+                return new LexEntry(type, currentRaw);
+            }
+            return new LexEntry(current, currentRaw);
+        }
+
+        public static LexEntry Run(StreamReader reader) {
+            if(reader.EndOfStream) {
+                throw new Exception("File ended prematurely.");
+            }
             string currentRaw = "";
             TokenTypes current = TokenTypes.NONE;
             do {
-                char read = (char)reader.Read();
+                char read = (char)reader.Peek();
                 TokenTypes newToken = GetTokenType(current, GetCharType(read), currentRaw);
                 if(newToken == TokenTypes.SAME) {
+                    reader.Read();
                     currentRaw += read;
                 } else {
                     if(current != TokenTypes.COMMENT && current != TokenTypes.NONE) {
-                        if(current == TokenTypes.KEYWORD) {
-                            TokenTypes type = TokenTypes.KEYWORD;
-                            if(currentRaw == "true" || currentRaw == "false") {
-                                type = TokenTypes.BOOLEAN;
-                            } else if(Operators.O.ContainsKey(currentRaw)) {
-                                type = TokenTypes.OPERATOR;
-                            }
-                            returning.Add(new LexEntry(type, currentRaw));
-                        } else {
-                            returning.Add(new LexEntry(current, currentRaw));
-                        }
+                        return Convert(current, currentRaw);
                     }
+                    reader.Read();
                     current = newToken;
                     currentRaw = Char.ToString(read);
                 }
             } while(!reader.EndOfStream);
-            if(current != TokenTypes.COMMENT && current != TokenTypes.NONE) {
-                returning.Add(new LexEntry(current, currentRaw));
+            if(current == TokenTypes.COMMENT || current == TokenTypes.NONE) {
+                throw new Exception("File ended prematurely.");
             }
-            return returning;
+            return Convert(current, currentRaw);
         }
     }
 }
