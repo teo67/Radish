@@ -5,7 +5,6 @@ namespace Tools {
             do {
                 Console.WriteLine(Lexer.Run(reader));
             } while(!reader.EndOfStream);
-            Operators.Operators.Test();
         }   
     }
 }

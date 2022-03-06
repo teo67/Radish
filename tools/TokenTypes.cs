@@ -8,6 +8,7 @@ namespace Tools {
         OPERATOR,
         BOOLEAN,
         SYMBOL,
-        KEYWORD
+        KEYWORD,
+        ENDOFFILE
     }
 }

@@ -89,6 +89,9 @@ namespace Tools {
                 if(currentRaw == "true" || currentRaw == "false") {
                     type = TokenTypes.BOOLEAN;
                 }
+                if(Operations.OpKeywords.Contains(currentRaw)) {
+                    type = TokenTypes.OPERATOR;
+                }
                 return new LexEntry(type, currentRaw);
             }
             return new LexEntry(current, currentRaw);
@@ -96,7 +99,7 @@ namespace Tools {
 
         public static LexEntry Run(StreamReader reader) {
             if(reader.EndOfStream) {
-                throw new Exception("File ended prematurely.");
+                return new LexEntry(TokenTypes.ENDOFFILE, "");
             }
             string currentRaw = "";
             TokenTypes current = TokenTypes.NONE;
@@ -116,7 +119,7 @@ namespace Tools {
                 }
             } while(!reader.EndOfStream);
             if(current == TokenTypes.COMMENT || current == TokenTypes.NONE) {
-                throw new Exception("File ended prematurely.");
+                return new LexEntry(TokenTypes.ENDOFFILE, "");
             }
             return Convert(current, currentRaw);
         }

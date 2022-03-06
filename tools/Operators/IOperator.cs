@@ -1,5 +1,6 @@
-namespace Tools.Operators {
-    interface IOperator<T> {
-        public T Run();
+namespace Tools {
+    interface IOperator {
+        public IValue Run();
+        public string Print();
     }
 }
