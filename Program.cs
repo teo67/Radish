@@ -1,5 +1,32 @@
 ﻿class Program {
-    public static void Main() {
-        Tools.Radish.Run(System.IO.Path.GetFullPath(Directory.GetCurrentDirectory() + @"\main.radish"));
+    public static void Main(string[] args) {
+        if(args.Length < 1) {
+            throw new Exception("Missing argument!");
+        }
+        int index = args[0].IndexOf('~');
+        if(index == -1 || index == 0) {
+            throw new Exception("Something went wrong, try again later.");
+        }
+        string first = args[0].Substring(0, index);
+        if(args[0].Length < index + 2) {
+            throw new Exception("No argument provided!");
+        }
+        string second = args[0].Substring(index + 1);
+        switch(second) {
+            case "r":
+            case "run":
+                Tools.Radish.Run(first);
+                break;
+            case "l":
+            case "lex":
+                Tools.Radish.Lex(first);
+                break;
+            case "p":
+            case "parse":
+                Tools.Radish.Parse(first);
+                break;
+            default:
+                throw new Exception("Invalid argument!");
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace Tools.Operators {
             return new Values.BooleanLiteral(Stored);
         }
         public string Print() {
-            return (Stored) ? "true" : "false";
+            return (Stored) ? "yes" : "no";
         }
     }
 }

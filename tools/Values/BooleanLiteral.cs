@@ -16,7 +16,7 @@ namespace Tools.Values {
         }
         public string String {
             get {
-                return (Stored) ? "true" : "false";
+                return (Stored) ? "yes" : "no";
             }
         }
         public bool Boolean {

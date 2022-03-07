@@ -40,6 +40,7 @@ namespace Tools {
             dict.Add(dotChar, CharTypes.dot);
             dict.Add(' ', CharTypes.whitespace);
             dict.Add('\n', CharTypes.whitespace);
+            dict.Add('\r', CharTypes.whitespace);
             dict.Add(quoteChar, CharTypes.quotes);
             dict.Add(hashChar, CharTypes.hashtags);
         }
@@ -49,7 +50,7 @@ namespace Tools {
             try {
                 returning = dict[input];
             } catch {
-                throw new Exception("Unrecognized character!");
+                throw new Exception($"Unrecognized character: {input}!");
             }
             return returning;
         }
@@ -86,14 +87,16 @@ namespace Tools {
         private static LexEntry Convert(TokenTypes current, string currentRaw) {
             if(current == TokenTypes.KEYWORD) {
                 TokenTypes type = TokenTypes.KEYWORD;
-                if(currentRaw == "true" || currentRaw == "false") {
+                if(currentRaw == "yes" || currentRaw == "no") {
                     type = TokenTypes.BOOLEAN;
                 }
-                if(Operations.OpKeywords.Contains(currentRaw)) {
+                if(Operations.IsKeyword(currentRaw)) {
                     type = TokenTypes.OPERATOR;
                 }
+                //Console.WriteLine($"Lexer returning {type}: {currentRaw}");
                 return new LexEntry(type, currentRaw);
             }
+            //Console.WriteLine($"Lexer returning {current}: {currentRaw}");
             return new LexEntry(current, currentRaw);
         }
 

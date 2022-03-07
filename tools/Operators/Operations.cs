@@ -25,7 +25,7 @@
 */
 namespace Tools {
     static class Operations {
-        public static List<string> OpKeywords { get; }
+        private static List<string> OpKeywords { get; }
         private static List<string> ScopeKeywords { get; }
         private static LexEntry? Stored { get; set; }
         static Operations() {
@@ -38,6 +38,10 @@ namespace Tools {
             Stored = null;
         }
 
+        public static bool IsKeyword(string input) {
+            return OpKeywords.Contains(input) || ScopeKeywords.Contains(input);
+        }
+
         private static LexEntry Read(StreamReader reader) {
             if(Stored != null) {
                 LexEntry saved = Stored;
@@ -48,6 +52,7 @@ namespace Tools {
         }
 
         public static IOperator ParseScope(StreamReader reader) {
+            //Console.WriteLine("begin scope");
             Operators.ExpressionSeparator returning = new Operators.ExpressionSeparator();
             LexEntry read = Read(reader);
             while(read.Type != TokenTypes.ENDOFFILE) {
@@ -61,11 +66,13 @@ namespace Tools {
                         throw new Exception("Missing an endline character!");
                     }
                 }
+                read = Read(reader);
             }
             return returning;
         }
 
         private static IOperator ParseExpression(StreamReader reader) {
+            //Console.WriteLine("begin expression");
             IOperator current = ParseCombiners(reader);
             LexEntry next = Read(reader);
             Func<bool> check = (() => {
@@ -87,6 +94,7 @@ namespace Tools {
         }
 
         private static IOperator ParseCombiners(StreamReader reader) {
+            //Console.WriteLine("begin combiners");
             IOperator current = ParseComparators(reader);
             LexEntry next = Read(reader);
             Func<bool> check = (() => {
@@ -112,6 +120,7 @@ namespace Tools {
         }
 
         private static IOperator ParseComparators(StreamReader reader) {
+            //Console.WriteLine("begin comparators");
             IOperator current = ParseTerms(reader);
             LexEntry next = Read(reader);
             Func<bool> check = (() => {
@@ -152,6 +161,7 @@ namespace Tools {
         }
 
         private static IOperator ParseTerms(StreamReader reader) {
+            //Console.WriteLine("begin terms");
             IOperator current = ParseFactors(reader);
             LexEntry next = Read(reader);
             Func<bool> check = (() => {
@@ -177,6 +187,7 @@ namespace Tools {
         }
 
         private static IOperator ParseFactors(StreamReader reader) {
+            //Console.WriteLine("begin factors");
             IOperator current = ParseLowest(reader);
             LexEntry next = Read(reader);
             Func<bool> check = (() => {
@@ -207,6 +218,7 @@ namespace Tools {
         }
         
         private static IOperator ParseLowest(StreamReader reader) {
+            //Console.WriteLine("begin lowest");
             LexEntry returned = Read(reader);
             if(returned.Type == TokenTypes.OPERATOR) {
                 if(returned.Val == "-") {
@@ -220,9 +232,21 @@ namespace Tools {
             } else if(returned.Type == TokenTypes.NUMBER) {
                 return new Operators.Number(Double.Parse(returned.Val));
             } else if(returned.Type == TokenTypes.BOOLEAN) {
-                return new Operators.Boolean(returned.Val == "true");
+                return new Operators.Boolean(returned.Val == "yes");
             } else if(returned.Type == TokenTypes.KEYWORD) {
                 // parse as variable (under construction)
+                LexEntry next = Read(reader);
+                if(next.Type == TokenTypes.SYMBOL && next.Val == "(") {
+                    IOperator returning = (returned.Val == "output") ? new Operators.Output(ParseExpression(reader)) : throw new Exception("Method calls are under construction!");
+                    LexEntry nextNext = Read(reader);
+                    if(nextNext.Type == TokenTypes.SYMBOL && nextNext.Val == ")") {
+                        return returning;
+                    }
+                    throw new Exception("Missing closing parentheses on method call!");
+                } else {
+                    Stored = next;
+                    throw new Exception("Variable calls are under construction!");
+                }
             } else if(returned.Type == TokenTypes.SYMBOL) {
                 if(returned.Val == "(") {
                     IOperator returning = ParseExpression(reader);
@@ -232,7 +256,7 @@ namespace Tools {
                     }
                 }
             }
-            throw new Exception("Could not parse value!");
+            throw new Exception($"Could not parse value: {returned.Type}: {returned.Val} !");
         }
     }
 }
