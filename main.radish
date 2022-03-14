@@ -1,1 +1,9 @@
-output(1 + 1)r
+if(1 == 2) {
+    output("not gonna happen")r
+} elseif(2 * 3 > 7 + 1) {
+    output("also not gonna happen")r
+} elseif(yes) {
+    output("gonna happen")r
+} else {
+    output("not gonna happen either")r
+}

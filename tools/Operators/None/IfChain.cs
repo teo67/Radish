@@ -1,24 +1,25 @@
 namespace Tools.Operators {
-    class ExpressionSeparator : IOperator {
-        private List<IOperator> Children { get; }
-        public ExpressionSeparator(List<IOperator>? children = null) {
-            this.Children = (children == null) ? new List<IOperator>() : children;
+    class IfChain : IOperator {
+        private List<If> Children { get; }
+        public IfChain(List<If>? children = null) {
+            this.Children = (children == null) ? new List<If>() : children;
         }
         public IValue Run() {
             foreach(IOperator child in Children) {
-                child.Run();
+                if(child.Run().Boolean) {
+                    break;
+                }
             }
             return new Values.NoneLiteral();
         }
-        public void AddValue(IOperator adding) {
+        public void AddValue(If adding) {
             Children.Add(adding);
         }
         public string Print() {
-            string returning = "{\n";
+            string returning = "";
             foreach(IOperator child in Children) {
                 returning += $"{child.Print()}\n";
             }
-            returning += "}";
             return returning;
         }
     }

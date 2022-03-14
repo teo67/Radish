@@ -25,6 +25,10 @@
             case "parse":
                 Tools.Radish.Parse(first);
                 break;
+            case "v":
+            case "verbose":
+                Tools.Radish.Run(first, true);
+                break;
             default:
                 throw new Exception("Invalid argument!");
         }

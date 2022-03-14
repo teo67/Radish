@@ -29,11 +29,11 @@ namespace Tools {
             for(int i = 0; i < numbers.Length; i++) {
                 dict.Add(numbers[i], CharTypes.digit);
             }
-            string ops = "+-/*=<>|&!";
+            string ops = "+-/*=<>|&!%";
             for(int i = 0; i < ops.Length; i++) {
                 dict.Add(ops[i], CharTypes.operators);
             }
-            string symbols = "(){}[]r";
+            string symbols = "(){}[]r,";
             for(int i = 0; i < symbols.Length; i++) {
                 dict.Add(symbols[i], CharTypes.symbols);
             }
@@ -45,12 +45,12 @@ namespace Tools {
             dict.Add(hashChar, CharTypes.hashtags);
         }
         
-        private static CharTypes GetCharType(char input) {
+        private static CharTypes GetCharType(char input, CountingReader reader) {
             CharTypes returning;
             try {
                 returning = dict[input];
             } catch {
-                throw new Exception($"Unrecognized character: {input}!");
+                throw reader.Error($"Unrecognized character: {input}!");
             }
             return returning;
         }
@@ -96,11 +96,14 @@ namespace Tools {
                 //Console.WriteLine($"Lexer returning {type}: {currentRaw}");
                 return new LexEntry(type, currentRaw);
             }
+            if(current == TokenTypes.STRING) {
+                return new LexEntry(current, currentRaw.Substring(1, currentRaw.Length - 2));
+            }
             //Console.WriteLine($"Lexer returning {current}: {currentRaw}");
             return new LexEntry(current, currentRaw);
         }
 
-        public static LexEntry Run(StreamReader reader) {
+        public static LexEntry Run(CountingReader reader) {
             if(reader.EndOfStream) {
                 return new LexEntry(TokenTypes.ENDOFFILE, "");
             }
@@ -108,7 +111,7 @@ namespace Tools {
             TokenTypes current = TokenTypes.NONE;
             do {
                 char read = (char)reader.Peek();
-                TokenTypes newToken = GetTokenType(current, GetCharType(read), currentRaw);
+                TokenTypes newToken = GetTokenType(current, GetCharType(read, reader), currentRaw);
                 if(newToken == TokenTypes.SAME) {
                     reader.Read();
                     currentRaw += read;
