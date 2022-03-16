@@ -1,5 +1,5 @@
 namespace Tools {
-    static class Lexer {
+    class Lexer {
         enum CharTypes {
             letter,
             digit, 
@@ -10,11 +10,13 @@ namespace Tools {
             operators,
             symbols, // these cant be chained and are immediately parsed when added
         }
-        static Dictionary<char, CharTypes> dict;
-        static char dotChar;
-        static char quoteChar;
-        static char hashChar;
-        static Lexer() {
+        private Dictionary<char, CharTypes> dict;
+        private char dotChar;
+        private char quoteChar;
+        private char hashChar;
+        private CountingReader reader { get; }
+        public Lexer(CountingReader reader) {
+            this.reader = reader;
             dict = new Dictionary<char, CharTypes>();
             dotChar = '.';
             quoteChar = '"';
@@ -45,7 +47,7 @@ namespace Tools {
             dict.Add(hashChar, CharTypes.hashtags);
         }
         
-        private static CharTypes GetCharType(char input, CountingReader reader) {
+        private CharTypes GetCharType(char input) {
             CharTypes returning;
             try {
                 returning = dict[input];
@@ -55,7 +57,7 @@ namespace Tools {
             return returning;
         }
 
-        private static TokenTypes GetTokenType(TokenTypes current, CharTypes adding, string currentRaw) { // same = no change
+        private TokenTypes GetTokenType(TokenTypes current, CharTypes adding, string currentRaw) { // same = no change
             if(current == TokenTypes.COMMENT && currentRaw.IndexOf(hashChar) == currentRaw.LastIndexOf(hashChar)) { // being in a comment gets first priority
                 return TokenTypes.SAME;
             }
@@ -84,7 +86,7 @@ namespace Tools {
             }
         }
 
-        private static LexEntry Convert(TokenTypes current, string currentRaw) {
+        private LexEntry Convert(TokenTypes current, string currentRaw) {
             if(current == TokenTypes.KEYWORD) {
                 TokenTypes type = TokenTypes.KEYWORD;
                 if(currentRaw == "yes" || currentRaw == "no") {
@@ -103,7 +105,7 @@ namespace Tools {
             return new LexEntry(current, currentRaw);
         }
 
-        public static LexEntry Run(CountingReader reader) {
+        public LexEntry Run() {
             if(reader.EndOfStream) {
                 return new LexEntry(TokenTypes.ENDOFFILE, "");
             }
@@ -111,7 +113,7 @@ namespace Tools {
             TokenTypes current = TokenTypes.NONE;
             do {
                 char read = (char)reader.Peek();
-                TokenTypes newToken = GetTokenType(current, GetCharType(read, reader), currentRaw);
+                TokenTypes newToken = GetTokenType(current, GetCharType(read), currentRaw);
                 if(newToken == TokenTypes.SAME) {
                     reader.Read();
                     currentRaw += read;

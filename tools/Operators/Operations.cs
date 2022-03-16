@@ -24,93 +24,117 @@
         -> resolve until 0 -> find r -> resolve 0 -> find } -> resolve 0
 */
 namespace Tools {
-    static class Operations {
+    class Operations {
         private static List<string> OpKeywords { get; }
         private static List<string> ScopeKeywords { get; }
-        private static LexEntry? Stored { get; set; }
+        private LexEntry? Stored { get; set; }
+        private int PrevRow { get; set; }
+        private int PrevCol { get; set; }
+        private bool verbose { get; }
+        private CountingReader reader { get; }
+        private Lexer lexer { get; }
         static Operations() {
             OpKeywords = new List<string>() {
                 // keywords that should be parsed as operators
             };
             ScopeKeywords = new List<string>() {
                 // keywords that specifically trigger a new scope instance
-                "if", "elseif", "else"
+                "if", "elseif", "else", "while", "for"
             };
+        }
+        public Operations(CountingReader reader, bool verbose) {
+            this.reader = reader;
+            this.verbose = verbose;
+            this.lexer = new Lexer(reader);
             Stored = null;
+            PrevRow = -1;
+            PrevCol = -1;
         }
 
         public static bool IsKeyword(string input) {
             return OpKeywords.Contains(input) || ScopeKeywords.Contains(input);
         }
 
-        private static void RequireSymbol(CountingReader reader, string input) {
-            LexEntry next = Read(reader);
+        private void RequireSymbol(string input) {
+            LexEntry next = Read();
             if(!(next.Type == TokenTypes.SYMBOL && next.Val == input)) {
-                throw reader.Error($"Missing expected symbol: {input}");
+                throw Error($"Missing expected symbol: {input}");
             }
         }
 
-        private static LexEntry Read(CountingReader reader) {
+        private void Print(string input) {
+            if(verbose) {
+                Console.WriteLine(input);
+            }
+        }
+
+        private Exception Error(string input) {
+            if(Stored == null) {
+                return reader.Error(input);
+            }
+            return reader.Error(input, PrevRow, PrevCol);        
+        }
+
+        private LexEntry Read() {
             if(Stored != null) {
                 LexEntry saved = Stored;
                 Stored = null;
                 return saved;
             }
-            return Lexer.Run(reader);
+            PrevCol = reader.col;
+            PrevRow = reader.row;
+            return lexer.Run();
         }
 
-        public static Operators.ExpressionSeparator ParseScope(CountingReader reader, bool verbose) {
-            if(verbose) {
-                Console.WriteLine("begin scope");
-            }
+        public Operators.ExpressionSeparator ParseScope() {
+            Print("begin scope");
             Operators.ExpressionSeparator returning = new Operators.ExpressionSeparator();
-            LexEntry read = Read(reader);
+            LexEntry read = Read();
             while(read.Type != TokenTypes.ENDOFFILE && !(read.Type == TokenTypes.SYMBOL && read.Val == "}")) {
                 if(read.Type == TokenTypes.OPERATOR && ScopeKeywords.Contains(read.Val)) {
                     // do things with for loops and if statements and other block stuff (under construction)
                     if(read.Val == "if") {
                         Stored = read;
-                        returning.AddValue(ParseIfs(reader, verbose));
+                        returning.AddValue(ParseIfs());
+                    } else if(read.Val == "while") {
+                        RequireSymbol("(");
+                        IOperator exp = ParseExpression();
+                        RequireSymbol(")");
+                        RequireSymbol("{");
+                        IOperator scope = ParseScope();
+                        RequireSymbol("}");
+                        returning.AddValue(new Operators.While(exp, scope));
                     }
                 } else {
-                    if(verbose) {
-                        Console.WriteLine("parsing expression");
-                    }
+                    Print("parsing expression");
                     Stored = read;
-                    returning.AddValue(ParseExpression(reader, verbose));
-                    if(verbose) {
-                        Console.WriteLine("parsing endline (r)");
-                    }
-                    LexEntry next = Read(reader);
-                    if(!(next.Type == TokenTypes.SYMBOL && next.Val == "r")) {
-                        throw reader.Error("Missing an endline character!");
-                    }
+                    returning.AddValue(ParseExpression());
+                    Print("parsing endline (r)");
+                    RequireSymbol("r");
                 }
-                read = Read(reader);
+                read = Read();
             }
             Stored = read;
             return returning;
         }
 
-        private static Operators.IfChain ParseIfs(CountingReader reader, bool verbose) {
-            if(verbose) {
-                Console.WriteLine("begin if chain");
-            }
+        private Operators.IfChain ParseIfs() {
+            Print("begin if chain");
             Operators.IfChain returning = new Operators.IfChain();
-            LexEntry IF = Read(reader);
+            LexEntry IF = Read();
             if(!(IF.Type == TokenTypes.OPERATOR && IF.Val == "if")) {
-                throw reader.Error("Expecting if statement!");
+                throw Error("Expecting if statement!");
             }
-            returning.AddValue(ParseIf(reader, verbose));
-            LexEntry read = Read(reader);
+            returning.AddValue(ParseIf());
+            LexEntry read = Read();
             while(read.Type == TokenTypes.OPERATOR && read.Val == "elseif") {
-                returning.AddValue(ParseIf(reader, verbose));
-                read = Read(reader);
+                returning.AddValue(ParseIf());
+                read = Read();
             }
             if(read.Type == TokenTypes.OPERATOR && read.Val == "else") {
-                RequireSymbol(reader, "{");
-                IOperator scope = ParseScope(reader, verbose);
-                RequireSymbol(reader, "}");
+                RequireSymbol("{");
+                IOperator scope = ParseScope();
+                RequireSymbol("}");
                 returning.AddValue(new Operators.If(new Operators.Boolean(true), scope));
             } else {
                 Stored = read;
@@ -118,56 +142,50 @@ namespace Tools {
             return returning;
         }
 
-        private static Operators.If ParseIf(CountingReader reader, bool verbose) {
-            RequireSymbol(reader, "(");
-            Operators.ListSeparator li = ParseList(reader, verbose);
-            RequireSymbol(reader, ")");
-            RequireSymbol(reader, "{");
-            IOperator scope = ParseScope(reader, verbose);
-            RequireSymbol(reader, "}");
-            return new Operators.If(li.First(), scope);
+        private Operators.If ParseIf() {
+            RequireSymbol("(");
+            IOperator li = ParseExpression();
+            RequireSymbol(")");
+            RequireSymbol("{");
+            IOperator scope = ParseScope();
+            RequireSymbol("}");
+            return new Operators.If(li, scope);
         }
 
-        private static Operators.ListSeparator ParseList(CountingReader reader, bool verbose) {
-            if(verbose) {
-                Console.WriteLine("begin list");
-            }
+        private Operators.ListSeparator ParseList() {
+            Print("begin list");
             Operators.ListSeparator returning = new Operators.ListSeparator();
-            LexEntry read = Read(reader);
+            LexEntry read = Read();
             if(read.Type == TokenTypes.SYMBOL && (read.Val == "]" || read.Val == ")")) { // empty list
                 Stored = read;
                 return returning;
             }
             while(true) { 
-                if(verbose) {
-                    Console.WriteLine("parsing list element");
-                }
+                Print("parsing list element");
                 Stored = read;
-                returning.AddValue(ParseExpression(reader, verbose));
-                LexEntry next = Read(reader);
+                returning.AddValue(ParseExpression());
+                LexEntry next = Read();
 
                 if(!(next.Type == TokenTypes.SYMBOL && next.Val == ",")) {
                     Stored = next;
                     break;
-                } else if(verbose) {
-                    Console.WriteLine("found comma");
+                } else {
+                    Print("found comma");
                 }
 
-                read = Read(reader);
+                read = Read();
             }
             return returning;
         }
 
-        private static IOperator ParseExpression(CountingReader reader, bool verbose) {
-            if(verbose) {
-                Console.WriteLine("begin expression");
-            }
-            IOperator current = ParseCombiners(reader, verbose);
-            LexEntry next = Read(reader);
+        private IOperator ParseExpression() {
+            Print("begin expression");
+            IOperator current = ParseCombiners();
+            LexEntry next = Read();
             Func<bool> check = (() => {
                 if(next.Type == TokenTypes.OPERATOR) {
                     if(next.Val == "=") {
-                        // IOperator after = ParseCombiners(reader);
+                        // IOperator after = ParseCombiners();
                         // current = new Operators.Assign(current, after);
                         // return true;
                         // assigning variables - under construction
@@ -177,32 +195,26 @@ namespace Tools {
                 return false;
             });
             while(check()) {
-                next = Read(reader);
+                next = Read();
             }
             return current;
         }
 
-        private static IOperator ParseCombiners(CountingReader reader, bool verbose) {
-            if(verbose) {
-                Console.WriteLine("begin combiners");
-            }
-            IOperator current = ParseComparators(reader, verbose);
-            LexEntry next = Read(reader);
+        private IOperator ParseCombiners() {
+            Print("begin combiners");
+            IOperator current = ParseComparators();
+            LexEntry next = Read();
             Func<bool> check = (() => {
                 if(next.Type == TokenTypes.OPERATOR) {
                     if(next.Val == "&&") {
-                        if(verbose) {
-                            Console.WriteLine("parsing and");
-                        }
-                        IOperator after = ParseComparators(reader, verbose);
+                        Print("parsing and");
+                        IOperator after = ParseComparators();
                         current = new Operators.And(current, after);
                         return true;
                     }
                     if(next.Val == "||") {
-                        if(verbose) {
-                            Console.WriteLine("parsing or");
-                        }
-                        IOperator after = ParseComparators(reader, verbose);
+                        Print("parsing or");
+                        IOperator after = ParseComparators();
                         current = new Operators.Or(current, after);
                         return true;
                     }
@@ -211,56 +223,44 @@ namespace Tools {
                 return false;
             });
             while(check()) {
-                next = Read(reader);
+                next = Read();
             }
             return current;
         }
 
-        private static IOperator ParseComparators(CountingReader reader, bool verbose) {
-            if(verbose) {
-                Console.WriteLine("begin comparators");
-            }
-            IOperator current = ParseTerms(reader, verbose);
-            LexEntry next = Read(reader);
+        private IOperator ParseComparators() {
+            Print("begin comparators");
+            IOperator current = ParseTerms();
+            LexEntry next = Read();
             Func<bool> check = (() => {
                 if(next.Type == TokenTypes.OPERATOR) {
                     if(next.Val == "==") {
-                        if(verbose) {
-                            Console.WriteLine("parsing double equals");
-                        }
-                        IOperator after = ParseTerms(reader, verbose);
+                        Print("parsing double equals");
+                        IOperator after = ParseTerms();
                         current = new Operators.EqualsEquals(current, after);
                         return true;
                     }
                     if(next.Val == ">=") {
-                        if(verbose) {
-                            Console.WriteLine("parsing more than equals");
-                        }
-                        IOperator after = ParseTerms(reader, verbose);
+                        Print("parsing more than equals");
+                        IOperator after = ParseTerms();
                         current = new Operators.MoreThanOrEquals(current, after);
                         return true;
                     }
                     if(next.Val == "<=") {
-                        if(verbose) {
-                            Console.WriteLine("parsing less than equals");
-                        }
-                        IOperator after = ParseTerms(reader, verbose);
+                        Print("parsing less than equals");
+                        IOperator after = ParseTerms();
                         current = new Operators.LessThanOrEquals(current, after);
                         return true;
                     }
                     if(next.Val == ">") {
-                        if(verbose) {
-                            Console.WriteLine("parsing more than");
-                        }
-                        IOperator after = ParseTerms(reader, verbose);
+                        Print("parsing more than");
+                        IOperator after = ParseTerms();
                         current = new Operators.MoreThan(current, after);
                         return true;
                     }
                     if(next.Val == "<") {
-                        if(verbose) {
-                            Console.WriteLine("parsing less than");
-                        }
-                        IOperator after = ParseTerms(reader, verbose);
+                        Print("parsing less than");
+                        IOperator after = ParseTerms();
                         current = new Operators.LessThan(current, after);
                         return true;
                     }
@@ -269,32 +269,26 @@ namespace Tools {
                 return false;
             });
             while(check()) {
-                next = Read(reader);
+                next = Read();
             }
             return current;
         }
 
-        private static IOperator ParseTerms(CountingReader reader, bool verbose) {
-            if(verbose) {
-                Console.WriteLine("begin terms");
-            }
-            IOperator current = ParseFactors(reader, verbose);
-            LexEntry next = Read(reader);
+        private IOperator ParseTerms() {
+            Print("begin terms");
+            IOperator current = ParseFactors();
+            LexEntry next = Read();
             Func<bool> check = (() => {
                 if(next.Type == TokenTypes.OPERATOR) {
                     if(next.Val == "+") {
-                        if(verbose) {
-                            Console.WriteLine("parsing plus");
-                        }
-                        IOperator after = ParseFactors(reader, verbose);
+                        Print("parsing plus");
+                        IOperator after = ParseFactors();
                         current = new Operators.Add(current, after);
                         return true;
                     }
                     if(next.Val == "-") {
-                        if(verbose) {
-                            Console.WriteLine("parsing minus");
-                        }
-                        IOperator after = ParseFactors(reader, verbose);
+                        Print("parsing minus");
+                        IOperator after = ParseFactors();
                         current = new Operators.Subtract(current, after);
                         return true;
                     }
@@ -303,40 +297,32 @@ namespace Tools {
                 return false;
             });
             while(check()) {
-                next = Read(reader);
+                next = Read();
             }
             return current;
         }
 
-        private static IOperator ParseFactors(CountingReader reader, bool verbose) {
-            if(verbose) {
-                Console.WriteLine("begin factors");
-            }
-            IOperator current = ParseLowest(reader, verbose);
-            LexEntry next = Read(reader);
+        private IOperator ParseFactors() {
+            Print("begin factors");
+            IOperator current = ParseLowest();
+            LexEntry next = Read();
             Func<bool> check = (() => {
                 if(next.Type == TokenTypes.OPERATOR) {
                     if(next.Val == "*") {
-                        if(verbose) {
-                            Console.WriteLine("parsing multiply");
-                        }
-                        IOperator after = ParseLowest(reader, verbose);
+                        Print("parsing multiply");
+                        IOperator after = ParseLowest();
                         current = new Operators.Multiply(current, after);
                         return true;
                     }
                     if(next.Val == "/") {
-                        if(verbose) {
-                            Console.WriteLine("parsing divide");
-                        }
-                        IOperator after = ParseLowest(reader, verbose);
+                        Print("parsing divide");
+                        IOperator after = ParseLowest();
                         current = new Operators.Divide(current, after);
                         return true;
                     }
                     if(next.Val == "%") {
-                        if(verbose) {
-                            Console.WriteLine("parsing modulo");
-                        }
-                        IOperator after = ParseLowest(reader, verbose);
+                        Print("parsing modulo");
+                        IOperator after = ParseLowest();
                         current = new Operators.Modulo(current, after);
                         return true;
                     }
@@ -345,57 +331,42 @@ namespace Tools {
                 return false;
             });
             while(check()) {
-                next = Read(reader);
+                next = Read();
             }
             return current;
         }
         
-        private static IOperator ParseLowest(CountingReader reader, bool verbose) {
-            if(verbose) {
-                Console.WriteLine("begin lowest");
-            }
-            LexEntry returned = Read(reader);
+        private IOperator ParseLowest() {
+            Print("begin lowest");
+            LexEntry returned = Read();
             if(returned.Type == TokenTypes.OPERATOR) {
                 if(returned.Val == "-") {
-                    if(verbose) {
-                        Console.WriteLine("parsing negative");
-                    }
-                    return new Operators.Multiply(new Operators.Number(-1.0), ParseLowest(reader, verbose));
+                    Print("parsing negative");
+                    return new Operators.Multiply(new Operators.Number(-1.0), ParseLowest());
                 }
                 if(returned.Val == "!") {
-                    if(verbose) {
-                        Console.WriteLine("parsing not");
-                    }
-                    return new Operators.Invert(ParseLowest(reader, verbose));
+                    Print("parsing not");
+                    return new Operators.Invert(ParseLowest());
                 }
             } else if(returned.Type == TokenTypes.STRING) {
-                if(verbose) {
-                    Console.WriteLine("parsing string");
-                }
+                Print("parsing string");
                 return new Operators.String(returned.Val);
             } else if(returned.Type == TokenTypes.NUMBER) {
-                if(verbose) {
-                    Console.WriteLine("parsing number");
-                }
+                Print("parsing number");
                 return new Operators.Number(Double.Parse(returned.Val));
             } else if(returned.Type == TokenTypes.BOOLEAN) {
-                if(verbose) {
-                    Console.WriteLine("parsing boolean");
-                }
+                Print("parsing boolean");
                 return new Operators.Boolean(returned.Val == "yes");
             } else if(returned.Type == TokenTypes.KEYWORD) {
                 // parse as variable (under construction)
-                LexEntry next = Read(reader);
+                LexEntry next = Read();
                 if(next.Type == TokenTypes.SYMBOL && next.Val == "(") {
-                    IOperator returning = (returned.Val == "output") ? new Operators.Output(ParseExpression(reader, verbose)) : throw reader.Error("Method calls are under construction!");
-                    LexEntry nextNext = Read(reader);
-                    if(nextNext.Type == TokenTypes.SYMBOL && nextNext.Val == ")") {
-                        return returning;
-                    }
-                    throw reader.Error("Missing closing parentheses on method call!");
+                    IOperator returning = (returned.Val == "output") ? new Operators.Output(ParseExpression()) : throw Error("Method calls are under construction!");
+                    RequireSymbol(")");
+                    return returning;
                 } else {
                     Stored = next;
-                    throw reader.Error("Variable calls are under construction!");
+                    throw Error("Variable calls are under construction!");
                 }
             } else if(returned.Type == TokenTypes.SYMBOL) {
                 if(returned.Val == "(") {
@@ -403,17 +374,13 @@ namespace Tools {
                         Console.WriteLine("parsing opening paren.");
                         Console.WriteLine("parsing expression");
                     }
-                    IOperator returning = ParseExpression(reader, verbose);
-                    LexEntry next = Read(reader);
-                    if(verbose) {
-                        Console.WriteLine("parsing closing paren.");
-                    }
-                    if(next.Type == TokenTypes.SYMBOL && next.Val == ")") {
-                        return returning;
-                    }
+                    IOperator returning = ParseExpression();
+                    Print("parsing closing paren.");
+                    RequireSymbol(")");
+                    return returning;
                 }
             }
-            throw reader.Error($"Could not parse value: {returned.Type}: {returned.Val} !");
+            throw Error($"Could not parse value: {returned.Type}: {returned.Val} !");
         }
     }
 }

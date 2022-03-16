@@ -12,22 +12,23 @@
             throw new Exception("No argument provided!");
         }
         string second = args[0].Substring(index + 1);
+        Tools.Radish radish = new Tools.Radish(first);
         switch(second) {
             case "r":
             case "run":
-                Tools.Radish.Run(first);
+                radish.Run();
                 break;
             case "l":
             case "lex":
-                Tools.Radish.Lex(first);
+                radish.Lex();
                 break;
             case "p":
             case "parse":
-                Tools.Radish.Parse(first);
+                radish.Parse();
                 break;
             case "v":
             case "verbose":
-                Tools.Radish.Run(first, true);
+                radish.Run(true);
                 break;
             default:
                 throw new Exception("Invalid argument!");

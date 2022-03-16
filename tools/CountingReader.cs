@@ -1,12 +1,12 @@
 namespace Tools {
     class CountingReader {
         private StreamReader Container { get; }
-        private int lineNumber;
-        private int colNumber;
+        public int row;
+        public int col;
         public CountingReader(string filename) {
             Container = new StreamReader(filename);
-            lineNumber = 1;
-            colNumber = -1;
+            row = 1;
+            col = 0;
         }
         public bool EndOfStream {
             get {
@@ -18,15 +18,19 @@ namespace Tools {
         }
         public void Read() {
             char returning = (char)Container.Read();
-            if(returning == '\n' || returning == '\r') {
-                lineNumber++;
-                colNumber = -1;
+            if(returning == '\r') {
+                Container.Read(); // carriage return on windows
+                row++;
+                col = 0;
             } else {
-                colNumber++;
+                col++;
             }
         }
+        public Exception Error(string msg, int rowNum, int colNum) {
+            return new Exception($"[line {rowNum}, column {colNum}]: {msg}");
+        }
         public Exception Error(string msg) {
-            return new Exception($"[line {lineNumber}, column {colNumber}]: {msg}");
+            return Error(msg, row, col);
         }
     }
 }

@@ -1,21 +1,25 @@
 namespace Tools {
-    static class Radish {
-        public static void Run(string filename, bool verbose = false) {
-            CountingReader reader = new CountingReader(filename);
-            Operations.ParseScope(reader, verbose).Run();
+    class Radish {
+        private CountingReader reader { get; }
+        public Radish(string filename) {
+            reader = new CountingReader(filename);
+        }
+
+        public void Run(bool verbose = false) {
+            Operations operations = new Operations(reader, verbose);
+            operations.ParseScope().Run();
         }   
 
-        public static void Lex(string filename) {
-            CountingReader reader = new CountingReader(filename);
+        public void Lex() {
+            Lexer lexer = new Lexer(reader);
             do {
-                LexEntry result = Lexer.Run(reader);
+                LexEntry result = lexer.Run();
                 Console.WriteLine($"{result.Type}: {result.Val}");
             } while(!reader.EndOfStream);
         }
 
-        public static void Parse(string filename) {
-            CountingReader reader = new CountingReader(filename);
-            Console.WriteLine(Operations.ParseScope(reader, false).Print());
+        public void Parse() {
+            Console.WriteLine(new Operations(reader, false).ParseScope().Print());
         }
     }
 }
