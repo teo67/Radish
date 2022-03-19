@@ -6,20 +6,32 @@ namespace Tools {
         }
 
         public void Run(bool verbose = false) {
-            Operations operations = new Operations(reader, verbose);
-            operations.ParseScope().Run();
+            try {
+                Operations operations = new Operations(reader, verbose);
+                operations.ParseScope().Run();
+            } catch(Exception e) {
+                Console.WriteLine(e.Message);
+            }
         }   
 
         public void Lex() {
-            Lexer lexer = new Lexer(reader);
-            do {
-                LexEntry result = lexer.Run();
-                Console.WriteLine($"{result.Type}: {result.Val}");
-            } while(!reader.EndOfStream);
+            try {
+                Lexer lexer = new Lexer(reader);
+                do {
+                    LexEntry result = lexer.Run();
+                    Console.WriteLine($"{result.Type}: {result.Val}");
+                } while(!reader.EndOfStream);
+            } catch(Exception e) {
+                Console.WriteLine(e.Message);
+            }
         }
 
         public void Parse() {
-            Console.WriteLine(new Operations(reader, false).ParseScope().Print());
+            try {
+                Console.WriteLine(new Operations(reader, false).ParseScope().Print());
+            } catch(Exception e) {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }

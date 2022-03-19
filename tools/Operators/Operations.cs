@@ -26,36 +26,35 @@
 namespace Tools {
     class Operations {
         private static List<string> OpKeywords { get; }
-        private static List<string> ScopeKeywords { get; }
         private LexEntry? Stored { get; set; }
         private int PrevRow { get; set; }
         private int PrevCol { get; set; }
         private bool verbose { get; }
         private CountingReader reader { get; }
         private Lexer lexer { get; }
+        private Stack stack { get; }
         static Operations() {
             OpKeywords = new List<string>() {
                 // keywords that should be parsed as operators
-            };
-            ScopeKeywords = new List<string>() {
-                // keywords that specifically trigger a new scope instance
-                "if", "elseif", "else", "while", "for"
+                "if", "elseif", "else", "while", "for", "val"
             };
         }
         public Operations(CountingReader reader, bool verbose) {
             this.reader = reader;
             this.verbose = verbose;
             this.lexer = new Lexer(reader);
+            this.stack = new Stack(new StackNode(new Dictionary<string, Values.Variable>()));
             Stored = null;
             PrevRow = -1;
             PrevCol = -1;
         }
 
         public static bool IsKeyword(string input) {
-            return OpKeywords.Contains(input) || ScopeKeywords.Contains(input);
+            return OpKeywords.Contains(input);
         }
 
         private void RequireSymbol(string input) {
+            Print($"requiring {input}");
             LexEntry next = Read();
             if(!(next.Type == TokenTypes.SYMBOL && next.Val == input)) {
                 throw Error($"Missing expected symbol: {input}");
@@ -76,6 +75,7 @@ namespace Tools {
         }
 
         private LexEntry Read() {
+            //Print("reading");
             if(Stored != null) {
                 LexEntry saved = Stored;
                 Stored = null;
@@ -88,23 +88,20 @@ namespace Tools {
 
         public Operators.ExpressionSeparator ParseScope() {
             Print("begin scope");
-            Operators.ExpressionSeparator returning = new Operators.ExpressionSeparator();
+            Operators.ExpressionSeparator returning = new Operators.ExpressionSeparator(stack);
             LexEntry read = Read();
             while(read.Type != TokenTypes.ENDOFFILE && !(read.Type == TokenTypes.SYMBOL && read.Val == "}")) {
-                if(read.Type == TokenTypes.OPERATOR && ScopeKeywords.Contains(read.Val)) {
-                    // do things with for loops and if statements and other block stuff (under construction)
-                    if(read.Val == "if") {
-                        Stored = read;
-                        returning.AddValue(ParseIfs());
-                    } else if(read.Val == "while") {
-                        RequireSymbol("(");
-                        IOperator exp = ParseExpression();
-                        RequireSymbol(")");
-                        RequireSymbol("{");
-                        IOperator scope = ParseScope();
-                        RequireSymbol("}");
-                        returning.AddValue(new Operators.While(exp, scope));
-                    }
+                if(read.Type == TokenTypes.OPERATOR && read.Val == "if") {
+                    Stored = read;
+                    returning.AddValue(ParseIfs());
+                } else if(read.Type == TokenTypes.OPERATOR && read.Val == "while") {
+                    RequireSymbol("(");
+                    IOperator exp = ParseExpression();
+                    RequireSymbol(")");
+                    RequireSymbol("{");
+                    IOperator scope = ParseScope();
+                    RequireSymbol("}");
+                    returning.AddValue(new Operators.While(exp, scope));
                 } else {
                     Print("parsing expression");
                     Stored = read;
@@ -185,10 +182,10 @@ namespace Tools {
             Func<bool> check = (() => {
                 if(next.Type == TokenTypes.OPERATOR) {
                     if(next.Val == "=") {
-                        // IOperator after = ParseCombiners();
-                        // current = new Operators.Assign(current, after);
-                        // return true;
-                        // assigning variables - under construction
+                        Print("parsing variable assignment");
+                        IOperator after = ParseCombiners();
+                        current = new Operators.Assignment(current, after);
+                        return true;
                     }
                 }
                 Stored = next; // cancel viewing
@@ -348,6 +345,14 @@ namespace Tools {
                     Print("parsing not");
                     return new Operators.Invert(ParseLowest());
                 }
+                if(returned.Val == "val") {
+                    Print("parsing variable definition");
+                    LexEntry next = Read();
+                    if(next.Type == TokenTypes.KEYWORD) {
+                        return new Operators.Declaration(stack, next.Val);
+                    }
+                    throw Error("No variable name received!");
+                }
             } else if(returned.Type == TokenTypes.STRING) {
                 Print("parsing string");
                 return new Operators.String(returned.Val);
@@ -366,14 +371,12 @@ namespace Tools {
                     return returning;
                 } else {
                     Stored = next;
-                    throw Error("Variable calls are under construction!");
+                    return new Operators.Reference(stack, returned.Val);
                 }
             } else if(returned.Type == TokenTypes.SYMBOL) {
                 if(returned.Val == "(") {
-                    if(verbose) {
-                        Console.WriteLine("parsing opening paren.");
-                        Console.WriteLine("parsing expression");
-                    }
+                    Print("parsing opening paren.");
+                    Print("parsing expression");
                     IOperator returning = ParseExpression();
                     Print("parsing closing paren.");
                     RequireSymbol(")");

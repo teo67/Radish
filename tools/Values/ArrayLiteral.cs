@@ -38,5 +38,10 @@ namespace Tools.Values {
                 return returning;
             }
         }
+        public Carrier Var {
+            get {
+                throw new Exception("Could not use a literal as a variable!");
+            }
+        }
     }
 }

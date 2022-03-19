@@ -31,5 +31,10 @@ namespace Tools.Values {
                 throw new Exception("No value found to convert to object!");
             }
         }
+        public Carrier Var {
+            get {
+                throw new Exception("Could not use a literal as a variable!");
+            }
+        }
     }
 }

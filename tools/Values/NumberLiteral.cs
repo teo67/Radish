@@ -34,5 +34,10 @@ namespace Tools.Values {
                 return new Dictionary<string, IValue>() { { "0", this } };
             }
         }
+        public Carrier Var {
+            get {
+                throw new Exception("Could not use a literal as a variable!");
+            }
+        }
     }
 }

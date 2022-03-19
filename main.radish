@@ -1,5 +1,6 @@
-if(yes) {
-    while(yes) {
-        output("yay!")r
-    }
+val width = 30r
+val i = 0r
+while(i < width) {
+    output("*" * width * 2.5)r
+    i = i + 1r
 }

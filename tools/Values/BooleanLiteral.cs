@@ -1,6 +1,6 @@
 namespace Tools.Values {
     class BooleanLiteral : IValue {
-        private bool Stored { get; }
+        private bool Stored { get; set; }
         public BooleanLiteral(bool input) {
             this.Stored = input;
         }
@@ -32,6 +32,11 @@ namespace Tools.Values {
         public Dictionary<string, IValue> Object {
             get {
                 return new Dictionary<string, IValue>() { { "0", this } };
+            }
+        }
+        public Carrier Var {
+            get {
+                throw new Exception("Could not use a literal as a variable!");
             }
         }
     }
