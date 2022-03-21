@@ -1,6 +1,6 @@
 namespace Tools.Operators {
     class ListSeparator : IOperator {
-        private List<IOperator> Children { get; }
+        public List<IOperator> Children { get; }
         public ListSeparator(List<IOperator>? children = null) {
             this.Children = (children == null) ? new List<IOperator>() : children;
         }
@@ -27,6 +27,13 @@ namespace Tools.Operators {
                 throw new Exception("List is missing an element!");
             }
             return Children[0];
+        }
+        public List<string> ParseAsArgs() {
+            List<string> returning = new List<string>();
+            foreach(IOperator child in Children) {
+                returning.Add(child.Print());
+            }
+            return returning;
         }
     }
 }

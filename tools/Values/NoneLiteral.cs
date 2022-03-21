@@ -31,10 +31,14 @@ namespace Tools.Values {
                 throw new Exception("No value found to convert to object!");
             }
         }
-        public Carrier Var {
+        public IValue Var {
             get {
                 throw new Exception("Could not use a literal as a variable!");
             }
+            set {
+                throw new Exception("Could not use a literal as a variable!");
+            }
         }
+        public void Function(List<IValue> args) {}
     }
 }

@@ -1,9 +1,14 @@
 namespace Tools.Operators {
     class While : SimpleOperator {
-        public While(IOperator left, IOperator right) : base(left, right, "while") {} // left is condition, right is scope
+        private Stack Stack { get; }
+        public While(Stack stack, IOperator left, IOperator right) : base(left, right, "while") {
+            this.Stack = stack;
+        } // left is condition, right is scope
         public override IValue Run() {
             while(Left.Run().Boolean) {
+                Stack.Push();
                 Right.Run();
+                Stack.Pop();
             }
             return new Values.NoneLiteral();
         }

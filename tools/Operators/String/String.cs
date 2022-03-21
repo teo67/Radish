@@ -8,7 +8,7 @@ namespace Tools.Operators {
             return new Values.StringLiteral(Stored);
         }
         public string Print() {
-            return Stored;
+            return $"\"{Stored}\"";
         }
     }
 }

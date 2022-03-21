@@ -1,14 +1,16 @@
 namespace Tools.Values {
     class Variable : IValue {
-        private Carrier Host { get; }
-        public Variable() {
-            this.Host = new Carrier();
+        private IValue? Host { get; set; }
+        public string Name { get; }
+        public Variable(string name, IValue? host = null) {
+            this.Name = name;
+            this.Host = host;
         }
         private IValue Resolve() {
-            if(Host.Carrying == null) {
+            if(Host == null) {
                 throw new Exception("No value stored in variable!");
             }
-            return Host.Carrying;
+            return Host;
         }
         public BasicTypes Default {
             get {
@@ -40,10 +42,16 @@ namespace Tools.Values {
                 return Resolve().Object;
             }
         }
-        public Carrier Var {
+        public IValue Var {
             get {
-                return Host;
+                return Resolve();
             }
+            set {
+                Host = value;
+            }
+        }
+        public void Function(List<IValue> args) {
+            Resolve().Function(args);
         }
     }
 }

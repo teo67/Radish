@@ -5,11 +5,13 @@ namespace Tools.Operators {
             this.VarName = varName;
         }
         public override IValue Run() {
-            if(Stack.Head.Val.ContainsKey(VarName)) {
-                throw new Exception($"Could not redeclare variable {VarName}!");
+            foreach(Values.Variable variable in Stack.Head.Val) {
+                if(variable.Name == VarName) {
+                    throw new Exception($"Could not redeclare variable {VarName}!");
+                }
             }
-            Values.Variable adding = new Values.Variable();
-            Stack.Head.Val[VarName] = adding;
+            Values.Variable adding = new Values.Variable(VarName);
+            Stack.Head.Val.Add(adding);
             return adding;
         }
         public override string Print() {

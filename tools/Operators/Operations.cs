@@ -36,14 +36,14 @@ namespace Tools {
         static Operations() {
             OpKeywords = new List<string>() {
                 // keywords that should be parsed as operators
-                "if", "elseif", "else", "while", "for", "val"
+                "if", "elseif", "else", "while", "whileval", "val", "function"
             };
         }
         public Operations(CountingReader reader, bool verbose) {
             this.reader = reader;
             this.verbose = verbose;
             this.lexer = new Lexer(reader);
-            this.stack = new Stack(new StackNode(new Dictionary<string, Values.Variable>()));
+            this.stack = new Stack(new StackNode(new List<Values.Variable>()));
             Stored = null;
             PrevRow = -1;
             PrevCol = -1;
@@ -88,7 +88,7 @@ namespace Tools {
 
         public Operators.ExpressionSeparator ParseScope() {
             Print("begin scope");
-            Operators.ExpressionSeparator returning = new Operators.ExpressionSeparator(stack);
+            Operators.ExpressionSeparator returning = new Operators.ExpressionSeparator();
             LexEntry read = Read();
             while(read.Type != TokenTypes.ENDOFFILE && !(read.Type == TokenTypes.SYMBOL && read.Val == "}")) {
                 if(read.Type == TokenTypes.OPERATOR && read.Val == "if") {
@@ -101,7 +101,15 @@ namespace Tools {
                     RequireSymbol("{");
                     IOperator scope = ParseScope();
                     RequireSymbol("}");
-                    returning.AddValue(new Operators.While(exp, scope));
+                    returning.AddValue(new Operators.While(stack, exp, scope));
+                } else if(read.Type == TokenTypes.OPERATOR && read.Val == "whileval") {
+                    RequireSymbol("(");
+                    Operators.ListSeparator list = ParseList();
+                    RequireSymbol(")");
+                    RequireSymbol("{");
+                    IOperator body = ParseScope();
+                    RequireSymbol("}");
+                    returning.AddValue(new Operators.WhileVal(stack, list, body));
                 } else {
                     Print("parsing expression");
                     Stored = read;
@@ -132,7 +140,7 @@ namespace Tools {
                 RequireSymbol("{");
                 IOperator scope = ParseScope();
                 RequireSymbol("}");
-                returning.AddValue(new Operators.If(new Operators.Boolean(true), scope));
+                returning.AddValue(new Operators.If(stack, new Operators.Boolean(true), scope));
             } else {
                 Stored = read;
             }
@@ -146,7 +154,7 @@ namespace Tools {
             RequireSymbol("{");
             IOperator scope = ParseScope();
             RequireSymbol("}");
-            return new Operators.If(li, scope);
+            return new Operators.If(stack, li, scope);
         }
 
         private Operators.ListSeparator ParseList() {
@@ -353,6 +361,25 @@ namespace Tools {
                     }
                     throw Error("No variable name received!");
                 }
+                if(returned.Val == "function") {
+                    Print("parsing function definition");
+                    RequireSymbol("(");
+                    Operators.ListSeparator args = ParseList();
+                    RequireSymbol(")");
+                    RequireSymbol("{");
+                    Operators.ExpressionSeparator body = ParseScope();
+                    RequireSymbol("}");
+                    Operators.FunctionDefinition def = new Operators.FunctionDefinition(stack, args, body);
+                    LexEntry next = Read();
+                    if(next.Type == TokenTypes.SYMBOL && next.Val == "(") {
+                        Print("parsing literal function call");
+                        Operators.FunctionCall call = new Operators.FunctionCall(def, ParseList());
+                        RequireSymbol(")");
+                        return call;
+                    }
+                    Stored = next;
+                    return def;
+                }
             } else if(returned.Type == TokenTypes.STRING) {
                 Print("parsing string");
                 return new Operators.String(returned.Val);
@@ -363,13 +390,20 @@ namespace Tools {
                 Print("parsing boolean");
                 return new Operators.Boolean(returned.Val == "yes");
             } else if(returned.Type == TokenTypes.KEYWORD) {
-                // parse as variable (under construction)
+                Print("parsing variable or function call");
                 LexEntry next = Read();
                 if(next.Type == TokenTypes.SYMBOL && next.Val == "(") {
-                    IOperator returning = (returned.Val == "output") ? new Operators.Output(ParseExpression()) : throw Error("Method calls are under construction!");
+                    Print("parsing function call");
+                    IOperator returning;
+                    if(returned.Val == "output") {
+                        returning = new Operators.Output(ParseExpression()); // still working on objects and default methods, so this is an override
+                    } else {
+                        returning = new Operators.FunctionCall(new Operators.Reference(stack, returned.Val), ParseList());
+                    }
                     RequireSymbol(")");
                     return returning;
                 } else {
+                    Print("parsing variable");
                     Stored = next;
                     return new Operators.Reference(stack, returned.Val);
                 }

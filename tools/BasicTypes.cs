@@ -5,6 +5,7 @@ namespace Tools {
         BOOLEAN, 
         ARRAY, 
         OBJECT,
+        FUNCTION,
         NONE
     }
 }

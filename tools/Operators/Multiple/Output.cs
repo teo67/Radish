@@ -26,6 +26,8 @@ namespace Tools.Operators {
                 }
                 returning += "}";
                 return returning;
+            } else if(input.Default == BasicTypes.FUNCTION) {
+                return "Function";
             } else {
                 return input.String;
             }

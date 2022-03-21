@@ -1,8 +1,8 @@
 namespace Tools {
     class StackNode {
-        public Dictionary<string, Values.Variable> Val { get; }
+        public List<Values.Variable> Val { get; }
         public StackNode? Next { get; }
-        public StackNode(Dictionary<string, Values.Variable> val, StackNode? next = null) {
+        public StackNode(List<Values.Variable> val, StackNode? next = null) {
             this.Val = val;
             this.Next = next;
         }
@@ -12,8 +12,8 @@ namespace Tools {
         public Stack(StackNode head) {
             this.Head = head;
         }
-        public StackNode Push(Dictionary<string, Values.Variable> val) {
-            Head = new StackNode(val, Head);
+        public StackNode Push() {
+            Head = new StackNode(new List<Values.Variable>(), Head);
             return Head;
         }
         public StackNode Pop() {
@@ -27,8 +27,10 @@ namespace Tools {
         public Values.Variable Get(string key) {
             StackNode? viewing = Head;
             while(viewing != null) {
-                if(viewing.Val.ContainsKey(key)) {
-                    return viewing.Val[key];
+                foreach(Values.Variable variable in viewing.Val) {
+                    if(variable.Name == key) {
+                        return variable;
+                    }
                 }
                 viewing = viewing.Next;
             }
