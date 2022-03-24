@@ -28,12 +28,5 @@ namespace Tools.Operators {
             }
             return Children[0];
         }
-        public List<string> ParseAsArgs() {
-            List<string> returning = new List<string>();
-            foreach(IOperator child in Children) {
-                returning.Add(child.Print());
-            }
-            return returning;
-        }
     }
 }

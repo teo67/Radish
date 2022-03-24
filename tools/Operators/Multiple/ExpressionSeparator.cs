@@ -6,7 +6,10 @@ namespace Tools.Operators {
         }
         public IValue Run() {
             foreach(IOperator child in Children) {
-                child.Run();
+                IValue result = child.Run();
+                if(result.Default == BasicTypes.RETURN) {
+                    return result;
+                }
             }
             return new Values.NoneLiteral();
         }

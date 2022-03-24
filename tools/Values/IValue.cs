@@ -7,6 +7,6 @@ namespace Tools {
         public IValue Var { get; set; } // get/set mutable variable inside of value
         public List<IValue> Array { get; } // get value as array 
         public Dictionary<string, IValue> Object { get; } // get value as object
-        public void Function(List<IValue> args); // call value as function with list of values
+        public IValue Function(List<IValue> args); // call value as function with list of values
     }
 }

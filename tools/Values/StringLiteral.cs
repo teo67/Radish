@@ -42,6 +42,8 @@ namespace Tools.Values {
                 throw new Exception("Could not use a literal as a variable!");
             }
         }
-        public void Function(List<IValue> args) {}
+        public IValue Function(List<IValue> args) {
+            return this;
+        }
     }
 }

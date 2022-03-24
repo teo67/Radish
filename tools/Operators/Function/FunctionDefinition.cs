@@ -7,7 +7,15 @@ namespace Tools.Operators {
             this.Body = body;
         }
         public override IValue Run() {
-            return new Values.FunctionLiteral(Stack, Args.ParseAsArgs(), Body);
+            List<IValue> argsAsValues = Args.Run().Array;
+            List<string> args = new List<string>();
+            foreach(IValue val in argsAsValues) {
+                args.Add(val.String);
+            }
+            return new Values.FunctionLiteral(Stack, args, Body);
+        }
+        public override string Print() {
+            return $"({Args.Print()}) {Body.Print()}";
         }
     }
 }

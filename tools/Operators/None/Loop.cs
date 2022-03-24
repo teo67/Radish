@@ -1,8 +1,8 @@
 namespace Tools.Operators {
-    class WhileVal : VariableOperator {
+    class Loop : VariableOperator {
         private ListSeparator Tags { get; }
         private IOperator Body { get; }
-        public WhileVal(Stack stack, ListSeparator tags, IOperator body) : base(stack) {
+        public Loop(Stack stack, ListSeparator tags, IOperator body) : base(stack) {
             this.Tags = tags;
             this.Body = body;
         } // left is condition, right is scope
@@ -14,9 +14,15 @@ namespace Tools.Operators {
             Tags.Children[0].Run();
             while(Tags.Children[1].Run().Boolean) {
                 Stack.Push();
-                Body.Run();
+                IValue result = Body.Run();
                 Tags.Children[2].Run();
                 Stack.Pop();
+                if(result.Default == BasicTypes.RETURN) {
+                    if(result.String == "out" || result.String == "cancel") {
+                        Stack.Pop();
+                        return result;
+                    }
+                }
             }
             Stack.Pop();
             return new Values.NoneLiteral();

@@ -7,8 +7,13 @@ namespace Tools.Operators {
         public override IValue Run() {
             while(Left.Run().Boolean) {
                 Stack.Push();
-                Right.Run();
+                IValue result = Right.Run();
                 Stack.Pop();
+                if(result.Default == BasicTypes.RETURN) {
+                    if(result.String == "out" || result.String == "cancel") {
+                        return result;
+                    }
+                }
             }
             return new Values.NoneLiteral();
         }

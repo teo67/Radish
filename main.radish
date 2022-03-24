@@ -1,11 +1,6 @@
-val diamond = function(size) {
-    whileval(val i = 1, i <= size, i = i + 1) {
-        output("*" * i)r
-    }
-    whileval(val i = size - 1, i > 0, i = i - 1) {
-        output(" " * (size - i) + "*" * i)r
-    }
+val test = function (name) {
+    output(name + 1)r
+    out namer
 }r
-diamond(20)r
 
-whileval(output("test1"), no, output("test2")){} # efficient radish programming demo lmao #
+output(test(1))r

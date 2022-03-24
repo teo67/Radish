@@ -50,8 +50,8 @@ namespace Tools.Values {
                 Host = value;
             }
         }
-        public void Function(List<IValue> args) {
-            Resolve().Function(args);
+        public IValue Function(List<IValue> args) {
+            return Resolve().Function(args);
         }
     }
 }

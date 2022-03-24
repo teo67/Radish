@@ -46,7 +46,7 @@ namespace Tools.Values {
                 throw new Exception("Function cannot be converted to variable!");
             }
         }
-        public void Function(List<IValue> args) {
+        public IValue Function(List<IValue> args) {
             if(args.Count != ArgNames.Count) {
                 throw new Exception("Invalid number of arguments!");
             }
@@ -54,8 +54,12 @@ namespace Tools.Values {
             for(int i = 0; i < args.Count; i++) {
                 Stack.Head.Val.Add(new Variable(ArgNames[i], args[i]));
             }
-            Body.Run();
+            IValue result = Body.Run();
             Stack.Pop();
+            if(result.Default != BasicTypes.RETURN) {
+                return result; // this will be null
+            }
+            return result.Function(new List<IValue>());
         }
     }
 }
