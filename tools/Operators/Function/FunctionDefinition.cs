@@ -1,21 +1,20 @@
 namespace Tools.Operators {
     class FunctionDefinition : VariableOperator {
-        private ListSeparator Args { get; }
+        private List<string> Args { get; }
         private IOperator Body { get; }
-        public FunctionDefinition(Stack stack, ListSeparator args, IOperator body) : base(stack) {
+        public FunctionDefinition(Stack stack, List<string> args, IOperator body) : base(stack) {
             this.Args = args;
             this.Body = body;
         }
         public override IValue Run() {
-            List<IValue> argsAsValues = Args.Run().Array;
-            List<string> args = new List<string>();
-            foreach(IValue val in argsAsValues) {
-                args.Add(val.String);
-            }
-            return new Values.FunctionLiteral(Stack, args, Body);
+            return new Values.FunctionLiteral(Stack, Args, Body);
         }
         public override string Print() {
-            return $"({Args.Print()}) {Body.Print()}";
+            string returning = "";
+            foreach(string arg in Args) {
+                returning += $"{arg}, ";
+            }
+            return $"({returning}) {Body.Print()}";
         }
     }
 }

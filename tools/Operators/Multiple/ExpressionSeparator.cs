@@ -6,11 +6,16 @@ namespace Tools.Operators {
         }
         public IValue Run() {
             foreach(IOperator child in Children) {
+                //Console.WriteLine("looking for result");
                 IValue result = child.Run();
+                //Console.WriteLine("got result");
+                //Console.WriteLine(result.Default);
                 if(result.Default == BasicTypes.RETURN) {
+                    //Console.WriteLine($"caught {result.Default}");
                     return result;
                 }
             }
+            //Console.WriteLine("finished");
             return new Values.NoneLiteral();
         }
         public void AddValue(IOperator adding) {

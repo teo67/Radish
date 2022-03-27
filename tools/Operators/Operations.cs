@@ -132,10 +132,17 @@ namespace Tools {
                     returning.AddValue(new Operators.Loop(stack, list, body));
                 } else if(read.Type == TokenTypes.OPERATOR && (read.Val == "out" || read.Val == "cancel" || read.Val == "continue")) {
                     Print("parsing return statement");
-                    IOperator carrying = ParseExpression();
-                    Print("parsing endline");
-                    RequireSymbol("r");
-                    returning.AddValue(new Operators.ReturnType(read.Val, carrying));
+                    LexEntry next = Read();
+                    if(next.Type == TokenTypes.SYMBOL && next.Val == "r") {
+                        Print("parsing empty return");
+                        returning.AddValue(new Operators.ReturnType(read.Val));
+                    } else {
+                        Stored = next;
+                        IOperator carrying = ParseExpression();
+                        Print("parsing endline");
+                        RequireSymbol("r");
+                        returning.AddValue(new Operators.ReturnType(read.Val, carrying));
+                    }
                 } else {
                     Print("parsing expression");
                     Stored = read;
@@ -183,9 +190,9 @@ namespace Tools {
             return new Operators.If(stack, li, scope);
         }
 
-        private Operators.ListSeparator ParseList(bool keywords = false) {
+        private T ParseLi<T>(Func<T> init, Action<T> onEach) {
             Print("begin list");
-            Operators.ListSeparator returning = new Operators.ListSeparator();
+            T returning = init();
             LexEntry read = Read();
             if(read.Type == TokenTypes.SYMBOL && (read.Val == "]" || read.Val == ")")) { // empty list
                 Stored = read;
@@ -194,15 +201,7 @@ namespace Tools {
             while(true) { 
                 Print("parsing list element");
                 Stored = read;
-                if(keywords) {
-                    LexEntry key = Read();
-                    if(key.Type != TokenTypes.KEYWORD) {
-                        Error("Expecting a function parameter!");
-                    }
-                    returning.AddValue(new Operators.String(key.Val));
-                } else {
-                    returning.AddValue(ParseExpression());
-                }
+                onEach(returning);
                 
                 LexEntry next = Read();
 
@@ -216,6 +215,26 @@ namespace Tools {
                 read = Read();
             }
             return returning;
+        }
+
+        private Operators.ListSeparator ParseList() {
+            return ParseLi<Operators.ListSeparator>(() => {
+                return new Operators.ListSeparator();
+            }, (Operators.ListSeparator returning) => {
+                returning.AddValue(ParseExpression());
+            });
+        }
+
+        private List<string> ParseArgs() {
+            return ParseLi<List<string>>(() => {
+                return new List<string>();
+            }, (List<string> returning) => {
+                LexEntry key = Read();
+                if(key.Type != TokenTypes.KEYWORD) {
+                    Error("Expecting a function parameter!");
+                }
+                returning.Add(key.Val);
+            });
         }
 
         private IOperator ParseExpression() {
@@ -393,13 +412,26 @@ namespace Tools {
         private IOperator ParseCalls() {
             IOperator current = ParseLowest();
             LexEntry next = Read();
+            Func<bool> checkCheck = (() => {
+                if(next.Val == "(") {
+                    Print("parsing function call");
+                    IOperator args = ParseList();
+                    RequireSymbol(")");
+                    current = new Operators.FunctionCall(current, args);
+                    return true;
+                }
+                if(next.Val == "[") {
+                    Print("parsing array accessor");
+                    IOperator exp = ParseExpression();
+                    RequireSymbol("]");
+                    current = new Operators.ArrayGet(current, exp);
+                    return true;
+                }
+                return false;
+            });
             Func<bool> check = (() => {
                 if(next.Type == TokenTypes.SYMBOL) {
-                    while(next.Val == "(") {
-                        Print("parsing function call");
-                        IOperator args = ParseList();
-                        RequireSymbol(")");
-                        current = new Operators.FunctionCall(current, args);
+                    while(checkCheck()) {
                         next = Read();
                     }
                     if(next.Val == ".") {
@@ -433,7 +465,7 @@ namespace Tools {
                 if(returned.Val == "function") {
                     Print("parsing function definition");
                     RequireSymbol("(");
-                    Operators.ListSeparator args = ParseList(true);
+                    List<string> args = ParseArgs();
                     RequireSymbol(")");
                     RequireSymbol("{");
                     Operators.ExpressionSeparator body = ParseScope();
@@ -460,6 +492,13 @@ namespace Tools {
                     IOperator returning = ParseExpression();
                     Print("parsing closing paren.");
                     RequireSymbol(")");
+                    return returning;
+                } 
+                if(returned.Val == "[") {
+                    Print("parsing opening square brackets");
+                    Operators.ListSeparator returning = ParseList();
+                    Print("parsing closing square brackets");
+                    RequireSymbol("]");
                     return returning;
                 }
             }

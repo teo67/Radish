@@ -5,9 +5,9 @@ namespace Tools.Operators {
             this.Children = (children == null) ? new List<If>() : children;
         }
         public IValue Run() {
-            foreach(IOperator child in Children) {
-                if(child.Run().Boolean) {
-                    break;
+            foreach(If child in Children) {
+                if(child.Check()) {
+                    return child.Run();
                 }
             }
             return new Values.NoneLiteral();

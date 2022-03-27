@@ -8,7 +8,7 @@ namespace Tools.Operators {
         } // left is condition, right is scope
         public override IValue Run() {
             if(Tags.Children.Count != 3) {
-                throw new Exception("Whileval loops require three arguments!");
+                throw new Exception("Loops require three arguments!");
             }
             Stack.Push();
             Tags.Children[0].Run();
@@ -28,7 +28,7 @@ namespace Tools.Operators {
             return new Values.NoneLiteral();
         }
         public override string Print() {
-            return $"whileval({Tags.Print()})\n{Body.Print()}";
+            return $"loop({Tags.Print()})\n{Body.Print()}";
         }
     }
 }
