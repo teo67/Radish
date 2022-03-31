@@ -22,20 +22,19 @@ namespace Tools {
             quoteChar = '"';
             hashChar = '#';
             string numbers = "0123456789";
-            string letters = "abcdefghijklmnopqstuvwxyz";
+            string letters = "abcdefghijklmnopqrstuvwxyz";
             for(int i = 0; i < letters.Length; i++) {
                 dict.Add(letters[i], CharTypes.letter);
                 dict.Add(Char.ToUpper(letters[i]), CharTypes.letter);
             }
-            dict.Add('R', CharTypes.letter);
             for(int i = 0; i < numbers.Length; i++) {
                 dict.Add(numbers[i], CharTypes.digit);
             }
-            string ops = "+-/*=<>|&!%";
+            string ops = "+-/*=<>|&!%\\";
             for(int i = 0; i < ops.Length; i++) {
                 dict.Add(ops[i], CharTypes.operators);
             }
-            string symbols = "(){}[]r,";
+            string symbols = "(){}[],";
             for(int i = 0; i < symbols.Length; i++) {
                 dict.Add(symbols[i], CharTypes.symbols);
             }
@@ -76,7 +75,7 @@ namespace Tools {
                 case CharTypes.digit:
                     return (current == TokenTypes.NUMBER) ? TokenTypes.SAME : TokenTypes.NUMBER;
                 case CharTypes.dot:
-                    return (current == TokenTypes.NUMBER && currentRaw.IndexOf(dotChar) == -1) ? TokenTypes.SAME : TokenTypes.OPERATOR; // if youre already in a number with no decimal points yet, consider this a decimal point : otherwise, its punctuation
+                    return (current == TokenTypes.NUMBER && currentRaw.IndexOf(dotChar) == -1) ? TokenTypes.SAME : TokenTypes.SYMBOL; // if youre already in a number with no decimal points yet, consider this a decimal point : otherwise, its punctuation
                 case CharTypes.symbols:
                     return TokenTypes.SYMBOL;
                 case CharTypes.operators:

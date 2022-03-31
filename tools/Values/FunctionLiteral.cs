@@ -1,52 +1,24 @@
 namespace Tools.Values {
-    class FunctionLiteral : IValue {
+    class FunctionLiteral : EmptyLiteral {
         private Stack Stack { get; }
         private List<string> ArgNames { get; }
         private IOperator Body { get; }
-        public FunctionLiteral(Stack stack, List<string> argNames, IOperator body) {
+        public FunctionLiteral(Stack stack, List<string> argNames, IOperator body) : base("function") {
             this.Stack = stack;
             this.ArgNames = argNames;
             this.Body = body;
         }
-        public BasicTypes Default {
+        public override BasicTypes Default {
             get {
                 return BasicTypes.FUNCTION;
             }
         }
-        public double Number {
-            get {
-                throw new Exception("Function cannot be converted to number!");
-            }
-        }
-        public string String {
-            get {
-                throw new Exception("Function cannot be converted to string!");
-            }
-        }
-        public bool Boolean {
+        public override bool Boolean {
             get {
                 return true;
             }
         }
-        public List<IValue> Array {
-            get {
-                throw new Exception("Function cannot be converted to array!");
-            }
-        }
-        public Dictionary<string, IValue> Object {
-            get {
-                throw new Exception("Function cannot be converted to object!");
-            }
-        }
-        public IValue Var {
-            get {
-                throw new Exception("Function cannot be converted to variable!");
-            }
-            set {
-                throw new Exception("Function cannot be converted to variable!");
-            }
-        }
-        public IValue Function(List<IValue> args) {
+        public override IValue Function(List<IValue> args) {
             if(args.Count != ArgNames.Count) {
                 throw new Exception("Invalid number of arguments!");
             }

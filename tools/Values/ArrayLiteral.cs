@@ -1,53 +1,22 @@
 namespace Tools.Values {
-    class ArrayLiteral : IValue {
-        private List<IValue> Stored { get; }
-        public ArrayLiteral(List<IValue> input) {
-            this.Stored = input;
+    class ArrayLiteral : EmptyLiteral {
+        public override List<IValue> Array { get; }
+        public override List<Variable> Object { get; }
+        public ArrayLiteral(List<IValue> input, IValue arr) : base("array") {
+            this.Array = input;
+            this.Object = new List<Variable>() {
+                new Variable("base", arr)
+            };
         }
-        public BasicTypes Default {
+        public override BasicTypes Default {
             get {
                 return BasicTypes.ARRAY;
             }
         }
-        public double Number {
+        public override bool Boolean {
             get {
-                throw new Exception("Unable to parse array as number!");
+                return Array.Count > 0;
             }
-        }
-        public string String {
-            get {
-                throw new Exception("Unable to parse array as string!");
-            }
-        }
-        public bool Boolean {
-            get {
-                return Stored.Count > 0;
-            }
-        }
-        public List<IValue> Array {
-            get {
-                return Stored;
-            }
-        }
-        public Dictionary<string, IValue> Object {
-            get {
-                Dictionary<string, IValue> returning = new Dictionary<string, IValue>();
-                for(int i = 0; i < Stored.Count; i++) {
-                    returning[$"{i}"] = Stored[i];
-                }
-                return returning;
-            }
-        }
-        public IValue Var {
-            get {
-                throw new Exception("Could not use a literal as a variable!");
-            }
-            set {
-                throw new Exception("Could not use a literal as a variable!");
-            }
-        }
-        public IValue Function(List<IValue> args) {
-            return this;
         }
     }
 }

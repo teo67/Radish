@@ -17,11 +17,11 @@ namespace Tools.Operators {
                 returning += "]";
                 return returning;
             } else if(input.Default == BasicTypes.OBJECT) {
-                string returning = "{";
-                foreach(var item in input.Object) {
-                    returning += item.Key;
+                string returning = "{\n";
+                foreach(Values.Variable item in input.Object) {
+                    returning += item.Name;
                     returning += ": ";
-                    returning += CalcOutput(item.Value);
+                    returning += CalcOutput(item.Var);
                     returning += "\n";
                 }
                 returning += "}";

@@ -10,8 +10,11 @@ namespace Tools.Operators {
                 IValue result = Right.Run();
                 Stack.Pop();
                 if(result.Default == BasicTypes.RETURN) {
-                    if(result.String == "out" || result.String == "cancel") {
+                    if(result.String == "out" || result.String == "end") {
                         return result;
+                    }
+                    if(result.String == "cancel") {
+                        return new Values.NoneLiteral();
                     }
                 }
             }

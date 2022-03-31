@@ -3,7 +3,7 @@ namespace Tools.Operators {
         private IOperator? Stored { get; }
         private string Type { get; }
         public ReturnType(string type, IOperator? stored = null) {
-            string[] valid = { "out", "cancel", "continue" };
+            string[] valid = { "out", "end", "cancel", "continue" };
             if(!valid.Contains(type)) {
                 throw new Exception($"{type} is not a valid return type!");
             }

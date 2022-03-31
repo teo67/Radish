@@ -1,49 +1,27 @@
 namespace Tools.Values {
-    class NumberLiteral : IValue {
-        private double Stored { get; }
-        public NumberLiteral(double input) {
-            this.Stored = input;
+    class NumberLiteral : EmptyLiteral {
+        public override double Number { get; }
+        public override List<Variable> Object { get; }
+        public NumberLiteral(double input, IValue num) : base("number") {
+            Number = input;
+            Object = new List<Variable>() {
+                new Variable("base", num)
+            };
         }
-        public BasicTypes Default {
+        public override BasicTypes Default {
             get {
                 return BasicTypes.NUMBER;
             }
         }
-        public double Number {
+        public override string String {
             get {
-                return Stored;
+                return $"{Number}";
             }
         }
-        public string String {
+        public override bool Boolean {
             get {
-                return $"{Stored}";
+                return Number != 0.0;
             }
-        }
-        public bool Boolean {
-            get {
-                return Stored != 0.0;
-            }
-        }
-        public List<IValue> Array {
-            get {
-                return new List<IValue>() { this };
-            }
-        }
-        public Dictionary<string, IValue> Object {
-            get {
-                return new Dictionary<string, IValue>() { { "0", this } };
-            }
-        }
-        public IValue Var {
-            get {
-                throw new Exception("Could not use a literal as a variable!");
-            }
-            set {
-                throw new Exception("Could not use a literal as a variable!");
-            }
-        }
-        public IValue Function(List<IValue> args) {
-            return this;
         }
     }
 }

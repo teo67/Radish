@@ -33,10 +33,11 @@ namespace Tools {
         private CountingReader reader { get; }
         private Lexer lexer { get; }
         private Stack stack { get; }
+        private Prototypes prototypes { get; }
         static Operations() {
             OpKeywords = new List<string>() {
                 // keywords that should be parsed as operators
-                "if", "elseif", "else", "while", "loop", "val", "function", "out", "cancel", "continue"
+                "if", "elseif", "else", "while", "loop", "make", "function", "out", "cancel", "continue", "set", "end"
             };
         }
         public Operations(CountingReader reader, bool verbose) {
@@ -47,26 +48,7 @@ namespace Tools {
             Stored = null;
             PrevRow = -1;
             PrevCol = -1;
-
-            stack.Push();
-            stack.Head.Val.Add(
-                new Values.Variable(
-                    "output", 
-                    new Values.FunctionLiteral(
-                        stack, 
-                        new List<string>() { "input" }, 
-                        new Operators.ExpressionSeparator(
-                            new List<IOperator>() {
-                                new Operators.ReturnType("out", 
-                                    new Operators.Output(
-                                        new Operators.Reference(stack, "input")
-                                    )
-                                )
-                            }
-                        )
-                    )
-                )
-            ); // we're manually adding output to the stack for now, eventually it will become an import
+            prototypes = new Prototypes(this.stack);
         }
 
         public static bool IsKeyword(string input) {
@@ -99,11 +81,14 @@ namespace Tools {
             if(Stored != null) {
                 LexEntry saved = Stored;
                 Stored = null;
+                //Print(saved.Val);
                 return saved;
             }
             PrevCol = reader.col;
             PrevRow = reader.row;
-            return lexer.Run();
+            LexEntry ran = lexer.Run();
+            //Print(ran.Val);
+            return ran;
         }
 
         public Operators.ExpressionSeparator ParseScope() {
@@ -130,25 +115,17 @@ namespace Tools {
                     IOperator body = ParseScope();
                     RequireSymbol("}");
                     returning.AddValue(new Operators.Loop(stack, list, body));
-                } else if(read.Type == TokenTypes.OPERATOR && (read.Val == "out" || read.Val == "cancel" || read.Val == "continue")) {
-                    Print("parsing return statement");
-                    LexEntry next = Read();
-                    if(next.Type == TokenTypes.SYMBOL && next.Val == "r") {
-                        Print("parsing empty return");
-                        returning.AddValue(new Operators.ReturnType(read.Val));
-                    } else {
-                        Stored = next;
-                        IOperator carrying = ParseExpression();
-                        Print("parsing endline");
-                        RequireSymbol("r");
-                        returning.AddValue(new Operators.ReturnType(read.Val, carrying));
-                    }
+                } else if(read.Type == TokenTypes.OPERATOR && (read.Val == "cancel" || read.Val == "continue" || read.Val == "end")) {
+                    Print("parsing end/c/c statement");
+                    returning.AddValue(new Operators.ReturnType(read.Val));
+                } else if(read.Type == TokenTypes.OPERATOR && read.Val == "out") {
+                    Print("parsing out statement");
+                    IOperator carrying = ParseExpression();
+                    returning.AddValue(new Operators.ReturnType(read.Val, carrying));
                 } else {
                     Print("parsing expression");
                     Stored = read;
                     returning.AddValue(ParseExpression());
-                    Print("parsing endline (r)");
-                    RequireSymbol("r");
                 }
                 read = Read();
             }
@@ -219,7 +196,7 @@ namespace Tools {
 
         private Operators.ListSeparator ParseList() {
             return ParseLi<Operators.ListSeparator>(() => {
-                return new Operators.ListSeparator();
+                return new Operators.ListSeparator(prototypes.Array);
             }, (Operators.ListSeparator returning) => {
                 returning.AddValue(ParseExpression());
             });
@@ -237,18 +214,50 @@ namespace Tools {
             });
         }
 
+        private IOperator ParseAssignment(IOperator current, Func<IOperator, IOperator, IOperator> translate) {
+            Print("parsing variable assignment");
+            IOperator after = ParseCombiners();
+            return new Operators.Assignment(current, translate(current, after), prototypes.Number, prototypes.String);
+        }
+
         private IOperator ParseExpression() {
             Print("begin expression");
             IOperator current = ParseCombiners();
             LexEntry next = Read();
             Func<bool> check = (() => {
                 if(next.Type == TokenTypes.OPERATOR) {
-                    if(next.Val == "=") {
-                        Print("parsing variable assignment");
-                        IOperator after = ParseCombiners();
-                        current = new Operators.Assignment(current, after);
-                        return true;
+                    IValue num = prototypes.Number;
+                    switch(next.Val) {
+                        case "set":
+                        case "=":
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return after; });
+                            break;
+                        case "+=":
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Add(current, after, num, prototypes.String); });
+                            break;
+                        case "-=":
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Subtract(current, after, num); });
+                            break;
+                        case "*=":
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Multiply(current, after, num, prototypes.String); });
+                            break;
+                        case "/=":
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Divide(current, after, num); });
+                            break;
+                        case "%=":
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Modulo(current, after, num); });
+                            break;
+                        case "++":
+                            current = new Operators.Assignment(current, new Operators.Add(current, new Operators.Number(1, num), num, prototypes.String), num, prototypes.String);
+                            break;
+                        case "--":
+                            current = new Operators.Assignment(current, new Operators.Subtract(current, new Operators.Number(1, num), num), num, prototypes.String);
+                            break;
+                        default:
+                            Stored = next;
+                            return false;
                     }
+                    return true;
                 }
                 Stored = next; // cancel viewing
                 return false;
@@ -342,13 +351,13 @@ namespace Tools {
                     if(next.Val == "+") {
                         Print("parsing plus");
                         IOperator after = ParseFactors();
-                        current = new Operators.Add(current, after);
+                        current = new Operators.Add(current, after, prototypes.Number, prototypes.String);
                         return true;
                     }
                     if(next.Val == "-") {
                         Print("parsing minus");
                         IOperator after = ParseFactors();
-                        current = new Operators.Subtract(current, after);
+                        current = new Operators.Subtract(current, after, prototypes.Number);
                         return true;
                     }
                 }
@@ -370,19 +379,19 @@ namespace Tools {
                     if(next.Val == "*") {
                         Print("parsing multiply");
                         IOperator after = ParseNegatives();
-                        current = new Operators.Multiply(current, after);
+                        current = new Operators.Multiply(current, after, prototypes.Number, prototypes.String);
                         return true;
                     }
                     if(next.Val == "/") {
                         Print("parsing divide");
                         IOperator after = ParseNegatives();
-                        current = new Operators.Divide(current, after);
+                        current = new Operators.Divide(current, after, prototypes.Number);
                         return true;
                     }
                     if(next.Val == "%") {
                         Print("parsing modulo");
                         IOperator after = ParseNegatives();
-                        current = new Operators.Modulo(current, after);
+                        current = new Operators.Modulo(current, after, prototypes.Number);
                         return true;
                     }
                 }
@@ -399,7 +408,7 @@ namespace Tools {
             LexEntry returned = Read();
             if(returned.Type == TokenTypes.OPERATOR) {
                 if(returned.Val == "-") {
-                    return new Operators.Multiply(new Operators.Number(-1.0), ParseNegatives());
+                    return new Operators.Multiply(new Operators.Number(-1.0, prototypes.Number), ParseNegatives(), prototypes.Number, prototypes.String);
                 }
                 if(returned.Val == "!") {
                     return new Operators.Invert(ParseNegatives());
@@ -410,6 +419,7 @@ namespace Tools {
         }
         
         private IOperator ParseCalls() {
+            Print("begin calls");
             IOperator current = ParseLowest();
             LexEntry next = Read();
             Func<bool> checkCheck = (() => {
@@ -417,7 +427,7 @@ namespace Tools {
                     Print("parsing function call");
                     IOperator args = ParseList();
                     RequireSymbol(")");
-                    current = new Operators.FunctionCall(current, args);
+                    current = new Operators.FunctionCall(current, args, stack);
                     return true;
                 }
                 if(next.Val == "[") {
@@ -436,8 +446,9 @@ namespace Tools {
                     }
                     if(next.Val == ".") {
                         Print("parsing accessor");
-                        // etc
-                        // ParseLowest();
+                        LexEntry lowRead = Read();
+                        IOperator low = new Operators.String(lowRead.Val, prototypes.String);
+                        current = new Operators.Get(current, low, stack);
                         return true;
                     }
                 }
@@ -454,7 +465,7 @@ namespace Tools {
             Print("begin lowest");
             LexEntry returned = Read();
             if(returned.Type == TokenTypes.OPERATOR) {
-                if(returned.Val == "val") {
+                if(returned.Val == "make") {
                     Print("parsing variable definition");
                     LexEntry next = Read();
                     if(next.Type == TokenTypes.KEYWORD) {
@@ -475,10 +486,10 @@ namespace Tools {
                 }
             } else if(returned.Type == TokenTypes.STRING) {
                 Print("parsing string");
-                return new Operators.String(returned.Val);
+                return new Operators.String(returned.Val, prototypes.String);
             } else if(returned.Type == TokenTypes.NUMBER) {
                 Print("parsing number");
-                return new Operators.Number(Double.Parse(returned.Val));
+                return new Operators.Number(Double.Parse(returned.Val), prototypes.Number);
             } else if(returned.Type == TokenTypes.BOOLEAN) {
                 Print("parsing boolean");
                 return new Operators.Boolean(returned.Val == "yes");

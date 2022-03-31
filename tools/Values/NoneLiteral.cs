@@ -1,46 +1,10 @@
 namespace Tools.Values {
-    class NoneLiteral : IValue {
-        public NoneLiteral() {}
-        public BasicTypes Default {
+    class NoneLiteral : EmptyLiteral {
+        public NoneLiteral() : base("none") {}
+        public override BasicTypes Default {
             get {
                 return BasicTypes.NONE;
             }
-        }
-        public double Number {
-            get {
-                throw new Exception("No value found to convert to number!");
-            }
-        }
-        public string String {
-            get {
-                throw new Exception("No value found to convert to string!");
-            }
-        }
-        public bool Boolean {
-            get {
-                throw new Exception("No value found to convert to boolean!");
-            }
-        }
-        public List<IValue> Array {
-            get {
-                throw new Exception("No value found to convert to array!");
-            }
-        }
-        public Dictionary<string, IValue> Object {
-            get {
-                throw new Exception("No value found to convert to object!");
-            }
-        }
-        public IValue Var {
-            get {
-                throw new Exception("Could not use a literal as a variable!");
-            }
-            set {
-                throw new Exception("Could not use a literal as a variable!");
-            }
-        }
-        public IValue Function(List<IValue> args) {
-            return this;
         }
     }
 }

@@ -1,7 +1,9 @@
 namespace Tools.Operators {
     class ListSeparator : IOperator {
         public List<IOperator> Children { get; }
-        public ListSeparator(List<IOperator>? children = null) {
+        private IValue Arr { get; }
+        public ListSeparator(IValue arr, List<IOperator>? children = null) {
+            this.Arr = arr;
             this.Children = (children == null) ? new List<IOperator>() : children;
         }
         public IValue Run() {
@@ -9,7 +11,7 @@ namespace Tools.Operators {
             foreach(IOperator child in Children) {
                 adding.Add(child.Run());
             }
-            return new Values.ArrayLiteral(adding);
+            return new Values.ArrayLiteral(adding, Arr);
         }
         public void AddValue(IOperator adding) {
             Children.Add(adding);

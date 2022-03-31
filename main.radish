@@ -1,25 +1,5 @@
-val pimes = []r
-val pimeslen = 0r
-val cuent = 2r
-
-val check = function () {
-    loop(val i = 0, i < pimeslen, i = i + 1) {
-        if(cuent % pimes[i] == 0) {
-            out nor
-        }
-    }
-    out yesr
-}r
-
-val sketchypush = function (aay, newval, aaylen) {
-    val etuning = []r
-    loop(val i = 0, i < aaylen, i = i + 1) {
-        # this is where i realized pushing to an array is impossible without class methods lmao #
-    }
-}r
-
-#loop(val i = 0, i < 100, i = i + 1) {
-    if(check()) {
-
-    }
-}#
+make a set [1]
+make b set a
+a.push([1])
+output(a)
+output(b)

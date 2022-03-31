@@ -37,7 +37,7 @@ namespace Tools.Values {
                 return Resolve().Array;
             }
         }
-        public Dictionary<string, IValue> Object {
+        public List<Variable> Object {
             get {
                 return Resolve().Object;
             }

@@ -12,8 +12,8 @@ namespace Tools {
         public Stack(StackNode head) {
             this.Head = head;
         }
-        public StackNode Push() {
-            Head = new StackNode(new List<Values.Variable>(), Head);
+        public StackNode Push(List<Values.Variable>? head = null) {
+            Head = new StackNode((head == null) ? new List<Values.Variable>() : head, Head);
             return Head;
         }
         public StackNode Pop() {
