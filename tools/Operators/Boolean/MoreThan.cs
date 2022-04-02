@@ -1,10 +1,10 @@
 namespace Tools.Operators {
-    class MoreThan : SimpleOperator {
-        public MoreThan(IOperator left, IOperator right) : base(left, right, ">") { }
+    class MoreThan : SimpleVariableOperator {
+        public MoreThan(Stack stack, IOperator left, IOperator right) : base(stack, left, right, ">") { }
         public override IValue Run() {
             IValue leftResult = Left.Run();
             IValue rightResult = Right.Run();
-            return new Values.BooleanLiteral(leftResult.Number > rightResult.Number);
+            return new Values.BooleanLiteral(leftResult.Number > rightResult.Number, Stack.Get("Boolean").Var);
         }
     }
 }

@@ -45,5 +45,16 @@ namespace Tools.Values {
         public virtual IValue Function(List<IValue> args) {
             throw new Exception($"Unable to parse {Name} as function!");
         }
+        public virtual IValue Clone() {
+            throw new Exception($"Unable to clone {Name}!");
+        }
+        public virtual bool Equals(IValue other) {
+            throw new Exception($"Unable to parse {Name} as equals!");
+        }
+        public virtual IOperator FunctionBody {
+            get {
+                throw new Exception($"Unable to parse {Name} as function body!");
+            }
+        }
     }
 }

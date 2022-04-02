@@ -1,13 +1,13 @@
 namespace Tools.Operators {
-    class Boolean : IOperator {
+    class Boolean : VariableOperator {
         private bool Stored { get; }
-        public Boolean(bool stored) {
+        public Boolean(bool stored, Stack stack) : base(stack) {
             this.Stored = stored;
         }
-        public IValue Run() {
-            return new Values.BooleanLiteral(Stored);
+        public override IValue Run() {
+            return new Values.BooleanLiteral(Stored, Stack.Get("Boolean").Var);
         }
-        public string Print() {
+        public override string Print() {
             return (Stored) ? "yes" : "no";
         }
     }

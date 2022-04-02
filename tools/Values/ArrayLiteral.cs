@@ -18,5 +18,11 @@ namespace Tools.Values {
                 return Array.Count > 0;
             }
         }
+        public override IValue Clone() {
+            return new ArrayLiteral(Array, ObjectLiteral.Get(this, "base"));
+        }
+        public override bool Equals(IValue other) {
+            return Array == other.Array;
+        }
     }
 }

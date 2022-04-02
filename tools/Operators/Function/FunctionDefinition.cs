@@ -7,7 +7,7 @@ namespace Tools.Operators {
             this.Body = body;
         }
         public override IValue Run() {
-            return new Values.FunctionLiteral(Stack, Args, Body);
+            return new Values.FunctionLiteral(Stack, Args, Body, Stack.Get("Function").Var);
         }
         public override string Print() {
             string returning = "";

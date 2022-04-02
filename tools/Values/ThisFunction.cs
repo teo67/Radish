@@ -49,6 +49,17 @@ namespace Tools.Values {
                 _Function.Var = value;
             }
         }
+        public IOperator FunctionBody {
+            get {
+                return _Function.FunctionBody;
+            }
+        }
+        public IValue Clone() {
+            return new ThisFunction(This, _Function, Stack);
+        }
+        public bool Equals(IValue other) {
+            return _Function.Equals(other);
+        }
         public IValue Function(List<IValue> args) {
             Stack.Push(new List<Variable>() {
                 new Variable("this", This)

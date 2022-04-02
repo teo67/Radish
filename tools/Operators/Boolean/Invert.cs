@@ -1,13 +1,13 @@
 namespace Tools.Operators {
-    class Invert : IOperator {
+    class Invert : VariableOperator {
         private IOperator Target { get; }
-        public Invert(IOperator target) {
+        public Invert(Stack stack, IOperator target) : base(stack) {
             this.Target = target;
         }
-        public IValue Run() {
-            return new Values.BooleanLiteral(!Target.Run().Boolean);
+        public override IValue Run() {
+            return new Values.BooleanLiteral(!Target.Run().Boolean, Stack.Get("Boolean").Var);
         }
-        public string Print() {
+        public override string Print() {
             return $"(!{Target.Print()})";
         }
     }

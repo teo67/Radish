@@ -1,21 +1,19 @@
 namespace Tools.Operators {
-    class LengthOf : IOperator {
+    class LengthOf : VariableOperator {
         private IOperator Arr { get; }
-        private IValue Num { get; }
-        public LengthOf(IOperator arr, IValue num) {
+        public LengthOf(Stack stack, IOperator arr) : base(stack) {
             this.Arr = arr;
-            this.Num = num;
         }
-        public IValue Run() {
+        public override IValue Run() {
             IValue returned = Arr.Run();
             if(returned.Default == BasicTypes.ARRAY) {
-                return new Values.NumberLiteral(returned.Array.Count, Num);
+                return new Values.NumberLiteral(returned.Array.Count, Stack.Get("Number").Var);
             } else if(returned.Default == BasicTypes.STRING) {
-                return new Values.NumberLiteral(returned.String.Length, Num);
+                return new Values.NumberLiteral(returned.String.Length, Stack.Get("Number").Var);
             } 
             throw new Exception("Lengthof can only be applied to strings and arrays!");
         }
-        public string Print() {
+        public override string Print() {
             return $"(length of {Arr.Print()})";
         }
     }

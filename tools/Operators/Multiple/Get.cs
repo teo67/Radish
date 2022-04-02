@@ -7,11 +7,11 @@ namespace Tools.Operators {
         public override IValue Run() {
             IValue result = Left.Run();
             IValue right = Right.Run();
-            Values.Variable gotten = Values.ObjectLiteral.Get(result, right.String);
+            IValue gotten = Values.ObjectLiteral.Get(result, right.String);
             if(gotten.Default == BasicTypes.FUNCTION) {
-                return new Values.ThisFunction(result, gotten.Var, Stack);
+                return new Values.ThisFunction(result, gotten, Stack);
             }
-            return gotten.Var;
+            return gotten;
         }
     }
 }

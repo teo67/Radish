@@ -1,22 +1,20 @@
 namespace Tools.Operators {
-    class ListSeparator : IOperator {
+    class ListSeparator : VariableOperator {
         public List<IOperator> Children { get; }
-        private IValue Arr { get; }
-        public ListSeparator(IValue arr, List<IOperator>? children = null) {
-            this.Arr = arr;
+        public ListSeparator(Stack stack, List<IOperator>? children = null) : base(stack) {
             this.Children = (children == null) ? new List<IOperator>() : children;
         }
-        public IValue Run() {
+        public override IValue Run() {
             List<IValue> adding = new List<IValue>();
             foreach(IOperator child in Children) {
                 adding.Add(child.Run());
             }
-            return new Values.ArrayLiteral(adding, Arr);
+            return new Values.ArrayLiteral(adding, Stack.Get("Array").Var);
         }
         public void AddValue(IOperator adding) {
             Children.Add(adding);
         }
-        public string Print() {
+        public override string Print() {
             string returning = "[";
             foreach(IOperator child in Children) {
                 returning += $"{child.Print()}, ";

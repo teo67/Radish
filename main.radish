@@ -1,5 +1,4 @@
 make a set [1]
 make b set a
-a.push([1])
-output(a)
+a.push(2)
 output(b)

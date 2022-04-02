@@ -1,14 +1,11 @@
 namespace Tools.Operators {
-    class Divide : SimpleOperator {
-        private IValue Num { get; }
-        public Divide(IOperator left, IOperator right, IValue num) : base(left, right, "/") {
-            this.Num = num;
-        }
+    class Divide : SimpleVariableOperator {
+        public Divide(Stack stack, IOperator left, IOperator right) : base(stack, left, right, "/") {}
         public override IValue Run() {
             IValue leftResult = Left.Run();
             IValue rightResult = Right.Run();
             if(leftResult.Default == BasicTypes.NUMBER) {
-                return new Values.NumberLiteral(leftResult.Number / rightResult.Number, Num);
+                return new Values.NumberLiteral(leftResult.Number / rightResult.Number, Stack.Get("Number").Var);
             }
             throw new Exception("The divide operator only applies to numbers!");
         }

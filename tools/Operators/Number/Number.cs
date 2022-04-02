@@ -1,15 +1,13 @@
 namespace Tools.Operators {
-    class Number : IOperator {
+    class Number : VariableOperator {
         private double Stored { get; }
-        private IValue Num { get; }
-        public Number(double stored, IValue num) {
+        public Number(Stack stack, double stored) : base(stack) {
             this.Stored = stored;
-            this.Num = num;
         }
-        public IValue Run() {
-            return new Values.NumberLiteral(Stored, Num);
+        public override IValue Run() {
+            return new Values.NumberLiteral(Stored, Stack.Get("Number").Var);
         }
-        public string Print() {
+        public override string Print() {
             return $"{Stored}";
         }
     }

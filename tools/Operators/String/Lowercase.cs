@@ -1,15 +1,13 @@
 namespace Tools.Operators {
-    class Lowercase : IOperator {
+    class Lowercase : VariableOperator {
         private IOperator Stored { get; }
-        private IValue Str { get; }
-        public Lowercase(IOperator stored, IValue str) {
+        public Lowercase(Stack stack, IOperator stored) : base(stack) {
             this.Stored = stored;
-            this.Str = str;
         }
-        public IValue Run() {
-            return new Values.StringLiteral(Stored.Run().String.ToLower(), Str);
+        public override IValue Run() {
+            return new Values.StringLiteral(Stored.Run().String.ToLower(), Stack.Get("String").Var);
         }
-        public string Print() {
+        public override string Print() {
             return $"(\"{Stored.Print()}\" to lower case)";
         }
     }

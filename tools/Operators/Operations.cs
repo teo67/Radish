@@ -150,7 +150,7 @@ namespace Tools {
                 RequireSymbol("{");
                 IOperator scope = ParseScope();
                 RequireSymbol("}");
-                returning.AddValue(new Operators.If(stack, new Operators.Boolean(true), scope));
+                returning.AddValue(new Operators.If(stack, new Operators.Boolean(true, stack), scope));
             } else {
                 Stored = read;
             }
@@ -196,7 +196,7 @@ namespace Tools {
 
         private Operators.ListSeparator ParseList() {
             return ParseLi<Operators.ListSeparator>(() => {
-                return new Operators.ListSeparator(prototypes.Array);
+                return new Operators.ListSeparator(stack);
             }, (Operators.ListSeparator returning) => {
                 returning.AddValue(ParseExpression());
             });
@@ -217,7 +217,7 @@ namespace Tools {
         private IOperator ParseAssignment(IOperator current, Func<IOperator, IOperator, IOperator> translate) {
             Print("parsing variable assignment");
             IOperator after = ParseCombiners();
-            return new Operators.Assignment(current, translate(current, after), prototypes.Number, prototypes.String);
+            return new Operators.Assignment(current, translate(current, after));
         }
 
         private IOperator ParseExpression() {
@@ -226,32 +226,31 @@ namespace Tools {
             LexEntry next = Read();
             Func<bool> check = (() => {
                 if(next.Type == TokenTypes.OPERATOR) {
-                    IValue num = prototypes.Number;
                     switch(next.Val) {
                         case "set":
                         case "=":
                             current = ParseAssignment(current, (IOperator current, IOperator after) => { return after; });
                             break;
                         case "+=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Add(current, after, num, prototypes.String); });
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Add(stack, current, after); });
                             break;
                         case "-=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Subtract(current, after, num); });
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Subtract(stack, current, after); });
                             break;
                         case "*=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Multiply(current, after, num, prototypes.String); });
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Multiply(stack, current, after); });
                             break;
                         case "/=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Divide(current, after, num); });
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Divide(stack, current, after); });
                             break;
                         case "%=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Modulo(current, after, num); });
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Modulo(stack, current, after); });
                             break;
                         case "++":
-                            current = new Operators.Assignment(current, new Operators.Add(current, new Operators.Number(1, num), num, prototypes.String), num, prototypes.String);
+                            current = new Operators.Assignment(current, new Operators.Add(stack, current, new Operators.Number(stack, 1)));
                             break;
                         case "--":
-                            current = new Operators.Assignment(current, new Operators.Subtract(current, new Operators.Number(1, num), num), num, prototypes.String);
+                            current = new Operators.Assignment(current, new Operators.Subtract(stack, current, new Operators.Number(stack, 1)));
                             break;
                         default:
                             Stored = next;
@@ -277,13 +276,13 @@ namespace Tools {
                     if(next.Val == "&&") {
                         Print("parsing and");
                         IOperator after = ParseComparators();
-                        current = new Operators.And(current, after);
+                        current = new Operators.And(stack, current, after);
                         return true;
                     }
                     if(next.Val == "||") {
                         Print("parsing or");
                         IOperator after = ParseComparators();
-                        current = new Operators.Or(current, after);
+                        current = new Operators.Or(stack, current, after);
                         return true;
                     }
                 }
@@ -305,31 +304,31 @@ namespace Tools {
                     if(next.Val == "==") {
                         Print("parsing double equals");
                         IOperator after = ParseTerms();
-                        current = new Operators.EqualsEquals(current, after);
+                        current = new Operators.EqualsEquals(stack, current, after);
                         return true;
                     }
                     if(next.Val == ">=") {
                         Print("parsing more than equals");
                         IOperator after = ParseTerms();
-                        current = new Operators.MoreThanOrEquals(current, after);
+                        current = new Operators.MoreThanOrEquals(stack, current, after);
                         return true;
                     }
                     if(next.Val == "<=") {
                         Print("parsing less than equals");
                         IOperator after = ParseTerms();
-                        current = new Operators.LessThanOrEquals(current, after);
+                        current = new Operators.LessThanOrEquals(stack, current, after);
                         return true;
                     }
                     if(next.Val == ">") {
                         Print("parsing more than");
                         IOperator after = ParseTerms();
-                        current = new Operators.MoreThan(current, after);
+                        current = new Operators.MoreThan(stack, current, after);
                         return true;
                     }
                     if(next.Val == "<") {
                         Print("parsing less than");
                         IOperator after = ParseTerms();
-                        current = new Operators.LessThan(current, after);
+                        current = new Operators.LessThan(stack, current, after);
                         return true;
                     }
                 }
@@ -351,13 +350,13 @@ namespace Tools {
                     if(next.Val == "+") {
                         Print("parsing plus");
                         IOperator after = ParseFactors();
-                        current = new Operators.Add(current, after, prototypes.Number, prototypes.String);
+                        current = new Operators.Add(stack, current, after);
                         return true;
                     }
                     if(next.Val == "-") {
                         Print("parsing minus");
                         IOperator after = ParseFactors();
-                        current = new Operators.Subtract(current, after, prototypes.Number);
+                        current = new Operators.Subtract(stack, current, after);
                         return true;
                     }
                 }
@@ -379,19 +378,19 @@ namespace Tools {
                     if(next.Val == "*") {
                         Print("parsing multiply");
                         IOperator after = ParseNegatives();
-                        current = new Operators.Multiply(current, after, prototypes.Number, prototypes.String);
+                        current = new Operators.Multiply(stack, current, after);
                         return true;
                     }
                     if(next.Val == "/") {
                         Print("parsing divide");
                         IOperator after = ParseNegatives();
-                        current = new Operators.Divide(current, after, prototypes.Number);
+                        current = new Operators.Divide(stack, current, after);
                         return true;
                     }
                     if(next.Val == "%") {
                         Print("parsing modulo");
                         IOperator after = ParseNegatives();
-                        current = new Operators.Modulo(current, after, prototypes.Number);
+                        current = new Operators.Modulo(stack, current, after);
                         return true;
                     }
                 }
@@ -408,10 +407,10 @@ namespace Tools {
             LexEntry returned = Read();
             if(returned.Type == TokenTypes.OPERATOR) {
                 if(returned.Val == "-") {
-                    return new Operators.Multiply(new Operators.Number(-1.0, prototypes.Number), ParseNegatives(), prototypes.Number, prototypes.String);
+                    return new Operators.Multiply(stack, new Operators.Number(stack, -1.0), ParseNegatives());
                 }
                 if(returned.Val == "!") {
-                    return new Operators.Invert(ParseNegatives());
+                    return new Operators.Invert(stack, ParseNegatives());
                 }
             }
             Stored = returned;
@@ -447,7 +446,7 @@ namespace Tools {
                     if(next.Val == ".") {
                         Print("parsing accessor");
                         LexEntry lowRead = Read();
-                        IOperator low = new Operators.String(lowRead.Val, prototypes.String);
+                        IOperator low = new Operators.String(stack, lowRead.Val);
                         current = new Operators.Get(current, low, stack);
                         return true;
                     }
@@ -486,13 +485,13 @@ namespace Tools {
                 }
             } else if(returned.Type == TokenTypes.STRING) {
                 Print("parsing string");
-                return new Operators.String(returned.Val, prototypes.String);
+                return new Operators.String(stack, returned.Val);
             } else if(returned.Type == TokenTypes.NUMBER) {
                 Print("parsing number");
-                return new Operators.Number(Double.Parse(returned.Val), prototypes.Number);
+                return new Operators.Number(stack, Double.Parse(returned.Val));
             } else if(returned.Type == TokenTypes.BOOLEAN) {
                 Print("parsing boolean");
-                return new Operators.Boolean(returned.Val == "yes");
+                return new Operators.Boolean(returned.Val == "yes", stack);
             } else if(returned.Type == TokenTypes.KEYWORD) {
                 Print("parsing variable");
                 return new Operators.Reference(stack, returned.Val);

@@ -18,5 +18,11 @@ namespace Tools.Values {
                 return true;
             }
         }
+        public override IValue Clone() {
+            return new StringLiteral(String, ObjectLiteral.Get(this, "base"));
+        }
+        public override bool Equals(IValue other) {
+            return String == other.String;
+        }
     }
 }

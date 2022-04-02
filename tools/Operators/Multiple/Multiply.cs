@@ -1,16 +1,11 @@
 namespace Tools.Operators {
-    class Multiply : SimpleOperator {
-        private IValue Num { get; }
-        private IValue Str { get; }
-        public Multiply(IOperator left, IOperator right, IValue num, IValue str) : base(left, right, "*") {
-            this.Num = num;
-            this.Str = str;
-        }
+    class Multiply : SimpleVariableOperator {
+        public Multiply(Stack stack, IOperator left, IOperator right) : base(stack, left, right, "*") {}
         public override IValue Run() {
             IValue leftResult = Left.Run();
             IValue rightResult = Right.Run();
             if(leftResult.Default == BasicTypes.NUMBER) {
-                return new Values.NumberLiteral(leftResult.Number * rightResult.Number, Num);
+                return new Values.NumberLiteral(leftResult.Number * rightResult.Number, Stack.Get("Number").Var);
             }
             if(leftResult.Default == BasicTypes.STRING) {
                 if(rightResult.Default == BasicTypes.NUMBER) {
@@ -18,7 +13,7 @@ namespace Tools.Operators {
                     for(int i = 0; i < rightResult.Number; i++) {
                         adding += leftResult.String;
                     }
-                    return new Values.StringLiteral(adding, Str);
+                    return new Values.StringLiteral(adding, Stack.Get("String").Var);
                 }
                 throw new Exception("Can only multiply a string by a number!");
             }

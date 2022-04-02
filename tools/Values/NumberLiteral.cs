@@ -23,5 +23,11 @@ namespace Tools.Values {
                 return Number != 0.0;
             }
         }
+        public override IValue Clone() {
+            return new NumberLiteral(Number, ObjectLiteral.Get(this, "base"));
+        }
+        public override bool Equals(IValue other) {
+            return Number == other.Number;
+        }
     }
 }

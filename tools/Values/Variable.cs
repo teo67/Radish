@@ -53,5 +53,16 @@ namespace Tools.Values {
         public IValue Function(List<IValue> args) {
             return Resolve().Function(args);
         }
+        public IOperator FunctionBody { 
+            get {
+                return Resolve().FunctionBody;
+            }
+        }
+        public IValue Clone() {
+            return Resolve().Clone();
+        }
+        public bool Equals(IValue other) {
+            return Resolve().Equals(other);
+        }
     }
 }

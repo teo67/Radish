@@ -1,14 +1,11 @@
 namespace Tools.Operators {
-    class Modulo : SimpleOperator {
-        private IValue Num { get; }
-        public Modulo(IOperator left, IOperator right, IValue num) : base(left, right, "%") {
-            this.Num = num;
-        }
+    class Modulo : SimpleVariableOperator {
+        public Modulo(Stack stack, IOperator left, IOperator right) : base(stack, left, right, "%") {}
         public override IValue Run() {
             IValue leftResult = Left.Run();
             IValue rightResult = Right.Run();
             if(leftResult.Default == BasicTypes.NUMBER) {
-                return new Values.NumberLiteral(leftResult.Number % rightResult.Number, Num);
+                return new Values.NumberLiteral(leftResult.Number % rightResult.Number, Stack.Get("Number").Var);
             }
             throw new Exception("The modulo operator only applies to numbers!");
         }

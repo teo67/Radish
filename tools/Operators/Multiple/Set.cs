@@ -1,7 +1,7 @@
 namespace Tools.Operators {
     class Set : SimpleOperator {
         private IOperator Middle { get; }
-        public Set(IOperator left, IOperator middle, IOperator right) : base(left, right, "set") {
+        public Set(IOperator left, IOperator middle, IOperator right) : base(left, right, "set") { // as in object.property = value
             this.Middle = middle;
         }
         public override IValue Run() {
