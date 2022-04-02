@@ -8,10 +8,7 @@ namespace Tools.Operators {
             IValue result = Left.Run();
             IValue right = Right.Run();
             IValue gotten = Values.ObjectLiteral.Get(result, right.String);
-            if(gotten.Default == BasicTypes.FUNCTION) {
-                return new Values.ThisFunction(result, gotten, Stack);
-            }
-            return gotten;
+            return new Values.PropertyHolder(gotten, right.String, result, Stack);
         }
     }
 }

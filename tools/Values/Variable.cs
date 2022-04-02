@@ -14,7 +14,10 @@ namespace Tools.Values {
         }
         public BasicTypes Default {
             get {
-                return Resolve().Default;
+                if(Host == null) {
+                    return BasicTypes.NONE;
+                }
+                return Host.Default;
             }
         }
         public double Number {

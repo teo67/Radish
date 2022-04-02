@@ -511,6 +511,13 @@ namespace Tools {
                     RequireSymbol("]");
                     return returning;
                 }
+                if(returned.Val == "{") {
+                    Print("parsing object literal");
+                    Operators.ExpressionSeparator body = ParseScope();
+                    Print("parsing closing braces");
+                    RequireSymbol("}");
+                    return new Operators.ObjectDefinition(stack, body);
+                }
             }
             throw Error($"Could not parse value: {returned.Type}: {returned.Val} !");
         }

@@ -1,4 +1,10 @@
-make a set [1]
-make b set a
-a.push(2)
-output(b)
+make test set {
+    make a set {
+        make b set function(name) {
+            output("hello " + name)
+            out "goodbye"
+        }
+    }
+}
+
+output(test.a.b("theo"))
