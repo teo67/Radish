@@ -1,48 +1,60 @@
 namespace Tools.Values {
     class PropertyHolder : IValue {
-        private IValue Held { get; }
+        private IValue? Held { get; }
         private string Name { get; }
         private IValue Obj { get; }
         private Stack Stack { get; }
-        public PropertyHolder(IValue held, string name, IValue obj, Stack stack) {
+        public PropertyHolder(IValue? held, string name, IValue obj, Stack stack) {
             this.Held = held;
             this.Name = name;
             this.Obj = obj;
             this.Stack = stack;
         }
+
+        private IValue Resolve() {
+            if(Held == null) {
+                throw new Exception($"No value stored in object property {Name}!");
+            }
+            return Held;
+        }
+
         public BasicTypes Default {
             get {
+                if(Held == null) {
+                    return BasicTypes.NONE;
+                }
                 return Held.Default;
             }
         }
         public double Number {
             get {
-                return Held.Number;
+                return Resolve().Number;
             }
         }
         public string String {
             get {
-                return Held.String;
+                return Resolve().String;
             }
         }
         public bool Boolean {
             get {
-                return Held.Boolean;
-            }
-        }
-        public List<IValue> Array {
-            get {
-                return Held.Array;
+                return Resolve().Boolean;
             }
         }
         public List<Variable> Object {
             get {
-                return Held.Object;
+                return Resolve().Object;
+            }
+        }
+
+        public IValue? Base {
+            get {
+                return Resolve().Base;
             }
         }
         public IValue Var {
             get {
-                return Held;
+                return Resolve();
             }
             set {
                 foreach(Variable property in Obj.Object) {
@@ -56,20 +68,20 @@ namespace Tools.Values {
         }
         public IOperator FunctionBody {
             get {
-                return Held.FunctionBody;
+                return Resolve().FunctionBody;
             }
         }
         public IValue Clone() {
-            return new PropertyHolder(Held, Name, Obj, Stack);
+            return this;
         }
         public bool Equals(IValue other) {
-            return Held.Equals(other);
+            return Resolve().Equals(other);
         }
-        public IValue Function(List<IValue> args) {
+        public IValue Function(List<Variable> args) {
             Stack.Push(new List<Variable>() {
                 new Variable("this", Obj)
             });
-            IValue returned = Held.Function(args);
+            IValue returned = Resolve().Function(args);
             Stack.Pop();
             return returned;
         }

@@ -37,7 +37,7 @@ namespace Tools {
         static Operations() {
             OpKeywords = new List<string>() {
                 // keywords that should be parsed as operators
-                "if", "elseif", "else", "while", "loop", "make", "function", "out", "cancel", "continue", "set", "end"
+                "if", "elseif", "else", "while", "loop", "make", "function", "out", "cancel", "continue", "set", "end", "new", "null", "class", "f", "m"
             };
         }
         public Operations(CountingReader reader, bool verbose) {
@@ -331,6 +331,12 @@ namespace Tools {
                         current = new Operators.LessThan(stack, current, after);
                         return true;
                     }
+                    if(next.Val == "!=") {
+                        Print("parsing not equals");
+                        IOperator after = ParseTerms();
+                        current = new Operators.Invert(stack, new Operators.EqualsEquals(stack, current, after));
+                        return true;
+                    }
                 }
                 Stored = next; // cancel viewing
                 return false;
@@ -430,10 +436,10 @@ namespace Tools {
                     return true;
                 }
                 if(next.Val == "[") {
-                    Print("parsing array accessor");
+                    Print("parsing object accessor via array brackets");
                     IOperator exp = ParseExpression();
                     RequireSymbol("]");
-                    current = new Operators.ArrayGet(current, exp);
+                    current = new Operators.BracketGet(current, exp, stack);
                     return true;
                 }
                 return false;
@@ -445,9 +451,8 @@ namespace Tools {
                     }
                     if(next.Val == ".") {
                         Print("parsing accessor");
-                        LexEntry lowRead = Read();
-                        IOperator low = new Operators.String(stack, lowRead.Val);
-                        current = new Operators.Get(current, low, stack);
+                        LexEntry read = Read();
+                        current = new Operators.Get(current, read.Val, stack);
                         return true;
                     }
                 }
@@ -464,7 +469,7 @@ namespace Tools {
             Print("begin lowest");
             LexEntry returned = Read();
             if(returned.Type == TokenTypes.OPERATOR) {
-                if(returned.Val == "make") {
+                if(returned.Val == "make" || returned.Val == "m") {
                     Print("parsing variable definition");
                     LexEntry next = Read();
                     if(next.Type == TokenTypes.KEYWORD) {
@@ -472,7 +477,7 @@ namespace Tools {
                     }
                     throw Error("No variable name received!");
                 }
-                if(returned.Val == "function") {
+                if(returned.Val == "function" || returned.Val == "f") {
                     Print("parsing function definition");
                     RequireSymbol("(");
                     List<string> args = ParseArgs();
@@ -482,6 +487,29 @@ namespace Tools {
                     RequireSymbol("}");
                     Operators.FunctionDefinition def = new Operators.FunctionDefinition(stack, args, body);
                     return def;
+                }
+                if(returned.Val == "null") {
+                    Print("parsing NULL");
+                    return new Operators.NullValue();
+                }
+                if(returned.Val == "class") {
+                    Print("parsing class definition");
+                    RequireSymbol("{");
+                    Print("parsing class body");
+                    IOperator body = ParseScope();
+                    Print("parsing closing braces");
+                    RequireSymbol("}");
+                    return new Operators.ClassDefinition(stack, body);
+                }
+                if(returned.Val == "new") {
+                    Print("parsing class instantiation");
+                    LexEntry next = Read();
+                    Print("parsing opening paren.");
+                    RequireSymbol("(");
+                    IOperator args = ParseList();
+                    Print("parsing closing paren.");
+                    RequireSymbol(")");
+                    return new Operators.New(stack, next.Val, args);
                 }
             } else if(returned.Type == TokenTypes.STRING) {
                 Print("parsing string");

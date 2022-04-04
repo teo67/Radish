@@ -16,7 +16,7 @@ namespace Tools.Values {
                 return Type;
             }
         }
-        public override IValue Function(List<IValue> args) {
+        public override IValue Function(List<Variable> args) {
             return Carrying;
         }
     }

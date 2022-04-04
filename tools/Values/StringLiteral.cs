@@ -1,12 +1,12 @@
 namespace Tools.Values {
     class StringLiteral : EmptyLiteral {
         public override string String { get; }
+        public override IValue? Base { get; }
         public override List<Variable> Object { get; }
         public StringLiteral(string input, IValue str) : base("string") {
             this.String = input;
-            this.Object = new List<Variable>() {
-                new Variable("base", str)
-            };
+            this.Base = str;
+            this.Object = new List<Variable>();
         }
         public override BasicTypes Default {
             get {
@@ -18,11 +18,8 @@ namespace Tools.Values {
                 return true;
             }
         }
-        public override IValue Clone() {
-            return new StringLiteral(String, ObjectLiteral.Get(this, "base"));
-        }
         public override bool Equals(IValue other) {
-            return String == other.String;
+            return other.Default == BasicTypes.STRING && String == other.String;
         }
     }
 }

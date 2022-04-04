@@ -6,35 +6,34 @@ namespace Tools.Operators {
         }
 
         private string CalcOutput(IValue input, int spaces = 2) {
-            if(input.Default == BasicTypes.ARRAY) {
-                string returning = "[";
-                for(int i = 0; i < input.Array.Count; i++) {
-                    returning += CalcOutput(input.Array[i], spaces + 2);
-                    if(i != input.Array.Count - 1) {
-                        returning += ", ";
+            if(input.Default == BasicTypes.OBJECT) {
+                if(Values.ObjectLiteral.ValidateArray(input)) {
+                    string returning = "[";
+                    for(int i = 0; i < input.Object.Count; i++) {
+                        returning += CalcOutput(input.Object[i].Var, spaces + 2);
+                        if(i != input.Object.Count - 1) {
+                            returning += ", ";
+                        }
                     }
+                    returning += "]";
+                    return returning;
+                } else {
+                    string returning = "{\n";
+                    foreach(Values.Variable item in input.Object) {
+                        returning += new System.String(' ', spaces);
+                        returning += item.Name;
+                        if(item.Default != BasicTypes.NONE) {
+                            returning += ": ";
+                            returning += CalcOutput(item.Var, spaces + 2);
+                        }
+                        returning += "\n";
+                    }
+                    returning += new System.String(' ', spaces - 2);
+                    returning += "}";
+                    return returning;
                 }
-                returning += "]";
-                return returning;
-            } else if(input.Default == BasicTypes.OBJECT) {
-                string returning = "{\n";
-                foreach(Values.Variable item in input.Object) {
-                    if(item.Name == "base") {
-                        continue;
-                    }
-                    returning += new System.String(' ', spaces);
-                    returning += item.Name;
-                    if(item.Default != BasicTypes.NONE) {
-                        returning += ": ";
-                        returning += CalcOutput(item.Var, spaces + 2);
-                    }
-                    returning += "\n";
-                }
-                returning += new System.String(' ', spaces - 2);
-                returning += "}";
-                return returning;
             } else if(input.Default == BasicTypes.FUNCTION) {
-                return "Function";
+                return "{Function}";
             } else {
                 return input.String;
             }

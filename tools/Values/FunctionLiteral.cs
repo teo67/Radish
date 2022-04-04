@@ -3,14 +3,14 @@ namespace Tools.Values {
         private Stack Stack { get; }
         private List<string> ArgNames { get; }
         public override IOperator FunctionBody { get; }
+        public override IValue? Base { get; }
         public override List<Variable> Object { get; }
         public FunctionLiteral(Stack stack, List<string> argNames, IOperator body, IValue func) : base("function") {
             this.Stack = stack;
             this.ArgNames = argNames;
             this.FunctionBody = body;
-            this.Object = new List<Variable>() {
-                new Variable("base", func)
-            };
+            this.Base = func;
+            this.Object = new List<Variable>();
         }
         public override BasicTypes Default {
             get {
@@ -22,26 +22,26 @@ namespace Tools.Values {
                 return true;
             }
         }
-        public override IValue Function(List<IValue> args) {
+        public override IValue Function(List<Variable> args) {
             if(args.Count != ArgNames.Count) {
+                Console.WriteLine($"args {args.Count}, names {ArgNames.Count}");
+                Console.WriteLine(args[0].Name);
+                Console.WriteLine(args[1].Name);
                 throw new Exception("Invalid number of arguments!");
             }
             Stack.Push();
             for(int i = 0; i < args.Count; i++) {
-                Stack.Head.Val.Add(new Variable(ArgNames[i], args[i]));
+                Stack.Head.Val.Add(new Variable(ArgNames[i], args[i].Var));
             }
             IValue result = FunctionBody.Run();
             Stack.Pop();
             if(result.Default != BasicTypes.RETURN) {
                 return result; // this will be null
             }
-            return result.Function(new List<IValue>());
-        }
-        public override IValue Clone() {
-            return new FunctionLiteral(Stack, ArgNames, FunctionBody, ObjectLiteral.Get(this, "base"));
+            return result.Function(new List<Variable>());
         }
         public override bool Equals(IValue other) {
-            return FunctionBody == other.FunctionBody;
+            return other.Default == BasicTypes.FUNCTION && FunctionBody == other.FunctionBody;
         }
     }
 }

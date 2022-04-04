@@ -27,6 +27,7 @@ namespace Tools {
                 dict.Add(letters[i], CharTypes.letter);
                 dict.Add(Char.ToUpper(letters[i]), CharTypes.letter);
             }
+            dict.Add('_', CharTypes.letter);
             for(int i = 0; i < numbers.Length; i++) {
                 dict.Add(numbers[i], CharTypes.digit);
             }

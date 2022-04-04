@@ -5,7 +5,7 @@ namespace Tools.Operators {
         }
         public override IValue Run() {
             IValue left = Left.Run();
-            Left.Run().Array.Add(Right.Run());
+            left.Object.Add(new Values.Variable($"{left.Object.Count}", Right.Run().Clone()));
             return left;
         }
     }

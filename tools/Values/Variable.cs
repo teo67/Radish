@@ -1,6 +1,6 @@
 namespace Tools.Values {
     class Variable : IValue {
-        private IValue? Host { get; set; }
+        public IValue? Host { get; set; }
         public string Name { get; }
         public Variable(string name, IValue? host = null) {
             this.Name = name;
@@ -35,14 +35,14 @@ namespace Tools.Values {
                 return Resolve().Boolean;
             }
         }
-        public List<IValue> Array {
-            get {
-                return Resolve().Array;
-            }
-        }
         public List<Variable> Object {
             get {
                 return Resolve().Object;
+            }
+        }
+        public IValue? Base {
+            get {
+                return Resolve().Base;
             }
         }
         public IValue Var {
@@ -53,7 +53,7 @@ namespace Tools.Values {
                 Host = value;
             }
         }
-        public IValue Function(List<IValue> args) {
+        public IValue Function(List<Variable> args) {
             return Resolve().Function(args);
         }
         public IOperator FunctionBody { 

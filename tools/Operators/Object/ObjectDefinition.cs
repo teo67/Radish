@@ -12,5 +12,9 @@ namespace Tools.Operators {
             }
             return new Values.ObjectLiteral(Stack.Pop().Val, Stack.Get("Object").Var);
         }
+
+        public override string Print() {
+            return $"(object({Body.Print()}))";
+        }
     }
 }

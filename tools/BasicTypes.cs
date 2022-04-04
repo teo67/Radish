@@ -3,7 +3,6 @@ namespace Tools {
         NUMBER, 
         STRING, 
         BOOLEAN, 
-        ARRAY, 
         OBJECT,
         FUNCTION,
         RETURN,

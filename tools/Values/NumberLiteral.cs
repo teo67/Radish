@@ -1,12 +1,12 @@
 namespace Tools.Values {
     class NumberLiteral : EmptyLiteral {
         public override double Number { get; }
+        public override IValue? Base { get; }
         public override List<Variable> Object { get; }
         public NumberLiteral(double input, IValue num) : base("number") {
             Number = input;
-            Object = new List<Variable>() {
-                new Variable("base", num)
-            };
+            Base = num;
+            Object = new List<Variable>();
         }
         public override BasicTypes Default {
             get {
@@ -22,9 +22,6 @@ namespace Tools.Values {
             get {
                 return Number != 0.0;
             }
-        }
-        public override IValue Clone() {
-            return new NumberLiteral(Number, ObjectLiteral.Get(this, "base"));
         }
         public override bool Equals(IValue other) {
             return Number == other.Number;

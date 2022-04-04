@@ -22,6 +22,9 @@ namespace Tools {
                 Container.Read(); // carriage return on windows
                 row++;
                 col = 0;
+            } else if(returning == '\n') { // line return on mac
+                row++;
+                col = 0;
             } else {
                 col++;
             }

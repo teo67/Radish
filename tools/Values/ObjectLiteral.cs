@@ -1,11 +1,10 @@
 namespace Tools.Values {
     class ObjectLiteral : EmptyLiteral {
         public override List<Variable> Object { get; }
+        public override IValue? Base { get; }
         public ObjectLiteral(List<Variable> properties, IValue? _base = null) : base("object") {
             this.Object = properties;
-            if(_base != null) {
-                this.Object.Add(new Variable("base", _base)); // ONLY DO THIS IF PROPERTIES ALREADY INCLUDES BASE
-            }
+            this.Base = _base;
         }
         public override BasicTypes Default {
             get {
@@ -17,26 +16,27 @@ namespace Tools.Values {
                 return true;
             }
         }
-        public override IValue Clone() {
-            return new ObjectLiteral(Object);
-        }
         public override bool Equals(IValue other) {
-            return Object == other.Object;
+            return other.Default == BasicTypes.OBJECT && Object == other.Object;
         }
-        public static IValue Get(IValue target, string key) {
-            IValue? proto = null;
+        public static IValue? Get(IValue target, string key) {
             foreach(Variable property in target.Object) {
                 if(property.Name == key) {
-                    return property.Var;
-                }
-                if(property.Name == "base") {
-                    proto = property.Var;
+                    return property.Host;
                 }
             }
-            if(proto == null) {
-                throw new Exception($"Could not find property {key}!");
+            if(target.Base == null) {
+                return null;
             }
-            return Get(proto, key);
+            return Get(target.Base, key);
+        }
+        public static bool ValidateArray(IValue target) {
+            for(int i = 0; i < target.Object.Count; i++) {
+                if(target.Object[i].Name != $"{i}") {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

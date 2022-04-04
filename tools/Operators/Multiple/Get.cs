@@ -1,14 +1,19 @@
 namespace Tools.Operators {
-    class Get : SimpleOperator {
-        private Stack Stack { get; }
-        public Get(IOperator left, IOperator right, Stack stack) : base(left, right, "get") {
-            this.Stack = stack;
+    class Get : VariableOperator {
+        private IOperator Left { get; }
+        private string Name { get; }
+        public Get(IOperator left, string name, Stack stack) : base(stack) {
+            this.Left = left;
+            this.Name = name;
         }
         public override IValue Run() {
             IValue result = Left.Run();
-            IValue right = Right.Run();
-            IValue gotten = Values.ObjectLiteral.Get(result, right.String);
-            return new Values.PropertyHolder(gotten, right.String, result, Stack);
+            IValue? gotten = Values.ObjectLiteral.Get(result, Name);
+            return new Values.PropertyHolder(gotten, Name, result, Stack);
+        }
+
+        public override string Print() {
+            return $"({Left.Print()}.{Name})";
         }
     }
 }

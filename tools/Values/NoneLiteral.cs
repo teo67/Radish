@@ -6,11 +6,13 @@ namespace Tools.Values {
                 return BasicTypes.NONE;
             }
         }
-        public override IValue Clone() {
-            return new NoneLiteral();
-        }
         public override bool Equals(IValue other) {
             return other.Default == BasicTypes.NONE;
+        }
+        public override string String {
+            get {
+                return "null";
+            }
         }
     }
 }

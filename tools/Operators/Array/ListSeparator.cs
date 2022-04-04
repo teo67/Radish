@@ -5,11 +5,11 @@ namespace Tools.Operators {
             this.Children = (children == null) ? new List<IOperator>() : children;
         }
         public override IValue Run() {
-            List<IValue> adding = new List<IValue>();
-            foreach(IOperator child in Children) {
-                adding.Add(child.Run());
+            List<Values.Variable> adding = new List<Values.Variable>();
+            for(int i = 0; i < Children.Count; i++) {
+                adding.Add(new Values.Variable($"{i}", Children[i].Run().Clone()));
             }
-            return new Values.ArrayLiteral(adding, Stack.Get("Array").Var);
+            return new Values.ObjectLiteral(adding, Stack.Get("Array").Var);
         }
         public void AddValue(IOperator adding) {
             Children.Add(adding);

@@ -1,27 +1,29 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\006co\\Desktop\\Code\\Radish\\Radish.csproj": {}
+    "/Users/cullijn/Desktop/Radish/Radish.csproj": {}
   },
   "projects": {
-    "C:\\Users\\006co\\Desktop\\Code\\Radish\\Radish.csproj": {
+    "/Users/cullijn/Desktop/Radish/Radish.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\006co\\Desktop\\Code\\Radish\\Radish.csproj",
+        "projectUniqueName": "/Users/cullijn/Desktop/Radish/Radish.csproj",
         "projectName": "Radish",
-        "projectPath": "C:\\Users\\006co\\Desktop\\Code\\Radish\\Radish.csproj",
-        "packagesPath": "C:\\Users\\006co\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\006co\\Desktop\\Code\\Radish\\obj\\",
+        "projectPath": "/Users/cullijn/Desktop/Radish/Radish.csproj",
+        "packagesPath": "/Users/cullijn/.nuget/packages/",
+        "outputPath": "/Users/cullijn/Desktop/Radish/obj/",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\006co\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/cullijn/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {
@@ -53,7 +55,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.201/RuntimeIdentifierGraph.json"
         }
       }
     }

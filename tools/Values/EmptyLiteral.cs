@@ -24,14 +24,15 @@ namespace Tools.Values {
                 throw new Exception($"Unable to parse {Name} as boolean!");
             }
         }
-        public virtual List<IValue> Array {
-            get {
-                throw new Exception($"Unable to parse {Name} as array!");
-            }
-        }
         public virtual List<Variable> Object {
             get {
                 throw new Exception($"Unable to parse {Name} as object!");
+            }
+        }
+
+        public virtual IValue? Base { 
+            get {
+                return null;
             }
         }
         public virtual IValue Var {
@@ -42,11 +43,11 @@ namespace Tools.Values {
                 throw new Exception($"Unable to parse {Name} as variable!");
             }
         }
-        public virtual IValue Function(List<IValue> args) {
+        public virtual IValue Function(List<Variable> args) {
             throw new Exception($"Unable to parse {Name} as function!");
         }
         public virtual IValue Clone() {
-            throw new Exception($"Unable to clone {Name}!");
+            return this;
         }
         public virtual bool Equals(IValue other) {
             throw new Exception($"Unable to parse {Name} as equals!");

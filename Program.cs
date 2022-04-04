@@ -31,7 +31,7 @@
                 radish.Run(true);
                 break;
             default:
-                throw new Exception("Invalid argument!");
+                throw new Exception($"Invalid argument: {second}!");
         }
     }
 }

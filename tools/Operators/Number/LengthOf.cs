@@ -6,8 +6,8 @@ namespace Tools.Operators {
         }
         public override IValue Run() {
             IValue returned = Arr.Run();
-            if(returned.Default == BasicTypes.ARRAY) {
-                return new Values.NumberLiteral(returned.Array.Count, Stack.Get("Number").Var);
+            if(returned.Default == BasicTypes.OBJECT) {
+                return new Values.NumberLiteral(returned.Object.Count, Stack.Get("Number").Var);
             } else if(returned.Default == BasicTypes.STRING) {
                 return new Values.NumberLiteral(returned.String.Length, Stack.Get("Number").Var);
             } 

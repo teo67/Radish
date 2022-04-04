@@ -2,7 +2,7 @@ namespace Tools { // adds basic prototypes to call stack
     class Prototypes {
         public Prototypes(Stack stack) {
             List<Values.Variable> top = stack.Push().Val;
-            IValue Object = new Values.ObjectLiteral(new List<Values.Variable>());
+            IValue Object = new Values.ObjectLiteral(new List<Values.Variable>(), null);
             top.Add(new Values.Variable("Object", Object));
             IValue Number = new Values.ObjectLiteral(new List<Values.Variable>(), Object);
             top.Add(new Values.Variable("Number", Number));
@@ -48,6 +48,14 @@ namespace Tools { // adds basic prototypes to call stack
                     )
                 , Function)
             ));
+
+            Array.Object.Add(new Values.Variable("length", new Values.FunctionLiteral(
+                stack, new List<string>(), new Operators.ExpressionSeparator(
+                    new List<IOperator>() {
+                        new Operators.ReturnType("out", new Operators.LengthOf(stack, new Operators.Reference(stack, "this")))
+                    }
+                ), Function
+            )));
 
             top.Add(new Values.Variable("output", new Values.FunctionLiteral(stack, 
                         new List<string>() { "input" }, new Operators.ExpressionSeparator(

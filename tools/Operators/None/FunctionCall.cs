@@ -5,12 +5,12 @@ namespace Tools.Operators {
             this.Stack = stack;
         }
         public override IValue Run() {
-            IValue result = Left.Run();
-            Stack.Push(new List<Values.Variable>() {
-                new Values.Variable("this", result)
-            });
-            IValue returned = Left.Run().Function(Right.Run().Array);
-            Stack.Pop();
+            // IValue result = Left.Run();
+            // Stack.Push(new List<Values.Variable>() {
+            //     new Values.Variable("this", result)
+            // });
+            IValue returned = Left.Run().Function(Right.Run().Object);
+            //Stack.Pop();
             return returned;
         }
     }
