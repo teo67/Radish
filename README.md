@@ -15,19 +15,19 @@
     </ul>
 In terms of OOP, perhaps a demonstration would be the best way to explain. See if you can figure out what this code does:<br><em>
 make FunkyList set class {<br>
-    make stored<br>
-    make constructor set f(arr) {<br>
-        this.stored set arr<br>
-    }<br>
-    make get set f(index) {<br>
-        if(index % 2 == 1) { # for odd numbered requests #<br>
-            out "no list element for you"<br>
-        }<br>
-        out this.stored[index]<br>
-    }<br>
-    make push set f(val) {<br>
-        this.stored.push(val)<br>
-    }<br>
+    &emsp;make stored<br>
+    &emsp;make constructor set f(arr) {<br>
+        &emsp;&emsp;this.stored set arr<br>
+    &emsp;}<br>
+    &emsp;make get set f(index) {<br>
+        &emsp;&emsp;if(index % 2 == 1) { # for odd numbered requests #<br>
+            &emsp;&emsp;&emsp;out "no list element for you"<br>
+        &emsp;&emsp;}<br>
+        &emsp;&emsp;out this.stored[index]<br>
+    &emsp;}<br>
+    &emsp;make push set f(val) {<br>
+        &emsp;&emsp;this.stored.push(val)<br>
+    &emsp;}<br>
 }<br>
 <br>
 make li set new FunkyList([1, 2, 3])<br>
