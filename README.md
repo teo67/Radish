@@ -38,3 +38,15 @@ li.push("list element please")<br>
 output(li.get(3)) # output = no list element for you #<br>
 output(li.get(4)) # error #<br>
 </em><br>Good luck on your journey with Radish!</p>
+<br>
+<p>TODO<br><ol>
+    <li>Add syntax for class to class inheritance</li>
+    <li>Add syntax to call inherited constructor</li>
+    <li>Add more prototype class functions, such as array.pop()</li>
+    <li>Introduce getter functions, so that array.length can be called instead of array.length()</li>
+    <li>Add tags for object/class properties, such as static, public/private/protected, etc</li>
+    <li>Better debugging! Literally it's so bad</li>
+    <li>Make VSCode extension so that the code doesn't look so bland (also cool file symbol)</li>
+    <li>Add importing/exporting from other files!!!</li>
+    <li>Package it so that users can install radish and run files without seeing all of the machinery</li>
+</ol></p>
