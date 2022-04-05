@@ -13,9 +13,13 @@ namespace Tools.Operators {
             if(returned != null) {
                 inheriting = returned;
             }
+            IValue? super = (inheriting.Base == null) ? null : Values.ObjectLiteral.Get(inheriting.Base, "constructor");
             IValue returning = new Values.ObjectLiteral(new List<Values.Variable>(), inheriting);
             Stack.Push();
             Stack.Head.Val.Add(new Values.Variable("this", returning));
+            if(super != null) {
+                Stack.Head.Val.Add(new Values.Variable("super", super));
+            }
             _class.Function(Args.Run().Object);
             Stack.Pop();
             return returning;

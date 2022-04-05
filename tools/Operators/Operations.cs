@@ -494,12 +494,19 @@ namespace Tools {
                 }
                 if(returned.Val == "class") {
                     Print("parsing class definition");
+                    string _base = "Object";
+                    LexEntry next = Read();
+                    if(next.Type == TokenTypes.SYMBOL && next.Val == ":") {
+                        _base = Read().Val;
+                    } else {
+                        Stored = next;
+                    }
                     RequireSymbol("{");
                     Print("parsing class body");
                     IOperator body = ParseScope();
                     Print("parsing closing braces");
                     RequireSymbol("}");
-                    return new Operators.ClassDefinition(stack, body);
+                    return new Operators.ClassDefinition(stack, body, _base);
                 }
                 if(returned.Val == "new") {
                     Print("parsing class instantiation");

@@ -40,9 +40,9 @@ output(li.get(4)) # error #<br>
 </em><br>Good luck on your journey with Radish!</p>
 <br>
 <p>TODO<br><ol>
-    <li>Add syntax for class to class inheritance</li>
-    <li>Add syntax to call inherited constructor</li>
-    <li>Add more prototype class functions, such as array.pop()</li>
+    <li>Add syntax for class to class inheritance // DONE</li>
+    <li>Add syntax to call inherited constructor // DONE</li>
+    <li>Add more prototype class functions, such as array.pop() // DONE (sort of)</li>
     <li>Introduce getter functions, so that array.length can be called instead of array.length()</li>
     <li>Add tags for object/class properties, such as static, public/private/protected, etc</li>
     <li>Better debugging! Literally it's so bad</li>

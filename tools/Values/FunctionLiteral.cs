@@ -24,9 +24,9 @@ namespace Tools.Values {
         }
         public override IValue Function(List<Variable> args) {
             if(args.Count != ArgNames.Count) {
-                Console.WriteLine($"args {args.Count}, names {ArgNames.Count}");
-                Console.WriteLine(args[0].Name);
-                Console.WriteLine(args[1].Name);
+                //Console.WriteLine($"args {args.Count}, names {ArgNames.Count}");
+                //Console.WriteLine(args[0].Name);
+                //Console.WriteLine(args[1].Name);
                 throw new Exception("Invalid number of arguments!");
             }
             Stack.Push();
