@@ -12,7 +12,7 @@ namespace Tools.Operators {
                 //Console.WriteLine(result.Default);
                 if(result.Default == BasicTypes.RETURN) {
                     //Console.WriteLine($"caught {result.Default}");
-                    return result;
+                    return result.Var;
                 }
             }
             //Console.WriteLine("finished");

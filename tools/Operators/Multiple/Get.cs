@@ -7,8 +7,8 @@ namespace Tools.Operators {
             this.Name = name;
         }
         public override IValue Run() {
-            IValue result = Left.Run();
-            IValue? gotten = Values.ObjectLiteral.Get(result, Name);
+            IValue result = Left.Run().Var;
+            IValue? gotten = Values.ObjectLiteral.Get(result, Name, Stack, result);
             return new Values.PropertyHolder(gotten, Name, result, Stack);
         }
 

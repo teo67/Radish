@@ -11,7 +11,7 @@ namespace Tools.Operators {
             // });
             IValue returned = Left.Run().Function(Right.Run().Object);
             //Stack.Pop();
-            return returned;
+            return returned.Var;
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Tools.Operators {
 
         }
         public override IValue Run() {
-            IValue arr = Left.Run();
+            IValue arr = Left.Run().Var;
             int index = (int)(Right.Run().Number);
             if(index < 0) {
                 throw new Exception("Unable to remove an index less than zero!");

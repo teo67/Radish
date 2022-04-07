@@ -1,23 +1,28 @@
 namespace Tools.Values {
     class Variable : IValue {
-        public IValue? Host { get; set; }
+        public virtual IValue? Host { get; protected set; }
         public string Name { get; }
-        public Variable(string name, IValue? host = null) {
+        public Variable(string name, IValue? host = null, bool ignoreHost = false) {
             this.Name = name;
-            this.Host = host;
+            if(!ignoreHost) {
+                this.Host = host;
+            }
         }
         private IValue Resolve() {
-            if(Host == null) {
+            IValue? returned = Host;
+            if(returned == null) {
                 throw new Exception("No value stored in variable!");
             }
-            return Host;
+            return returned; // store in a variable so we only call getter once
         }
         public BasicTypes Default {
             get {
-                if(Host == null) {
-                    return BasicTypes.NONE;
-                }
-                return Host.Default;
+                return BasicTypes.NONE; // in order to get the true value of a variable, you have to do .Var.Default
+                // IValue? returned = Host;
+                // if(returned == null) {
+                //     return BasicTypes.NONE;
+                // }
+                // return returned.Default; // ^
             }
         }
         public double Number {
@@ -47,7 +52,7 @@ namespace Tools.Values {
         }
         public IValue Var {
             get {
-                return Resolve();
+                return Resolve().Var;
             }
             set {
                 Host = value;
@@ -60,9 +65,6 @@ namespace Tools.Values {
             get {
                 return Resolve().FunctionBody;
             }
-        }
-        public IValue Clone() {
-            return Resolve().Clone();
         }
         public bool Equals(IValue other) {
             return Resolve().Equals(other);

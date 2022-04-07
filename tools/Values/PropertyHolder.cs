@@ -54,12 +54,16 @@ namespace Tools.Values {
         }
         public IValue Var {
             get {
-                return Resolve();
+                return this;
             }
             set {
                 foreach(Variable property in Obj.Object) {
                     if(property.Name == Name) {
-                        property.Var = value;
+                        Stack.Push(new List<Variable>() { // in case of setter function
+                            new Variable("this", Obj)
+                        });
+                        property.Var = value; // trigger setter of property / variable
+                        Stack.Pop();
                         return;
                     }
                 }
@@ -70,9 +74,6 @@ namespace Tools.Values {
             get {
                 return Resolve().FunctionBody;
             }
-        }
-        public IValue Clone() {
-            return this;
         }
         public bool Equals(IValue other) {
             return Resolve().Equals(other);

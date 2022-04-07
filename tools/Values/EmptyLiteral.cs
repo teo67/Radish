@@ -37,7 +37,7 @@ namespace Tools.Values {
         }
         public virtual IValue Var {
             get {
-                throw new Exception($"Unable to parse {Name} as variable!");
+                return this;
             }
             set {
                 throw new Exception($"Unable to parse {Name} as variable!");
@@ -45,9 +45,6 @@ namespace Tools.Values {
         }
         public virtual IValue Function(List<Variable> args) {
             throw new Exception($"Unable to parse {Name} as function!");
-        }
-        public virtual IValue Clone() {
-            return this;
         }
         public virtual bool Equals(IValue other) {
             throw new Exception($"Unable to parse {Name} as equals!");

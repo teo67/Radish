@@ -18,11 +18,12 @@ namespace Tools.Operators {
                 Tags.Children[2].Run();
                 Stack.Pop();
                 if(result.Default == BasicTypes.RETURN) {
-                    if(result.String == "out" || result.String == "end") {
+                    IValue asVar = result.Var;
+                    if(asVar.String == "out" || asVar.String == "end") {
                         Stack.Pop();
-                        return result;
+                        return asVar;
                     }
-                    if(result.String == "cancel") {
+                    if(asVar.String == "cancel") {
                         Stack.Pop();
                         return new Values.NoneLiteral();
                     }

@@ -1,0 +1,23 @@
+make FunkyList set class {
+    make stored
+    make constructor set f(arr) {
+        this.stored set arr
+    }
+    make _get set f(index) {
+        if(index % 2 == 1) { # for odd numbered requests #
+            out "no list element for you"
+        }
+        out this.stored[index]
+    }
+    make push set f(val) {
+        this.stored.push(val)
+    }
+}
+
+make li set new FunkyList([1, 2, 3])
+output(li._get(0)) # output = 1 #
+output(li._get(1)) # output = no list element for you #
+output(li._get(2)) # output = 3 #
+li.push("list element please")
+output(li._get(3)) # output = no list element for you #
+output(li._get(4)) # error #

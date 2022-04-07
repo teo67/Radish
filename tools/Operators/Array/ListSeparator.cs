@@ -7,7 +7,7 @@ namespace Tools.Operators {
         public override IValue Run() {
             List<Values.Variable> adding = new List<Values.Variable>();
             for(int i = 0; i < Children.Count; i++) {
-                adding.Add(new Values.Variable($"{i}", Children[i].Run().Clone()));
+                adding.Add(new Values.Variable($"{i}", Children[i].Run().Var));
             }
             return new Values.ObjectLiteral(adding, Stack.Get("Array").Var);
         }

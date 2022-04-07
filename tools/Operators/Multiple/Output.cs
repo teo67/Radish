@@ -40,7 +40,7 @@ namespace Tools.Operators {
         }
         public IValue Run() {
             IValue result = Target.Run();
-            Console.WriteLine(CalcOutput(result));
+            Console.WriteLine(CalcOutput(result.Var));
             return result;
         }
         public string Print() {

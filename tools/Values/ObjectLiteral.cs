@@ -19,20 +19,32 @@ namespace Tools.Values {
         public override bool Equals(IValue other) {
             return other.Default == BasicTypes.OBJECT && Object == other.Object;
         }
-        public static IValue? Get(IValue target, string key) {
+        public static IValue? Get(IValue target, string key, Stack stack, IValue originalTarget) {
             foreach(Variable property in target.Object) {
+                //Console.WriteLine(property.Name);
                 if(property.Name == key) {
-                    return property.Host;
+                    stack.Push(new List<Variable>() { // in case of setter function
+                            new Variable("this", originalTarget)
+                    });
+                    IValue? reported = property.Host; // save host to ivalue and return, voila
+                    //Console.WriteLine(key);
+                    //Console.WriteLine(reported);
+                    stack.Pop();
+                    // if(key == "Name") {
+                    //     throw new Exception("a");
+                    // }
+                    return reported;
                 }
             }
             if(target.Base == null) {
                 return null;
             }
-            return Get(target.Base, key);
+            return Get(target.Base, key, stack, originalTarget);
         }
         public static bool ValidateArray(IValue target) {
-            for(int i = 0; i < target.Object.Count; i++) {
-                if(target.Object[i].Name != $"{i}") {
+            IValue _target = target.Var;
+            for(int i = 0; i < _target.Object.Count; i++) {
+                if(_target.Object[i].Name != $"{i}") {
                     return false;
                 }
             }

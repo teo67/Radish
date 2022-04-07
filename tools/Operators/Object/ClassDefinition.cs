@@ -27,7 +27,7 @@ namespace Tools.Operators {
             //     popped.RemoveAt(index);
             // }
             IValue fromStack = Stack.Get(Inheriting).Var;
-            IValue? _base = Values.ObjectLiteral.Get(fromStack, "prototype");
+            IValue? _base = Values.ObjectLiteral.Get(fromStack, "prototype", Stack, fromStack);
             if(_base == null) {
                 _base = fromStack;
             }

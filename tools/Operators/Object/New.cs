@@ -9,11 +9,11 @@ namespace Tools.Operators {
         public override IValue Run() {
             IValue _class = Stack.Get(ClassName).Var;
             IValue inheriting = Stack.Get("Object").Var;
-            IValue? returned = Values.ObjectLiteral.Get(_class, "prototype");
+            IValue? returned = Values.ObjectLiteral.Get(_class, "prototype", Stack, _class);
             if(returned != null) {
                 inheriting = returned;
             }
-            IValue? super = (inheriting.Base == null) ? null : Values.ObjectLiteral.Get(inheriting.Base, "constructor");
+            IValue? super = (inheriting.Base == null) ? null : Values.ObjectLiteral.Get(inheriting.Base, "constructor", Stack, inheriting.Base);
             IValue returning = new Values.ObjectLiteral(new List<Values.Variable>(), inheriting);
             Stack.Push();
             Stack.Head.Val.Add(new Values.Variable("this", returning));

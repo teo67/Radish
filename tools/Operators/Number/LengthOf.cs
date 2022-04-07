@@ -5,7 +5,7 @@ namespace Tools.Operators {
             this.Arr = arr;
         }
         public override IValue Run() {
-            IValue returned = Arr.Run();
+            IValue returned = Arr.Run().Var;
             if(returned.Default == BasicTypes.OBJECT) {
                 return new Values.NumberLiteral(returned.Object.Count, Stack.Get("Number").Var);
             } else if(returned.Default == BasicTypes.STRING) {

@@ -4,7 +4,7 @@ namespace Tools.Operators {
         public override IValue Run() {
             IValue result = Left.Run();
             IValue right = Right.Run();
-            result.Var = right.Clone();
+            result.Var = right.Var;
             return result;
         }
     }

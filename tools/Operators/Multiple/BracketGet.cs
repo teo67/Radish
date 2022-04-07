@@ -8,9 +8,9 @@ namespace Tools.Operators {
             this.Name = name;
         }
         public override IValue Run() {
-            IValue result = Left.Run();
+            IValue result = Left.Run().Var;
             string nameR = Name.Run().String;
-            IValue? gotten = Values.ObjectLiteral.Get(result, nameR);
+            IValue? gotten = Values.ObjectLiteral.Get(result, nameR, Stack, result);
             return new Values.PropertyHolder(gotten, nameR, result, Stack);
         }
 

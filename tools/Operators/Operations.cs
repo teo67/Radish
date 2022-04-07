@@ -37,7 +37,7 @@ namespace Tools {
         static Operations() {
             OpKeywords = new List<string>() {
                 // keywords that should be parsed as operators
-                "if", "elseif", "else", "while", "loop", "make", "function", "out", "cancel", "continue", "set", "end", "new", "null", "class", "f", "m"
+                "if", "elseif", "else", "while", "loop", "make", "function", "out", "cancel", "continue", "set", "end", "new", "null", "class", "f", "m", "property", "prop", "p", "get", "give"
             };
         }
         public Operations(CountingReader reader, bool verbose) {
@@ -476,6 +476,38 @@ namespace Tools {
                         return new Operators.Declaration(stack, next.Val);
                     }
                     throw Error("No variable name received!");
+                }
+                if(returned.Val == "property" || returned.Val == "prop" || returned.Val == "p") {
+                    Print("parsing new property");
+                    LexEntry next = Read();
+                    if(next.Type != TokenTypes.KEYWORD) {
+                        throw Error("No property name received!");
+                    }
+                    RequireSymbol("{");
+                    IOperator? give = null;
+                    IOperator? _get = null;
+                    for(int i = 0; i < 2; i++) {
+                        LexEntry newType = Read();
+                        if(newType.Type == TokenTypes.SYMBOL && newType.Val == "}") {
+                            Stored = newType;
+                            break;
+                        }
+                        if(newType.Type != TokenTypes.OPERATOR) {
+                            throw Error($"Expecting give/get function (found {newType.Val})!");
+                        }
+                        RequireSymbol("{");
+                        if(newType.Val == "give") {
+                            give = new Operators.FunctionDefinition(stack, new List<string>() { "input" }, ParseScope());
+
+                        } else if(newType.Val == "get") {
+                            _get = new Operators.FunctionDefinition(stack, new List<string>(), ParseScope());
+                        } else {
+                            throw Error("Only get and give functions are valid in this context!");
+                        }
+                        RequireSymbol("}");
+                    }
+                    RequireSymbol("}");
+                    return new Operators.Property(stack, next.Val, give, _get);
                 }
                 if(returned.Val == "function" || returned.Val == "f") {
                     Print("parsing function definition");
