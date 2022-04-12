@@ -1,13 +1,13 @@
 namespace Tools.Operators {
-    class ExpressionSeparator : IOperator {
+    class ExpressionSeparator : Operator {
         private List<IOperator> Children { get; }
-        public ExpressionSeparator(List<IOperator>? children = null) {
+        public ExpressionSeparator(int row, int col, List<IOperator>? children = null) : base(row, col) {
             this.Children = (children == null) ? new List<IOperator>() : children;
         }
-        public IValue Run() {
+        public override IValue Run() {
             foreach(IOperator child in Children) {
                 //Console.WriteLine("looking for result");
-                IValue result = child.Run();
+                IValue result = child._Run();
                 //Console.WriteLine("got result");
                 //Console.WriteLine(result.Default);
                 if(result.Default == BasicTypes.RETURN) {
@@ -21,7 +21,7 @@ namespace Tools.Operators {
         public void AddValue(IOperator adding) {
             Children.Add(adding);
         }
-        public string Print() {
+        public override string Print() {
             string returning = "{\n";
             foreach(IOperator child in Children) {
                 returning += $"{child.Print()}\n";

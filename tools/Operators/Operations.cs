@@ -37,7 +37,12 @@ namespace Tools {
         static Operations() {
             OpKeywords = new List<string>() {
                 // keywords that should be parsed as operators
-                "if", "elseif", "else", "while", "loop", "make", "function", "out", "cancel", "continue", "set", "end", "new", "null", "class", "f", "m", "property", "prop", "p", "get", "give"
+                "if", "elseif", "else", 
+                "while", "for", 
+                "dig", "d", "tool", "t", "plant", "p",
+                "harvest", "h", "cancel", "continue", "end",
+                "new", "null", "class",
+                "public", "private", "protected", "static"
             };
         }
         public Operations(CountingReader reader, bool verbose) {
@@ -76,6 +81,24 @@ namespace Tools {
             return reader.Error(input, PrevRow, PrevCol);        
         }
 
+        private int Row {
+            get {
+                if(Stored == null) {
+                    return reader.row;
+                }
+                return PrevRow;
+            }
+        }
+
+        private int Col {
+            get {
+                if(Stored == null) {
+                    return reader.col;
+                }
+                return PrevCol;
+            }
+        }
+
         private LexEntry Read() {
             //Print("reading");
             if(Stored != null) {
@@ -93,7 +116,7 @@ namespace Tools {
 
         public Operators.ExpressionSeparator ParseScope() {
             Print("begin scope");
-            Operators.ExpressionSeparator returning = new Operators.ExpressionSeparator();
+            Operators.ExpressionSeparator returning = new Operators.ExpressionSeparator(Row, Col);
             LexEntry read = Read();
             while(read.Type != TokenTypes.ENDOFFILE && !(read.Type == TokenTypes.SYMBOL && read.Val == "}")) {
                 if(read.Type == TokenTypes.OPERATOR && read.Val == "if") {
@@ -106,22 +129,22 @@ namespace Tools {
                     RequireSymbol("{");
                     IOperator scope = ParseScope();
                     RequireSymbol("}");
-                    returning.AddValue(new Operators.While(stack, exp, scope));
-                } else if(read.Type == TokenTypes.OPERATOR && read.Val == "loop") {
+                    returning.AddValue(new Operators.While(stack, exp, scope, Row, Col));
+                } else if(read.Type == TokenTypes.OPERATOR && read.Val == "for") {
                     RequireSymbol("(");
                     Operators.ListSeparator list = ParseList();
                     RequireSymbol(")");
                     RequireSymbol("{");
                     IOperator body = ParseScope();
                     RequireSymbol("}");
-                    returning.AddValue(new Operators.Loop(stack, list, body));
+                    returning.AddValue(new Operators.Loop(stack, list, body, Row, Col));
                 } else if(read.Type == TokenTypes.OPERATOR && (read.Val == "cancel" || read.Val == "continue" || read.Val == "end")) {
                     Print("parsing end/c/c statement");
-                    returning.AddValue(new Operators.ReturnType(read.Val));
-                } else if(read.Type == TokenTypes.OPERATOR && read.Val == "out") {
+                    returning.AddValue(new Operators.ReturnType(read.Val, Row, Col));
+                } else if(read.Type == TokenTypes.OPERATOR && (read.Val == "harvest" || read.Val == "h")) {
                     Print("parsing out statement");
                     IOperator carrying = ParseExpression();
-                    returning.AddValue(new Operators.ReturnType(read.Val, carrying));
+                    returning.AddValue(new Operators.ReturnType("harvest", Row, Col, carrying));
                 } else {
                     Print("parsing expression");
                     Stored = read;
@@ -135,7 +158,7 @@ namespace Tools {
 
         private Operators.IfChain ParseIfs() {
             Print("begin if chain");
-            Operators.IfChain returning = new Operators.IfChain();
+            Operators.IfChain returning = new Operators.IfChain(Row, Col);
             LexEntry IF = Read();
             if(!(IF.Type == TokenTypes.OPERATOR && IF.Val == "if")) {
                 throw Error("Expecting if statement!");
@@ -150,7 +173,7 @@ namespace Tools {
                 RequireSymbol("{");
                 IOperator scope = ParseScope();
                 RequireSymbol("}");
-                returning.AddValue(new Operators.If(stack, new Operators.Boolean(true, stack), scope));
+                returning.AddValue(new Operators.If(stack, new Operators.Boolean(true, stack, Row, Col), scope, Row, Col));
             } else {
                 Stored = read;
             }
@@ -164,7 +187,7 @@ namespace Tools {
             RequireSymbol("{");
             IOperator scope = ParseScope();
             RequireSymbol("}");
-            return new Operators.If(stack, li, scope);
+            return new Operators.If(stack, li, scope, Row, Col);
         }
 
         private T ParseLi<T>(Func<T> init, Action<T> onEach) {
@@ -196,7 +219,7 @@ namespace Tools {
 
         private Operators.ListSeparator ParseList() {
             return ParseLi<Operators.ListSeparator>(() => {
-                return new Operators.ListSeparator(stack);
+                return new Operators.ListSeparator(stack, Row, Col);
             }, (Operators.ListSeparator returning) => {
                 returning.AddValue(ParseExpression());
             });
@@ -217,7 +240,7 @@ namespace Tools {
         private IOperator ParseAssignment(IOperator current, Func<IOperator, IOperator, IOperator> translate) {
             Print("parsing variable assignment");
             IOperator after = ParseCombiners();
-            return new Operators.Assignment(current, translate(current, after));
+            return new Operators.Assignment(current, translate(current, after), Row, Col);
         }
 
         private IOperator ParseExpression() {
@@ -227,30 +250,30 @@ namespace Tools {
             Func<bool> check = (() => {
                 if(next.Type == TokenTypes.OPERATOR) {
                     switch(next.Val) {
-                        case "set":
-                        case "=":
+                        case "plant":
+                        case "p":
                             current = ParseAssignment(current, (IOperator current, IOperator after) => { return after; });
                             break;
                         case "+=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Add(stack, current, after); });
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Add(stack, current, after, Row, Col); });
                             break;
                         case "-=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Subtract(stack, current, after); });
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Subtract(stack, current, after, Row, Col); });
                             break;
                         case "*=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Multiply(stack, current, after); });
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Multiply(stack, current, after, Row, Col); });
                             break;
                         case "/=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Divide(stack, current, after); });
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Divide(stack, current, after, Row, Col); });
                             break;
                         case "%=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Modulo(stack, current, after); });
+                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Modulo(stack, current, after, Row, Col); });
                             break;
                         case "++":
-                            current = new Operators.Assignment(current, new Operators.Add(stack, current, new Operators.Number(stack, 1)));
+                            current = new Operators.Assignment(current, new Operators.Add(stack, current, new Operators.Number(stack, 1, Row, Col), Row, Col), Row, Col);
                             break;
                         case "--":
-                            current = new Operators.Assignment(current, new Operators.Subtract(stack, current, new Operators.Number(stack, 1)));
+                            current = new Operators.Assignment(current, new Operators.Subtract(stack, current, new Operators.Number(stack, 1, Row, Col), Row, Col), Row, Col);
                             break;
                         default:
                             Stored = next;
@@ -276,13 +299,13 @@ namespace Tools {
                     if(next.Val == "&&") {
                         Print("parsing and");
                         IOperator after = ParseComparators();
-                        current = new Operators.And(stack, current, after);
+                        current = new Operators.And(stack, current, after, Row, Col);
                         return true;
                     }
                     if(next.Val == "||") {
                         Print("parsing or");
                         IOperator after = ParseComparators();
-                        current = new Operators.Or(stack, current, after);
+                        current = new Operators.Or(stack, current, after, Row, Col);
                         return true;
                     }
                 }
@@ -304,37 +327,37 @@ namespace Tools {
                     if(next.Val == "==") {
                         Print("parsing double equals");
                         IOperator after = ParseTerms();
-                        current = new Operators.EqualsEquals(stack, current, after);
+                        current = new Operators.EqualsEquals(stack, current, after, Row, Col);
                         return true;
                     }
                     if(next.Val == ">=") {
                         Print("parsing more than equals");
                         IOperator after = ParseTerms();
-                        current = new Operators.MoreThanOrEquals(stack, current, after);
+                        current = new Operators.MoreThanOrEquals(stack, current, after, Row, Col);
                         return true;
                     }
                     if(next.Val == "<=") {
                         Print("parsing less than equals");
                         IOperator after = ParseTerms();
-                        current = new Operators.LessThanOrEquals(stack, current, after);
+                        current = new Operators.LessThanOrEquals(stack, current, after, Row, Col);
                         return true;
                     }
                     if(next.Val == ">") {
                         Print("parsing more than");
                         IOperator after = ParseTerms();
-                        current = new Operators.MoreThan(stack, current, after);
+                        current = new Operators.MoreThan(stack, current, after, Row, Col);
                         return true;
                     }
                     if(next.Val == "<") {
                         Print("parsing less than");
                         IOperator after = ParseTerms();
-                        current = new Operators.LessThan(stack, current, after);
+                        current = new Operators.LessThan(stack, current, after, Row, Col);
                         return true;
                     }
                     if(next.Val == "!=") {
                         Print("parsing not equals");
                         IOperator after = ParseTerms();
-                        current = new Operators.Invert(stack, new Operators.EqualsEquals(stack, current, after));
+                        current = new Operators.Invert(stack, new Operators.EqualsEquals(stack, current, after, Row, Col), Row, Col);
                         return true;
                     }
                 }
@@ -356,13 +379,13 @@ namespace Tools {
                     if(next.Val == "+") {
                         Print("parsing plus");
                         IOperator after = ParseFactors();
-                        current = new Operators.Add(stack, current, after);
+                        current = new Operators.Add(stack, current, after, Row, Col);
                         return true;
                     }
                     if(next.Val == "-") {
                         Print("parsing minus");
                         IOperator after = ParseFactors();
-                        current = new Operators.Subtract(stack, current, after);
+                        current = new Operators.Subtract(stack, current, after, Row, Col);
                         return true;
                     }
                 }
@@ -384,19 +407,19 @@ namespace Tools {
                     if(next.Val == "*") {
                         Print("parsing multiply");
                         IOperator after = ParseNegatives();
-                        current = new Operators.Multiply(stack, current, after);
+                        current = new Operators.Multiply(stack, current, after, Row, Col);
                         return true;
                     }
                     if(next.Val == "/") {
                         Print("parsing divide");
                         IOperator after = ParseNegatives();
-                        current = new Operators.Divide(stack, current, after);
+                        current = new Operators.Divide(stack, current, after, Row, Col);
                         return true;
                     }
                     if(next.Val == "%") {
                         Print("parsing modulo");
                         IOperator after = ParseNegatives();
-                        current = new Operators.Modulo(stack, current, after);
+                        current = new Operators.Modulo(stack, current, after, Row, Col);
                         return true;
                     }
                 }
@@ -413,10 +436,10 @@ namespace Tools {
             LexEntry returned = Read();
             if(returned.Type == TokenTypes.OPERATOR) {
                 if(returned.Val == "-") {
-                    return new Operators.Multiply(stack, new Operators.Number(stack, -1.0), ParseNegatives());
+                    return new Operators.Multiply(stack, new Operators.Number(stack, -1.0, Row, Col), ParseNegatives(), Row, Col);
                 }
                 if(returned.Val == "!") {
-                    return new Operators.Invert(stack, ParseNegatives());
+                    return new Operators.Invert(stack, ParseNegatives(), Row, Col);
                 }
             }
             Stored = returned;
@@ -432,14 +455,14 @@ namespace Tools {
                     Print("parsing function call");
                     IOperator args = ParseList();
                     RequireSymbol(")");
-                    current = new Operators.FunctionCall(current, args, stack);
+                    current = new Operators.FunctionCall(current, args, stack, Row, Col);
                     return true;
                 }
                 if(next.Val == "[") {
                     Print("parsing object accessor via array brackets");
                     IOperator exp = ParseExpression();
                     RequireSymbol("]");
-                    current = new Operators.BracketGet(current, exp, stack);
+                    current = new Operators.BracketGet(current, exp, stack, Row, Col);
                     return true;
                 }
                 return false;
@@ -452,7 +475,7 @@ namespace Tools {
                     if(next.Val == ".") {
                         Print("parsing accessor");
                         LexEntry read = Read();
-                        current = new Operators.Get(current, read.Val, stack);
+                        current = new Operators.Get(current, read.Val, stack, Row, Col);
                         return true;
                     }
                 }
@@ -469,47 +492,49 @@ namespace Tools {
             Print("begin lowest");
             LexEntry returned = Read();
             if(returned.Type == TokenTypes.OPERATOR) {
-                if(returned.Val == "make" || returned.Val == "m") {
+                if(returned.Val == "dig" || returned.Val == "d") {
                     Print("parsing variable definition");
                     LexEntry next = Read();
-                    if(next.Type == TokenTypes.KEYWORD) {
-                        return new Operators.Declaration(stack, next.Val);
+                    List<string> modifiers = new List<string>();
+                    while(next.Type == TokenTypes.OPERATOR && (next.Val == "public" || next.Val == "private" || next.Val == "protected" || next.Val == "static")) {
+                        modifiers.Add(next.Val);
+                        next = Read();
+                    }
+                    if(next.Type == TokenTypes.KEYWORD && next.Val != "this") { // can't declare a variable named "this"
+                        LexEntry afterNext = Read();
+                        if(afterNext.Type == TokenTypes.SYMBOL && afterNext.Val == "{") {
+                            Print("parsing variable as property");
+                            IOperator? give = null;
+                            IOperator? _get = null;
+                            for(int i = 0; i < 2; i++) {
+                                LexEntry newType = Read();
+                                if(newType.Type == TokenTypes.SYMBOL && newType.Val == "}") {
+                                    Stored = newType;
+                                    break;
+                                }
+                                if(newType.Type != TokenTypes.OPERATOR) {
+                                    throw Error($"Expecting give/get function (found {newType.Val})!");
+                                }
+                                RequireSymbol("{");
+                                if(newType.Val == "plant" || newType.Val == "p") {
+                                    give = new Operators.FunctionDefinition(stack, new List<string>() { "input" }, ParseScope(), Row, Col);
+
+                                } else if(newType.Val == "harvest" || newType.Val == "h") {
+                                    _get = new Operators.FunctionDefinition(stack, new List<string>(), ParseScope(), Row, Col);
+                                } else {
+                                    throw Error("Only get and give functions are valid in this context!");
+                                }
+                                RequireSymbol("}");
+                            }
+                            RequireSymbol("}");
+                            return new Operators.Property(stack, next.Val, give, _get, modifiers, Row, Col);
+                        }
+                        Stored = afterNext;
+                        return new Operators.Declaration(stack, next.Val, modifiers, Row, Col);
                     }
                     throw Error("No variable name received!");
                 }
-                if(returned.Val == "property" || returned.Val == "prop" || returned.Val == "p") {
-                    Print("parsing new property");
-                    LexEntry next = Read();
-                    if(next.Type != TokenTypes.KEYWORD) {
-                        throw Error("No property name received!");
-                    }
-                    RequireSymbol("{");
-                    IOperator? give = null;
-                    IOperator? _get = null;
-                    for(int i = 0; i < 2; i++) {
-                        LexEntry newType = Read();
-                        if(newType.Type == TokenTypes.SYMBOL && newType.Val == "}") {
-                            Stored = newType;
-                            break;
-                        }
-                        if(newType.Type != TokenTypes.OPERATOR) {
-                            throw Error($"Expecting give/get function (found {newType.Val})!");
-                        }
-                        RequireSymbol("{");
-                        if(newType.Val == "give") {
-                            give = new Operators.FunctionDefinition(stack, new List<string>() { "input" }, ParseScope());
-
-                        } else if(newType.Val == "get") {
-                            _get = new Operators.FunctionDefinition(stack, new List<string>(), ParseScope());
-                        } else {
-                            throw Error("Only get and give functions are valid in this context!");
-                        }
-                        RequireSymbol("}");
-                    }
-                    RequireSymbol("}");
-                    return new Operators.Property(stack, next.Val, give, _get);
-                }
-                if(returned.Val == "function" || returned.Val == "f") {
+                if(returned.Val == "tool" || returned.Val == "t") {
                     Print("parsing function definition");
                     RequireSymbol("(");
                     List<string> args = ParseArgs();
@@ -517,12 +542,12 @@ namespace Tools {
                     RequireSymbol("{");
                     Operators.ExpressionSeparator body = ParseScope();
                     RequireSymbol("}");
-                    Operators.FunctionDefinition def = new Operators.FunctionDefinition(stack, args, body);
+                    Operators.FunctionDefinition def = new Operators.FunctionDefinition(stack, args, body, Row, Col);
                     return def;
                 }
                 if(returned.Val == "null") {
                     Print("parsing NULL");
-                    return new Operators.NullValue();
+                    return new Operators.NullValue(Row, Col);
                 }
                 if(returned.Val == "class") {
                     Print("parsing class definition");
@@ -538,7 +563,7 @@ namespace Tools {
                     IOperator body = ParseScope();
                     Print("parsing closing braces");
                     RequireSymbol("}");
-                    return new Operators.ClassDefinition(stack, body, _base);
+                    return new Operators.ClassDefinition(stack, body, _base, Row, Col);
                 }
                 if(returned.Val == "new") {
                     Print("parsing class instantiation");
@@ -548,20 +573,20 @@ namespace Tools {
                     IOperator args = ParseList();
                     Print("parsing closing paren.");
                     RequireSymbol(")");
-                    return new Operators.New(stack, next.Val, args);
+                    return new Operators.New(stack, next.Val, args, Row, Col);
                 }
             } else if(returned.Type == TokenTypes.STRING) {
                 Print("parsing string");
-                return new Operators.String(stack, returned.Val);
+                return new Operators.String(stack, returned.Val, Row, Col);
             } else if(returned.Type == TokenTypes.NUMBER) {
                 Print("parsing number");
-                return new Operators.Number(stack, Double.Parse(returned.Val));
+                return new Operators.Number(stack, Double.Parse(returned.Val), Row, Col);
             } else if(returned.Type == TokenTypes.BOOLEAN) {
                 Print("parsing boolean");
-                return new Operators.Boolean(returned.Val == "yes", stack);
+                return new Operators.Boolean(returned.Val == "yes", stack, Row, Col);
             } else if(returned.Type == TokenTypes.KEYWORD) {
                 Print("parsing variable");
-                return new Operators.Reference(stack, returned.Val);
+                return new Operators.Reference(stack, returned.Val, Row, Col);
             } else if(returned.Type == TokenTypes.SYMBOL) {
                 if(returned.Val == "(") {
                     Print("parsing opening paren.");
@@ -583,7 +608,7 @@ namespace Tools {
                     Operators.ExpressionSeparator body = ParseScope();
                     Print("parsing closing braces");
                     RequireSymbol("}");
-                    return new Operators.ObjectDefinition(stack, body);
+                    return new Operators.ObjectDefinition(stack, body, Row, Col);
                 }
             }
             throw Error($"Could not parse value: {returned.Type}: {returned.Val} !");

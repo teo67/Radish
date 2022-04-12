@@ -1,13 +1,13 @@
 namespace Tools.Operators {
     class ListSeparator : VariableOperator {
         public List<IOperator> Children { get; }
-        public ListSeparator(Stack stack, List<IOperator>? children = null) : base(stack) {
+        public ListSeparator(Stack stack, int row, int col, List<IOperator>? children = null) : base(stack, row, col) {
             this.Children = (children == null) ? new List<IOperator>() : children;
         }
         public override IValue Run() {
             List<Values.Variable> adding = new List<Values.Variable>();
             for(int i = 0; i < Children.Count; i++) {
-                adding.Add(new Values.Variable($"{i}", Children[i].Run().Var));
+                adding.Add(new Values.Variable($"{i}", Children[i]._Run().Var));
             }
             return new Values.ObjectLiteral(adding, Stack.Get("Array").Var);
         }
@@ -24,7 +24,7 @@ namespace Tools.Operators {
         }
         public IOperator First() {
             if(Children.Count < 1) {
-                throw new Exception("List is missing an element!");
+                throw Error("List is missing an element!");
             }
             return Children[0];
         }

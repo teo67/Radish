@@ -16,92 +16,92 @@ namespace Tools { // adds basic prototypes to call stack
             top.Add(new Values.Variable("Function", Function));
 
             Object.Object.Add(new Values.Variable("getValue", new Values.FunctionLiteral(
-                    stack, new List<string>(), new Operators.ExpressionSeparator(
+                    stack, new List<string>(), new Operators.ExpressionSeparator(-1, -1, 
                         new List<IOperator>() {
-                            new Operators.ReturnType("out", new Operators.Reference(stack, "this"))
+                            new Operators.ReturnType("harvest", -1, -1, new Operators.Reference(stack, "this", -1, -1))
                         }
                     )
             , Function)));
 
-            String.Object.Add(new Values.Variable("length", new Values.FunctionLiteral(
-                    stack, new List<string>(), new Operators.ExpressionSeparator(
+            String.Object.Add(new Values.Property("length", new Values.FunctionLiteral(
+                    stack, new List<string>(), new Operators.ExpressionSeparator(-1, -1,
                         new List<IOperator>() {
-                            new Operators.ReturnType("out", new Operators.LengthOf(stack, new Operators.Reference(stack, "this")))
+                            new Operators.ReturnType("harvest", -1, -1, new Operators.LengthOf(stack, new Operators.Reference(stack, "this", -1, -1), -1, -1))
                         }
                     )
-                , Function))
+                , Function), null)
             );
 
-             String.Object.Add(new Values.Variable("lowercase", new Values.FunctionLiteral(
-                stack, new List<string>(), new Operators.ExpressionSeparator(
+             String.Object.Add(new Values.Property("lowercase", new Values.FunctionLiteral(
+                stack, new List<string>(), new Operators.ExpressionSeparator(-1, -1,
                     new List<IOperator>() {
-                        new Operators.ReturnType("out", new Operators.AnyOperator(
-                            new List<IOperator>() { new Operators.Reference(stack, "this") }, 
+                        new Operators.ReturnType("harvest", -1, -1, new Operators.AnyOperator(
+                            new List<IOperator>() { new Operators.Reference(stack, "this", -1, -1) }, 
                             (List<IOperator> args) => {
-                                return new Values.StringLiteral(args[0].Run().String.ToLower(), String);
+                                return new Values.StringLiteral(args[0]._Run().String.ToLower(), String);
                             }, (List<IOperator> args) => {
                                 return $"({args[0].Print()} to lowercase)";
                             }
                         ))
                     }
                 )
-            , Function)));
+            , Function), null));
 
-            String.Object.Add(new Values.Variable("uppercase", new Values.FunctionLiteral(
-                stack, new List<string>(), new Operators.ExpressionSeparator(
+            String.Object.Add(new Values.Property("uppercase", new Values.FunctionLiteral(
+                stack, new List<string>(), new Operators.ExpressionSeparator(-1, -1,
                     new List<IOperator>() {
-                        new Operators.ReturnType("out", new Operators.AnyOperator(
-                            new List<IOperator>() { new Operators.Reference(stack, "this") }, 
+                        new Operators.ReturnType("harvest", -1, -1, new Operators.AnyOperator(
+                            new List<IOperator>() { new Operators.Reference(stack, "this", -1, -1) }, 
                             (List<IOperator> args) => {
-                                return new Values.StringLiteral(args[0].Run().String.ToUpper(), String);
+                                return new Values.StringLiteral(args[0]._Run().String.ToUpper(), String);
                             }, (List<IOperator> args) => {
                                 return $"({args[0].Print()} to uppercase)";
                             }
                         ))
                     }
                 )
-            , Function)));
+            , Function), null));
 
             Array.Object.Add(new Values.Variable("push", new Values.FunctionLiteral(
-                    stack, new List<string>() { "input" }, new Operators.ExpressionSeparator(
+                    stack, new List<string>() { "input" }, new Operators.ExpressionSeparator(-1, -1,
                         new List<IOperator>() {
-                            new Operators.ReturnType("out", new Operators.Push(new Operators.Reference(stack, "this"), new Operators.Reference(stack, "input")))
+                            new Operators.ReturnType("harvest", -1, -1, new Operators.Push(new Operators.Reference(stack, "this", -1, -1), new Operators.Reference(stack, "input", -1, -1), -1, -1))
                         }
                     )
                 , Function)
             ));
 
             Array.Object.Add(new Values.Variable("pop", new Values.FunctionLiteral(
-                    stack, new List<string>(), new Operators.ExpressionSeparator(
+                    stack, new List<string>(), new Operators.ExpressionSeparator(-1, -1,
                         new List<IOperator>() {
-                            new Operators.ReturnType("out", new Operators.Pop(new Operators.Reference(stack, "this"), new Operators.Subtract(stack, new Operators.LengthOf(stack, new Operators.Reference(stack, "this")), new Operators.Number(stack, 1.0))))
+                            new Operators.ReturnType("harvest", -1, -1, new Operators.Pop(new Operators.Reference(stack, "this", -1, -1), new Operators.Subtract(stack, new Operators.LengthOf(stack, new Operators.Reference(stack, "this", -1, -1), -1, -1), new Operators.Number(stack, 1.0, -1, -1), -1, -1), -1, -1))
                         }
                     )
                 , Function)
             ));
 
             Array.Object.Add(new Values.Variable("remove", new Values.FunctionLiteral(
-                    stack, new List<string>() { "index" }, new Operators.ExpressionSeparator(
+                    stack, new List<string>() { "index" }, new Operators.ExpressionSeparator(-1, -1,
                         new List<IOperator>() {
-                            new Operators.ReturnType("out", new Operators.Pop(new Operators.Reference(stack, "this"), new Operators.Reference(stack, "index")))
+                            new Operators.ReturnType("harvest", -1, -1, new Operators.Pop(new Operators.Reference(stack, "this", -1, -1), new Operators.Reference(stack, "index", -1, -1), -1, -1))
                         }
                     )
                 , Function)
             ));
 
-            Array.Object.Add(new Values.Variable("length", new Values.FunctionLiteral(
-                stack, new List<string>(), new Operators.ExpressionSeparator(
+            Array.Object.Add(new Values.Property("length", new Values.FunctionLiteral(
+                stack, new List<string>(), new Operators.ExpressionSeparator(-1, -1,
                     new List<IOperator>() {
-                        new Operators.ReturnType("out", new Operators.LengthOf(stack, new Operators.Reference(stack, "this")))
+                        new Operators.ReturnType("harvest", -1, -1, new Operators.LengthOf(stack, new Operators.Reference(stack, "this", -1, -1), -1, -1))
                     }
                 ), Function
-            )));
+            ), null));
 
-            top.Add(new Values.Variable("output", new Values.FunctionLiteral(stack, 
-                        new List<string>() { "input" }, new Operators.ExpressionSeparator(
+            top.Add(new Values.Variable("holler", new Values.FunctionLiteral(stack, 
+                        new List<string>() { "input" }, new Operators.ExpressionSeparator(-1, -1,
                             new List<IOperator>() {
-                                new Operators.ReturnType("out", new Operators.Output(
-                                        new Operators.Reference(stack, "input")
+                                new Operators.ReturnType("harvest", -1, -1, new Operators.Output(
+                                        new Operators.Reference(stack, "input", -1, -1), -1, -1
                                 )
                             )
                         }

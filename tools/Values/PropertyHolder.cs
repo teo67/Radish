@@ -4,11 +4,13 @@ namespace Tools.Values {
         private string Name { get; }
         private IValue Obj { get; }
         private Stack Stack { get; }
-        public PropertyHolder(IValue? held, string name, IValue obj, Stack stack) {
+        private ProtectionLevels ProtectionLevel { get; }
+        public PropertyHolder(IValue? held, string name, IValue obj, Stack stack, ProtectionLevels protectionLevel) {
             this.Held = held;
             this.Name = name;
             this.Obj = obj;
             this.Stack = stack;
+            this.ProtectionLevel = protectionLevel;
         }
 
         private IValue Resolve() {
@@ -62,12 +64,16 @@ namespace Tools.Values {
                         Stack.Push(new List<Variable>() { // in case of setter function
                             new Variable("this", Obj)
                         });
+                        IValue? saved = ObjectLiteral.CurrentPrivate;
+                        ObjectLiteral.CurrentPrivate = Obj;
                         property.Var = value; // trigger setter of property / variable
                         Stack.Pop();
+                        ObjectLiteral.CurrentPrivate = saved;
                         return;
                     }
                 }
-                Obj.Object.Add(new Variable(Name, value));
+                //Console.WriteLine($"adding new property: {Name}");
+                Obj.Object.Add(new Variable(Name, value, ProtectionLevel));
             }
         }
         public IOperator FunctionBody {
@@ -82,8 +88,11 @@ namespace Tools.Values {
             Stack.Push(new List<Variable>() {
                 new Variable("this", Obj)
             });
+            IValue? saved = ObjectLiteral.CurrentPrivate;
+            ObjectLiteral.CurrentPrivate = Obj;
             IValue returned = Resolve().Function(args);
             Stack.Pop();
+            ObjectLiteral.CurrentPrivate = saved;
             return returned;
         }
     }

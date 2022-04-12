@@ -1,7 +1,7 @@
 namespace Tools.Operators {
-    class Output : IOperator {
+    class Output : Operator {
         private IOperator Target { get; }
-        public Output(IOperator target) {
+        public Output(IOperator target, int row, int col) : base(row, col) {
             this.Target = target;
         }
 
@@ -21,7 +21,7 @@ namespace Tools.Operators {
                     string returning = "{\n";
                     foreach(Values.Variable item in input.Object) {
                         returning += new System.String(' ', spaces);
-                        returning += item.Name;
+                        returning += $"{item.Name} [{item.ProtectionLevel}]";
                         if(item.Default != BasicTypes.NONE) {
                             returning += ": ";
                             returning += CalcOutput(item.Var, spaces + 2);
@@ -38,13 +38,13 @@ namespace Tools.Operators {
                 return input.String;
             }
         }
-        public IValue Run() {
-            IValue result = Target.Run();
+        public override IValue Run() {
+            IValue result = Target._Run();
             Console.WriteLine(CalcOutput(result.Var));
             return result;
         }
-        public string Print() {
-            return $"output({Target.Print()})";
+        public override string Print() {
+            return $"holler({Target.Print()})";
         }
     }
 }

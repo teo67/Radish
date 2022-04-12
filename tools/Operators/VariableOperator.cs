@@ -1,14 +1,14 @@
-namespace Tools {
-    class VariableOperator : IOperator {
+namespace Tools.Operators {
+    class VariableOperator : Operator {
         protected Stack Stack { get; }
-        public VariableOperator(Stack stack) {
+        public VariableOperator(Stack stack, int row, int col) : base(row, col) {
             this.Stack = stack;
         }
-        public virtual IValue Run() {
-            throw new Exception("Could not run a variable operator!");
+        public override IValue Run() {
+            throw Error("Could not run a variable operator!");
         }
-        public virtual string Print() {
-            throw new Exception("Could not print a variable operator!");
+        public override string Print() {
+            throw Error("Could not print a variable operator!");
         }
     }
 }

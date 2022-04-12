@@ -2,7 +2,7 @@ namespace Tools.Operators {
     class FunctionDefinition : VariableOperator {
         private List<string> Args { get; }
         private IOperator Body { get; }
-        public FunctionDefinition(Stack stack, List<string> args, IOperator body) : base(stack) {
+        public FunctionDefinition(Stack stack, List<string> args, IOperator body, int row, int col) : base(stack, row, col) {
             this.Args = args;
             this.Body = body;
         }

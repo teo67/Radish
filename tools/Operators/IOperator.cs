@@ -1,6 +1,6 @@
 namespace Tools {
     interface IOperator {
-        public IValue Run();
+        public IValue _Run();
         public string Print();
     }
 }

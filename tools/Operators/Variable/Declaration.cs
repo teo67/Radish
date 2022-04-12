@@ -1,16 +1,35 @@
 namespace Tools.Operators {
     class Declaration : VariableOperator {
         private string VarName { get; }
-        public Declaration(Stack stack, string varName) : base(stack) {
+        private List<string> Modifiers { get; }
+        public Declaration(Stack stack, string varName, List<string> modifiers, int row, int col) : base(stack, row, col) {
             this.VarName = varName;
+            this.Modifiers = modifiers;
         }
         public override IValue Run() {
-            foreach(Values.Variable variable in Stack.Head.Val) {
-                if(variable.Name == VarName) {
-                    throw new Exception($"Could not redeclare variable {VarName}!");
+            ProtectionLevels lvl = ProtectionLevels.PUBLIC;
+            Dictionary<string, ProtectionLevels> dict = new Dictionary<string, ProtectionLevels>() {
+                { "public",  ProtectionLevels.PUBLIC }, 
+                { "private", ProtectionLevels.PRIVATE }, 
+                {"protected", ProtectionLevels.PROTECTED }
+            };
+            bool isStatic = false;
+            foreach(string modifier in Modifiers) {
+                if(dict.Keys.Contains(modifier)) {
+                    lvl = dict[modifier];
+                } else if(modifier == "static") {
+                    isStatic = true;
                 }
             }
-            Values.Variable adding = new Values.Variable(VarName);
+
+
+            foreach(Values.Variable variable in Stack.Head.Val) {
+                if(variable.Name == VarName && variable.IsStatic == isStatic) {
+                    throw Error($"Could not redeclare variable {VarName}!");
+                }
+            }
+            
+            Values.Variable adding = new Values.Variable(VarName, null, lvl, isStatic);
             Stack.Head.Val.Add(adding);
             return adding;
         }

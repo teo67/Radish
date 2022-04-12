@@ -2,7 +2,7 @@ namespace Tools.Operators {
     class New : VariableOperator {
         private IOperator Args { get; }
         private string ClassName { get; }
-        public New(Stack stack, string className, IOperator args) : base(stack) {
+        public New(Stack stack, string className, IOperator args, int row, int col) : base(stack, row, col) {
             this.ClassName = className;
             this.Args = args;
         }
@@ -17,11 +17,14 @@ namespace Tools.Operators {
             IValue returning = new Values.ObjectLiteral(new List<Values.Variable>(), inheriting);
             Stack.Push();
             Stack.Head.Val.Add(new Values.Variable("this", returning));
+            IValue? saved = Values.ObjectLiteral.CurrentPrivate;
+            Values.ObjectLiteral.CurrentPrivate = returning;
             if(super != null) {
                 Stack.Head.Val.Add(new Values.Variable("super", super));
             }
-            _class.Function(Args.Run().Object);
+            _class.Function(Args._Run().Object);
             Stack.Pop();
+            Values.ObjectLiteral.CurrentPrivate = saved;
             return returning;
         }
 

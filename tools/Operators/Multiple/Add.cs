@@ -1,16 +1,16 @@
 namespace Tools.Operators {
     class Add : SimpleVariableOperator {
-        public Add(Stack stack, IOperator left, IOperator right) : base(stack, left, right, "+") {}
+        public Add(Stack stack, IOperator left, IOperator right, int row, int col) : base(stack, left, right, "+", row, col) {}
         public override IValue Run() {
-            IValue leftResult = Left.Run().Var;
-            IValue rightResult = Right.Run().Var;
+            IValue leftResult = Left._Run().Var;
+            IValue rightResult = Right._Run().Var;
             if(leftResult.Default == BasicTypes.NUMBER) {
                 return new Values.NumberLiteral(leftResult.Number + rightResult.Number, Stack.Get("Number").Var);
             }
             if(leftResult.Default == BasicTypes.STRING) {
                 return new Values.StringLiteral(leftResult.String + rightResult.String, Stack.Get("String").Var);
             }
-            throw new Exception("The add operator only applies to numbers and strings!");
+            throw Error("The add operator only applies to numbers and strings!");
         }
     }
 }

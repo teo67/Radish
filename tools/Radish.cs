@@ -9,8 +9,8 @@ namespace Tools {
             try {
                 Operations operations = new Operations(reader, verbose);
                 operations.ParseScope().Run();
-            } catch(Exception e) {
-                Console.WriteLine(e.Message);
+            } catch(RadishException e) {
+                Console.WriteLine($"{e.RMessage} [row {e.Row}, column {e.Col}]");
             }
         }   
 
@@ -21,16 +21,16 @@ namespace Tools {
                     LexEntry result = lexer.Run();
                     Console.WriteLine($"{result.Type}: {result.Val}");
                 } while(!reader.EndOfStream);
-            } catch(Exception e) {
-                Console.WriteLine(e.Message);
+            } catch(RadishException e) {
+                Console.WriteLine($"{e.RMessage} [row {e.Row}, column {e.Col}]");
             }
         }
 
         public void Parse() {
             try {
                 Console.WriteLine(new Operations(reader, false).ParseScope().Print());
-            } catch(Exception e) {
-                Console.WriteLine(e.Message);
+            } catch(RadishException e) {
+                Console.WriteLine($"{e.RMessage} [row {e.Row}, column {e.Col}]");
             }
         }
     }

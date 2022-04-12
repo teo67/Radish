@@ -4,8 +4,8 @@ namespace Tools.Values {
         private List<string> ArgNames { get; }
         public override IOperator FunctionBody { get; }
         public override IValue? Base { get; }
-        public override List<Variable> Object { get; }
-        public FunctionLiteral(Stack stack, List<string> argNames, IOperator body, IValue func) : base("function") {
+        public override List<Variable> Object { get; } // setter is only used when defining a class
+        public FunctionLiteral(Stack stack, List<string> argNames, IOperator body, IValue func) : base("tool") {
             this.Stack = stack;
             this.ArgNames = argNames;
             this.FunctionBody = body;
@@ -33,7 +33,7 @@ namespace Tools.Values {
             for(int i = 0; i < args.Count; i++) {
                 Stack.Head.Val.Add(new Variable(ArgNames[i], args[i].Var));
             }
-            IValue result = FunctionBody.Run();
+            IValue result = FunctionBody._Run();
             Stack.Pop();
             if(result.Default != BasicTypes.RETURN) {
                 return result; // this will be null

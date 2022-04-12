@@ -1,14 +1,14 @@
 namespace Tools.Operators {
     class ObjectDefinition : VariableOperator {
         private IOperator Body { get; }
-        public ObjectDefinition(Stack stack, IOperator body) : base(stack) {
+        public ObjectDefinition(Stack stack, IOperator body, int row, int col) : base(stack, row, col) {
             this.Body = body;
         }
         public override IValue Run() {
             Stack.Push();
-            IValue result = Body.Run();
+            IValue result = Body._Run();
             if(result.Default == BasicTypes.RETURN) {
-                throw new Exception("Unable to output inside of an object definition!");
+                throw Error("Unable to output inside of an object definition!");
             }
             return new Values.ObjectLiteral(Stack.Pop().Val, Stack.Get("Object").Var);
         }

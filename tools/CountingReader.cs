@@ -29,10 +29,10 @@ namespace Tools {
                 col++;
             }
         }
-        public Exception Error(string msg, int rowNum, int colNum) {
-            return new Exception($"[line {rowNum}, column {colNum}]: {msg}");
+        public RadishException Error(string msg, int rowNum, int colNum) {
+            return new RadishException(msg, rowNum, colNum);
         }
-        public Exception Error(string msg) {
+        public RadishException Error(string msg) {
             return Error(msg, row, col);
         }
     }

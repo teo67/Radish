@@ -1,7 +1,7 @@
 namespace Tools.Operators {
     class String : VariableOperator {
         private string Stored { get; }
-        public String(Stack stack, string stored) : base(stack) {
+        public String(Stack stack, string stored, int row, int col) : base(stack, row, col) {
             this.Stored = stored;
         }
         public override IValue Run() {

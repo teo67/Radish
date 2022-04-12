@@ -28,7 +28,7 @@ namespace Tools {
             StackNode? viewing = Head;
             while(viewing != null) {
                 foreach(Values.Variable variable in viewing.Val) {
-                    if(variable.Name == key) {
+                    if(variable.Name == key && variable.ProtectionLevel == ProtectionLevels.PUBLIC) {
                         return variable;
                     }
                 }

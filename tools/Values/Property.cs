@@ -4,9 +4,11 @@ namespace Tools.Values {
         private IValue? Set { get; }
         public override IValue? Host {
             get {
+                //Console.WriteLine($"TEST: accessing getter {Name}");
                 return (Get == null) ? null : Get.Function(new List<Variable>());
             }
             protected set {
+                //Console.WriteLine($"TEST: accessing setter {Name}");
                 if(Set == null) {
                     throw new Exception("No setter function has been declared for this property!");
                 }
@@ -14,7 +16,7 @@ namespace Tools.Values {
             }
         }
 
-        public Property(string name, IValue? _get, IValue? _set) : base(name, null, true) {
+        public Property(string name, IValue? _get, IValue? _set, ProtectionLevels protectionLevel = ProtectionLevels.PUBLIC, bool isStatic = false) : base(name, null, protectionLevel, isStatic, true) {
             this.Get = _get;
             this.Set = _set;
         }

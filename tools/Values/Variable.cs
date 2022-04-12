@@ -2,11 +2,15 @@ namespace Tools.Values {
     class Variable : IValue {
         public virtual IValue? Host { get; protected set; }
         public string Name { get; }
-        public Variable(string name, IValue? host = null, bool ignoreHost = false) {
+        public ProtectionLevels ProtectionLevel { get; }
+        public bool IsStatic { get; }
+        public Variable(string name, IValue? host = null, ProtectionLevels protectionLevel = ProtectionLevels.PUBLIC, bool isStatic = false, bool ignoreHost = false) {
             this.Name = name;
             if(!ignoreHost) {
                 this.Host = host;
             }
+            this.ProtectionLevel = protectionLevel;
+            this.IsStatic = isStatic;
         }
         private IValue Resolve() {
             IValue? returned = Host;

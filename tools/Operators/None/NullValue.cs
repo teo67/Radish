@@ -1,10 +1,10 @@
 namespace Tools.Operators {
-    class NullValue : IOperator {
-        public NullValue() {}
-        public IValue Run() {
+    class NullValue : Operator {
+        public NullValue(int row, int col) : base(row, col) {}
+        public override IValue Run() {
             return new Values.NoneLiteral();
         }
-        public string Print() {
+        public override string Print() {
             return "null";
         }
     }
