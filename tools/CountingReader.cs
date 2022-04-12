@@ -6,7 +6,7 @@ namespace Tools {
         public CountingReader(string filename) {
             Container = new StreamReader(filename);
             row = 1;
-            col = 0;
+            col = 1;
         }
         public bool EndOfStream {
             get {
@@ -21,10 +21,10 @@ namespace Tools {
             if(returning == '\r') {
                 Container.Read(); // carriage return on windows
                 row++;
-                col = 0;
+                col = 1;
             } else if(returning == '\n') { // line return on mac
                 row++;
-                col = 0;
+                col = 1;
             } else {
                 col++;
             }

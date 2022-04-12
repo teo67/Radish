@@ -10,5 +10,8 @@ namespace Tools.Operators {
         public override string Print() {
             return $"{VarName}";
         }
+        public override IValue OnError(RadishException error) {
+            throw error.Append($">> {VarName}", Row, Col);
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace Tools {
                 Operations operations = new Operations(reader, verbose);
                 operations.ParseScope().Run();
             } catch(RadishException e) {
-                Console.WriteLine($"{e.RMessage} [row {e.Row}, column {e.Col}]");
+                e.Print();
             }
         }   
 
@@ -22,7 +22,7 @@ namespace Tools {
                     Console.WriteLine($"{result.Type}: {result.Val}");
                 } while(!reader.EndOfStream);
             } catch(RadishException e) {
-                Console.WriteLine($"{e.RMessage} [row {e.Row}, column {e.Col}]");
+                e.Print();
             }
         }
 
@@ -30,7 +30,7 @@ namespace Tools {
             try {
                 Console.WriteLine(new Operations(reader, false).ParseScope().Print());
             } catch(RadishException e) {
-                Console.WriteLine($"{e.RMessage} [row {e.Row}, column {e.Col}]");
+                e.Print();
             }
         }
     }

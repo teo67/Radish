@@ -16,5 +16,8 @@ namespace Tools.Operators {
             }
             return $"({returning}) {Body.Print()}";
         }
+        public override IValue OnError(RadishException error) {
+            throw error.Append(">> anonymous function", Row, Col);
+        }
     }
 }

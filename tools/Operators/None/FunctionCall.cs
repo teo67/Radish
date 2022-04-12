@@ -5,13 +5,16 @@ namespace Tools.Operators {
             this.Stack = stack;
         }
         public override IValue Run() {
-            // IValue result = Left._Run();
-            // Stack.Push(new List<Values.Variable>() {
-            //     new Values.Variable("this", result)
-            // });
             IValue returned = Left._Run().Function(Right._Run().Object);
-            //Stack.Pop();
             return returned.Var;
+        }
+        public override IValue OnError(RadishException error) {
+            try {
+                Left.OnError(error); // either returns or throws, if returns we throw a non-descriptive error
+            } catch(RadishException e) {
+                throw e.AppendToTop("(...)");
+            }
+            throw error.Append("@ function call", Row, Col);
         }
     }
 }
