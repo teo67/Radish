@@ -10,7 +10,7 @@ namespace Tools.Operators {
             Stack.Push();
             IValue result = Body._Run();
             if(result.Default == BasicTypes.RETURN) {
-                throw Error("Unable to output inside of an class definition!");
+                throw Error("Unexpected return statement inside a class definition!");
             }
             List<Values.Variable> popped = Stack.Pop().Val;
             IValue fun = new Values.FunctionLiteral(Stack, new List<string>(), new Operators.ExpressionSeparator(Row, Col), Stack.Get("Function").Var);

@@ -10,7 +10,7 @@ namespace Tools.Values {
             protected set {
                 //Console.WriteLine($"TEST: accessing setter {Name}");
                 if(Set == null) {
-                    throw new Exception("No setter function has been declared for this property!");
+                    throw new Exception("No harvest function has been declared for this property!");
                 }
                 Set.Function(new List<Variable>() { new Variable("input", value) });
             }

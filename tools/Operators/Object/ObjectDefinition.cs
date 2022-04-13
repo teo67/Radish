@@ -8,7 +8,7 @@ namespace Tools.Operators {
             Stack.Push();
             IValue result = Body._Run();
             if(result.Default == BasicTypes.RETURN) {
-                throw Error("Unable to output inside of an object definition!");
+                throw Error("Unexpected return statement in an object literal definition!");
             }
             return new Values.ObjectLiteral(Stack.Pop().Val, Stack.Get("Object").Var);
         }

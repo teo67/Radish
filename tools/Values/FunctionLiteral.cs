@@ -27,7 +27,7 @@ namespace Tools.Values {
                 //Console.WriteLine($"args {args.Count}, names {ArgNames.Count}");
                 //Console.WriteLine(args[0].Name);
                 //Console.WriteLine(args[1].Name);
-                throw new Exception("Invalid number of arguments!");
+                throw new Exception($"Expecting {ArgNames.Count} arguments instead of {args.Count}!");
             }
             Stack.Push();
             for(int i = 0; i < args.Count; i++) {

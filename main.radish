@@ -1,9 +1,5 @@
-d a p t () {
-    h b()
+d a p t(i) {
+    holler(i)
+    a(i + 1)
 }
-
-d b p t() {
-    h c
-}
-
-holler(a())
+a(0)

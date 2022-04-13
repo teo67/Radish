@@ -1,7 +1,7 @@
 namespace Tools { // adds basic prototypes to call stack
     class Prototypes {
         public Prototypes(Stack stack) {
-            List<Values.Variable> top = stack.Push().Val;
+            List<Values.Variable> top = stack.Head.Val;
             IValue Object = new Values.ObjectLiteral(new List<Values.Variable>(), null);
             top.Add(new Values.Variable("Object", Object));
             IValue Number = new Values.ObjectLiteral(new List<Values.Variable>(), Object);

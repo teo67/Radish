@@ -22,14 +22,13 @@ namespace Tools {
         }
         public void Print() {
             ConsoleColor current = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
             string str = "";
             for(int i = 0; i < Entries.Count; i++) {
-                if(i == 0) {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                } else {
+                if(i == 1) {
                     Console.ForegroundColor = ConsoleColor.Magenta;
                 }
-                Console.WriteLine($"{str}{Entries[i].RMessage} [row {Entries[i].Row}, column {Entries[i].Col}]");
+                Console.WriteLine($"{str}{Entries[i].RMessage}{((Entries[i].Row == -1 || Entries[i].Col == -1) ? "" : $" [row {Entries[i].Row}, column {Entries[i].Col}]")}");
                 str += "  ";
             }
             Console.ForegroundColor = current;

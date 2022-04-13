@@ -11,22 +11,22 @@ namespace Tools.Values {
         }
         public virtual double Number {
             get {
-                throw new Exception($"Unable to parse {Name} as number!");
+                throw new Exception($"Unable to parse {Name} as a number!");
             }
         }
         public virtual string String {
             get {
-                throw new Exception($"Unable to parse {Name} as string!");
+                throw new Exception($"Unable to parse {Name} as a string!");
             }
         }
         public virtual bool Boolean {
             get {
-                throw new Exception($"Unable to parse {Name} as boolean!");
+                throw new Exception($"Unable to parse {Name} as a boolean!");
             }
         }
         public virtual List<Variable> Object {
             get {
-                throw new Exception($"Unable to parse {Name} as object!");
+                throw new Exception($"Unable to parse {Name} as an object!");
             }
         }
 
@@ -40,18 +40,18 @@ namespace Tools.Values {
                 return this;
             }
             set {
-                throw new Exception($"Unable to parse {Name} as variable!");
+                throw new Exception($"Unable to parse {Name} as a variable!");
             }
         }
         public virtual IValue Function(List<Variable> args) {
-            throw new Exception($"Unable to parse {Name} as function!");
+            throw new Exception($"Unable to parse {Name} as a function!");
         }
         public virtual bool Equals(IValue other) {
-            throw new Exception($"Unable to parse {Name} as equals!");
+            throw new Exception($"Unable to check the equality of type {Name}!");
         }
         public virtual IOperator FunctionBody {
             get {
-                throw new Exception($"Unable to parse {Name} as function body!");
+                throw new Exception($"Unable to parse {Name} as a function!");
             }
         }
     }

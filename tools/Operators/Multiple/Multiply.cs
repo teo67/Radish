@@ -15,9 +15,9 @@ namespace Tools.Operators {
                     }
                     return new Values.StringLiteral(adding, Stack.Get("String").Var);
                 }
-                throw Error("Can only multiply a string by a number!");
+                throw Error("Strings can only be multiplied by numbers!");
             }
-            throw Error("The multiply operator only applies to numbers and strings!");
+            throw Error("Only numbers and strings can be combined using multiplication!");
         }
     }
 }

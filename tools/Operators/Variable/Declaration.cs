@@ -25,7 +25,7 @@ namespace Tools.Operators {
 
             foreach(Values.Variable variable in Stack.Head.Val) {
                 if(variable.Name == VarName && variable.IsStatic == isStatic) {
-                    throw Error($"Could not redeclare variable {VarName}!");
+                    throw Error($"{VarName} already exists in the current scope!");
                 }
             }
             

@@ -24,7 +24,7 @@ namespace Tools.Operators {
         }
         public IOperator First() {
             if(Children.Count < 1) {
-                throw Error("List is missing an element!");
+                throw Error("Attempted to access element from empty list!");
             }
             return Children[0];
         }

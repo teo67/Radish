@@ -64,7 +64,7 @@ namespace Tools {
             Print($"requiring {input}");
             LexEntry next = Read();
             if(!(next.Type == TokenTypes.SYMBOL && next.Val == input)) {
-                throw Error($"Missing expected symbol: {input}");
+                throw Error($"Error: expected symbol: {input}");
             }
         }
 
@@ -513,7 +513,7 @@ namespace Tools {
                                     break;
                                 }
                                 if(newType.Type != TokenTypes.OPERATOR) {
-                                    throw Error($"Expecting give/get function (found {newType.Val})!");
+                                    throw Error($"Expecting plant or harvest function instead of {newType.Val}!");
                                 }
                                 RequireSymbol("{");
                                 if(newType.Val == "plant" || newType.Val == "p") {
@@ -522,7 +522,7 @@ namespace Tools {
                                 } else if(newType.Val == "harvest" || newType.Val == "h") {
                                     _get = new Operators.FunctionDefinition(stack, new List<string>(), ParseScope(), Row, Col);
                                 } else {
-                                    throw Error("Only get and give functions are valid in this context!");
+                                    throw Error("Only plant and harvest functions are valid in this context!");
                                 }
                                 RequireSymbol("}");
                             }
@@ -532,7 +532,7 @@ namespace Tools {
                         Stored = afterNext;
                         return new Operators.Declaration(stack, next.Val, modifiers, Row, Col);
                     }
-                    throw Error("No variable name received!");
+                    throw Error($"Expecting a variable name instead of {next.Val}!");
                 }
                 if(returned.Val == "tool" || returned.Val == "t") {
                     Print("parsing function definition");
@@ -611,7 +611,7 @@ namespace Tools {
                     return new Operators.ObjectDefinition(stack, body, Row, Col);
                 }
             }
-            throw Error($"Could not parse value: {returned.Type}: {returned.Val} !");
+            throw Error($"Could not parse value: {returned.Val} !");
         }
     }
 }

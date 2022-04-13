@@ -10,7 +10,7 @@ namespace Tools.Operators {
             if(leftResult.Default == BasicTypes.STRING) {
                 return new Values.StringLiteral(leftResult.String + rightResult.String, Stack.Get("String").Var);
             }
-            throw Error("The add operator only applies to numbers and strings!");
+            throw Error("Only numbers and strings can be combined using addition!");
         }
     }
 }

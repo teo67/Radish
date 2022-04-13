@@ -48,13 +48,11 @@ namespace Tools {
         }
         
         private CharTypes GetCharType(char input) {
-            CharTypes returning;
             try {
-                returning = dict[input];
+                return dict[input];
             } catch {
-                throw reader.Error($"Unrecognized character: {input}!");
+                return CharTypes.letter;
             }
-            return returning;
         }
 
         private TokenTypes GetTokenType(TokenTypes current, CharTypes adding, string currentRaw) { // same = no change
@@ -74,7 +72,7 @@ namespace Tools {
                 case CharTypes.letter:
                     return (current == TokenTypes.KEYWORD) ? TokenTypes.SAME : TokenTypes.KEYWORD;
                 case CharTypes.digit:
-                    return (current == TokenTypes.NUMBER) ? TokenTypes.SAME : TokenTypes.NUMBER;
+                    return (current == TokenTypes.NUMBER || current == TokenTypes.KEYWORD) ? TokenTypes.SAME : TokenTypes.NUMBER;
                 case CharTypes.dot:
                     return (current == TokenTypes.NUMBER && currentRaw.IndexOf(dotChar) == -1) ? TokenTypes.SAME : TokenTypes.SYMBOL; // if youre already in a number with no decimal points yet, consider this a decimal point : otherwise, its punctuation
                 case CharTypes.symbols:

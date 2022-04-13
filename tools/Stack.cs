@@ -9,14 +9,21 @@ namespace Tools {
     }
     class Stack {
         public StackNode Head { get; private set; }
+        private int Length { get; set; }
         public Stack(StackNode head) {
             this.Head = head;
+            this.Length = 0;
         }
         public StackNode Push(List<Values.Variable>? head = null) {
+            Length++;
+            if(Length > 90) { // BREAKPOINT 96
+                throw new Exception("FATALMaximum stack size of 90 exceeded!");
+            }
             Head = new StackNode((head == null) ? new List<Values.Variable>() : head, Head);
             return Head;
         }
         public StackNode Pop() {
+            Length--;
             StackNode saved = Head;
             if(Head.Next == null) {
                 throw new Exception("Could not pop the last layer of the stack!");
@@ -34,7 +41,7 @@ namespace Tools {
                 }
                 viewing = viewing.Next;
             }
-            throw new Exception($"Could not find variable {key}!");
+            throw new Exception($"Unable to find variable {key}!");
         }
     }
 }
