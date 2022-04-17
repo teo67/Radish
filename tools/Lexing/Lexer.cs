@@ -80,7 +80,7 @@ namespace Tools {
                 case CharTypes.operators:
                     return (current == TokenTypes.OPERATOR) ? TokenTypes.SAME : TokenTypes.OPERATOR;
                 default:
-                    throw new Exception("Something went wrong in the lex phase.");
+                    throw new RadishException("Something went wrong in the lex phase.");
             }
         }
 

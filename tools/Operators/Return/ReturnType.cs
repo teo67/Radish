@@ -5,7 +5,7 @@ namespace Tools.Operators {
         public ReturnType(string type, int row, int col, IOperator? stored = null) : base(row, col) {
             string[] valid = { "harvest", "end", "cancel", "continue" };
             if(!valid.Contains(type)) {
-                throw Error($"{type} is not a valid return type!");
+                throw new RadishException($"{type} is not a valid return type!");
             }
             this.Type = type;
             this.Stored = stored;

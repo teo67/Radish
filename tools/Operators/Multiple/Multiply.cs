@@ -15,9 +15,9 @@ namespace Tools.Operators {
                     }
                     return new Values.StringLiteral(adding, Stack.Get("String").Var);
                 }
-                throw Error("Strings can only be multiplied by numbers!");
+                throw new RadishException("Strings can only be multiplied by numbers!");
             }
-            throw Error("Only numbers and strings can be combined using multiplication!");
+            throw new RadishException("Only numbers and strings can be combined using multiplication!");
         }
     }
 }

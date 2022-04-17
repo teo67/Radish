@@ -7,7 +7,7 @@ namespace Tools.Operators {
             if(leftResult.Default == BasicTypes.NUMBER) {
                 return new Values.NumberLiteral(leftResult.Number / rightResult.Number, Stack.Get("Number").Var);
             }
-            throw Error("Only numbers can be combined using division!");
+            throw new RadishException("Only numbers can be combined using division!");
         }
     }
 }

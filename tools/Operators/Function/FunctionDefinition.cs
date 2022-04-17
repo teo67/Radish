@@ -10,14 +10,7 @@ namespace Tools.Operators {
             return new Values.FunctionLiteral(Stack, Args, Body, Stack.Get("Function").Var);
         }
         public override string Print() {
-            string returning = "";
-            foreach(string arg in Args) {
-                returning += $"{arg}, ";
-            }
-            return $"({returning}) {Body.Print()}";
-        }
-        public override IValue OnError(RadishException error) {
-            throw error.Append(">> anonymous function", Row, Col);
+            return "anonymous function";
         }
     }
 }

@@ -16,8 +16,8 @@ namespace Tools {
         }
         public StackNode Push(List<Values.Variable>? head = null) {
             Length++;
-            if(Length > 90) { // BREAKPOINT 96
-                throw new Exception("FATALMaximum stack size of 90 exceeded!");
+            if(Length > 1470) { // BREAKPOINT 96
+                throw new RadishException("Maximum stack size of 1470 exceeded!");
             }
             Head = new StackNode((head == null) ? new List<Values.Variable>() : head, Head);
             return Head;
@@ -26,7 +26,7 @@ namespace Tools {
             Length--;
             StackNode saved = Head;
             if(Head.Next == null) {
-                throw new Exception("Could not pop the last layer of the stack!");
+                throw new RadishException("Could not pop the last layer of the stack!");
             }
             Head = Head.Next;
             return saved;
@@ -41,7 +41,7 @@ namespace Tools {
                 }
                 viewing = viewing.Next;
             }
-            throw new Exception($"Unable to find variable {key}!");
+            throw new RadishException($"Unable to find variable {key}!");
         }
     }
 }

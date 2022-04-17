@@ -8,10 +8,7 @@ namespace Tools.Operators {
             return Stack.Get(VarName);
         }
         public override string Print() {
-            return $"{VarName}";
-        }
-        public override IValue OnError(RadishException error) {
-            throw error.Append($">> {VarName}", Row, Col);
+            return VarName;
         }
     }
 }

@@ -6,27 +6,27 @@ namespace Tools.Values {
         }
         public virtual BasicTypes Default {
             get {
-                throw new Exception("System error: empty literal accessed directly.");
+                throw new RadishException("System error: empty literal accessed directly.");
             }
         }
         public virtual double Number {
             get {
-                throw new Exception($"Unable to parse {Name} as a number!");
+                throw new RadishException($"Unable to parse {Name} as a number!");
             }
         }
         public virtual string String {
             get {
-                throw new Exception($"Unable to parse {Name} as a string!");
+                throw new RadishException($"Unable to parse {Name} as a string!");
             }
         }
         public virtual bool Boolean {
             get {
-                throw new Exception($"Unable to parse {Name} as a boolean!");
+                throw new RadishException($"Unable to parse {Name} as a boolean!");
             }
         }
         public virtual List<Variable> Object {
             get {
-                throw new Exception($"Unable to parse {Name} as an object!");
+                throw new RadishException($"Unable to parse {Name} as an object!");
             }
         }
 
@@ -40,18 +40,18 @@ namespace Tools.Values {
                 return this;
             }
             set {
-                throw new Exception($"Unable to parse {Name} as a variable!");
+                throw new RadishException($"Unable to parse {Name} as a variable!");
             }
         }
         public virtual IValue Function(List<Variable> args) {
-            throw new Exception($"Unable to parse {Name} as a function!");
+            throw new RadishException($"Unable to parse {Name} as a function!");
         }
         public virtual bool Equals(IValue other) {
-            throw new Exception($"Unable to check the equality of type {Name}!");
+            throw new RadishException($"Unable to check the equality of type {Name}!");
         }
         public virtual IOperator FunctionBody {
             get {
-                throw new Exception($"Unable to parse {Name} as a function!");
+                throw new RadishException($"Unable to parse {Name} as a function!");
             }
         }
     }

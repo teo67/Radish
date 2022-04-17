@@ -28,7 +28,7 @@ namespace Tools.Operators {
 
             foreach(Values.Variable variable in Stack.Head.Val) {
                 if(variable.Name == Name && variable.IsStatic == isStatic) {
-                    throw Error($"Property {Name} already exists in the current scope!");
+                    throw new RadishException($"Property {Name} already exists in the current scope!");
                 }
             }
             

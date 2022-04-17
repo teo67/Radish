@@ -11,7 +11,7 @@ namespace Tools.Operators {
             } else if(returned.Default == BasicTypes.STRING) {
                 return new Values.NumberLiteral(returned.String.Length, Stack.Get("Number").Var);
             } 
-            throw Error("The length property can only be applied to strings and arrays!");
+            throw new RadishException("The length property can only be applied to strings and arrays!");
         }
         public override string Print() {
             return $"(length of {Arr.Print()})";

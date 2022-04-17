@@ -64,7 +64,7 @@ namespace Tools {
             Print($"requiring {input}");
             LexEntry next = Read();
             if(!(next.Type == TokenTypes.SYMBOL && next.Val == input)) {
-                throw Error($"Error: expected symbol: {input}");
+                throw new RadishException($"Error: expected symbol: {input}");
             }
         }
 
@@ -161,7 +161,7 @@ namespace Tools {
             Operators.IfChain returning = new Operators.IfChain(Row, Col);
             LexEntry IF = Read();
             if(!(IF.Type == TokenTypes.OPERATOR && IF.Val == "if")) {
-                throw Error("Expecting if statement!");
+                throw new RadishException("Expecting if statement!");
             }
             returning.AddValue(ParseIf());
             LexEntry read = Read();
@@ -513,7 +513,7 @@ namespace Tools {
                                     break;
                                 }
                                 if(newType.Type != TokenTypes.OPERATOR) {
-                                    throw Error($"Expecting plant or harvest function instead of {newType.Val}!");
+                                    throw new RadishException($"Expecting plant or harvest function instead of {newType.Val}!");
                                 }
                                 RequireSymbol("{");
                                 if(newType.Val == "plant" || newType.Val == "p") {
@@ -522,7 +522,7 @@ namespace Tools {
                                 } else if(newType.Val == "harvest" || newType.Val == "h") {
                                     _get = new Operators.FunctionDefinition(stack, new List<string>(), ParseScope(), Row, Col);
                                 } else {
-                                    throw Error("Only plant and harvest functions are valid in this context!");
+                                    throw new RadishException("Only plant and harvest functions are valid in this context!");
                                 }
                                 RequireSymbol("}");
                             }
@@ -532,7 +532,7 @@ namespace Tools {
                         Stored = afterNext;
                         return new Operators.Declaration(stack, next.Val, modifiers, Row, Col);
                     }
-                    throw Error($"Expecting a variable name instead of {next.Val}!");
+                    throw new RadishException($"Expecting a variable name instead of {next.Val}!");
                 }
                 if(returned.Val == "tool" || returned.Val == "t") {
                     Print("parsing function definition");
@@ -611,7 +611,7 @@ namespace Tools {
                     return new Operators.ObjectDefinition(stack, body, Row, Col);
                 }
             }
-            throw Error($"Could not parse value: {returned.Val} !");
+            throw new RadishException($"Could not parse value: {returned.Val} !");
         }
     }
 }

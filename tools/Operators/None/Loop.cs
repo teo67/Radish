@@ -8,7 +8,7 @@ namespace Tools.Operators {
         } // left is condition, right is scope
         public override IValue Run() {
             if(Tags.Children.Count != 3) {
-                throw Error("For loops require three arguments: an initialize statement, a condition, and an iterative statement!");
+                throw new RadishException("For loops require three arguments: an initialize statement, a condition, and an iterative statement!");
             }
             Stack.Push();
             Tags.Children[0]._Run();

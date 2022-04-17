@@ -46,8 +46,10 @@ holler(li.get(4)) # error #<br>
     <li>Introduce getter functions, so that array.length can be called instead of array.length() // DONE</li>
     <li>Add tags for object/class properties, such as static, public/private/protected, etc // DONE</li>
     <li>Farm theme! // DONE</li>
-    <li>Better debugging! Literally it's so bad</li>
+    <li>Better debugging! Literally it's so bad // DONE</li>
+    <li>Add manual exception throwing + try/catch syntax</li>
     <li>Make VSCode extension so that the code doesn't look so bland (also cool file symbol)</li>
     <li>Add importing/exporting from other files!!!</li>
     <li>Package it so that users can install radish and run files without seeing all of the machinery</li>
+    <li>async??</li>
 </ol></p>

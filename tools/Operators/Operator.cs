@@ -1,25 +1,20 @@
 namespace Tools.Operators {
     class Operator : IOperator {
         public IValue _Run() {
-            try {
-                return Run();
-            } catch(RadishException error) {
-                return OnError(error);
-            } catch(Exception error) {
-                return OnError(new RadishException(error.Message, Row, Col));
-            }
-        }
-        public RadishException Error(string msg) {
-            return new RadishException(msg, Row, Col);
+            int r = RadishException.Row;
+            int c = RadishException.Col;
+            RadishException.Row = this.Row;
+            RadishException.Col = this.Col;
+            IValue saved = Run();
+            RadishException.Row = r;
+            RadishException.Col = c;
+            return saved;
         }
         public virtual string Print() {
-            throw Error("Cannot print an operator!");
-        }
-        public virtual IValue OnError(RadishException error) {
-            throw error;
+            throw new RadishException("Cannot print an operator!");
         }
         public virtual IValue Run() {
-            throw Error("Cannot run an operator!");
+            throw new RadishException("Cannot run an operator!");
         }
         public virtual int Row { get; }
         public virtual int Col { get; }

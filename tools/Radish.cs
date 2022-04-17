@@ -9,8 +9,8 @@ namespace Tools {
             try {
                 Operations operations = new Operations(reader, verbose);
                 operations.ParseScope().Run();
-            } catch(RadishException e) {
-                e.Print();
+            } catch {
+                RadishException.Print();
             }
         }   
 
@@ -21,16 +21,16 @@ namespace Tools {
                     LexEntry result = lexer.Run();
                     Console.WriteLine($"{result.Type}: {result.Val}");
                 } while(!reader.EndOfStream);
-            } catch(RadishException e) {
-                e.Print();
+            } catch {
+                RadishException.Print();
             }
         }
 
         public void Parse() {
             try {
                 Console.WriteLine(new Operations(reader, false).ParseScope().Print());
-            } catch(RadishException e) {
-                e.Print();
+            } catch {
+                RadishException.Print();
             }
         }
     }

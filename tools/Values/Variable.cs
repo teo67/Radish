@@ -15,7 +15,7 @@ namespace Tools.Values {
         private IValue Resolve() {
             IValue? returned = Host;
             if(returned == null) {
-                throw new Exception($"No value stored in variable {Name}!");
+                throw new RadishException($"No value stored in variable {Name}!");
             }
             return returned; // store in a variable so we only call getter once
         }

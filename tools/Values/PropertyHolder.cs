@@ -15,7 +15,7 @@ namespace Tools.Values {
 
         private IValue Resolve() {
             if(Held == null) {
-                throw new Exception($"No value stored in object property {Name}!");
+                throw new RadishException($"No value stored in object property {Name}!");
             }
             return Held;
         }

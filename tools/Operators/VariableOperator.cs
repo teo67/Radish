@@ -5,10 +5,10 @@ namespace Tools.Operators {
             this.Stack = stack;
         }
         public override IValue Run() {
-            throw Error("Could not run a variable operator!");
+            throw new RadishException("Could not run a variable operator!");
         }
         public override string Print() {
-            throw Error("Could not print a variable operator!");
+            throw new RadishException("Could not print a variable operator!");
         }
     }
 }

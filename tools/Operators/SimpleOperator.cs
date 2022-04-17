@@ -9,7 +9,7 @@ namespace Tools.Operators {
             this.Name = name;
         }
         public override IValue Run() {
-            throw Error("Cannot run simple operator!");
+            throw new RadishException("Cannot run simple operator!");
         }
         public override string Print() {
             return $"({Left.Print()} {Name} {Right.Print()})";
