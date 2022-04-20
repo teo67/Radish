@@ -43,5 +43,8 @@ namespace Tools {
             }
             Console.ForegroundColor = current;
         }
+        public static void Clear() {
+            Entries.Clear();
+        }
     }
 }

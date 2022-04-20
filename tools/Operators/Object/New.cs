@@ -7,6 +7,7 @@ namespace Tools.Operators {
             this.Args = args;
         }
         public override IValue Run() {
+            List<Values.Variable> args = Args._Run().Object;
             IValue _class = Stack.Get(ClassName).Var;
             IValue inheriting = Stack.Get("Object").Var;
             IValue? returned = Values.ObjectLiteral.Get(_class, "prototype", Stack, _class);
@@ -22,7 +23,7 @@ namespace Tools.Operators {
             if(super != null) {
                 Stack.Head.Val.Add(new Values.Variable("super", super));
             }
-            _class.Function(Args._Run().Object);
+            _class.Function(args);
             Stack.Pop();
             Values.ObjectLiteral.CurrentPrivate = saved;
             return returning;

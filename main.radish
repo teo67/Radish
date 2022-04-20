@@ -1,1 +1,26 @@
-[holler, 1][0](["a", "b"][1] + [1, 2])
+#
+
+fixed the constructor bug!
+
+new issue: find a way to refactor propertyholders (or delete them altogether) so that they aren't permanent
+in other words, i can assign this.Head = this.Head and it will store it as a propertyholder
+i could do it again and it would store it as a new propertyholder that stores a propertyholder
+
+why isn't it easy to remove?
+
+#
+
+d x p {
+    d n p "a"
+    d f p t() {
+        holler(this.n)
+    }
+}
+d y p x.f
+y()
+
+#
+
+without a propertyholder, y() wouldnt be able to store a definition for "this" and x.f (stored in y) would fail when trying to access this.n
+
+#

@@ -6,6 +6,7 @@ namespace Tools.Values {
         private Stack Stack { get; }
         private ProtectionLevels ProtectionLevel { get; }
         public PropertyHolder(IValue? held, string name, IValue obj, Stack stack, ProtectionLevels protectionLevel) {
+            //Console.WriteLine($"creating property holder with value {held}, name {name}");
             this.Held = held;
             this.Name = name;
             this.Obj = obj;

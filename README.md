@@ -1,6 +1,5 @@
 <h1>RADISH</h1>
-<h3>Real Awesome Dynamic Interface w/ Structural Happiness</h3>
-<p>Just kidding, it's just Radish like the vegetable.</p>
+<p>{ like the vegetable. }</p>
 <br>
 <h2>So what's it all about, anyway?</h2>
 <p>Radish is an easy-to-learn, object-oriented programming language written in C#. If you know JavaScript, you know Radish. However, Radish has a few of its own quirks to keep in mind (don't ask why these exist)

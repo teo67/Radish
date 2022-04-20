@@ -6,8 +6,11 @@ namespace Tools.Operators {
         }
 
         private string CalcOutput(IValue input, int spaces = 2) {
+            //Console.WriteLine("accessed");
             if(input.Default == BasicTypes.OBJECT) {
+                //Console.WriteLine("obj");
                 if(Values.ObjectLiteral.ValidateArray(input)) {
+                    //Console.WriteLine("arr");
                     string returning = "[";
                     for(int i = 0; i < input.Object.Count; i++) {
                         returning += CalcOutput(input.Object[i].Var, spaces + 2);
@@ -18,6 +21,7 @@ namespace Tools.Operators {
                     returning += "]";
                     return returning;
                 } else {
+                    //Console.WriteLine("passed array check");
                     string returning = "{\n";
                     foreach(Values.Variable item in input.Object) {
                         returning += new System.String(' ', spaces);
@@ -35,12 +39,15 @@ namespace Tools.Operators {
             } else if(input.Default == BasicTypes.FUNCTION) {
                 return "{Function}";
             } else {
+                //Console.WriteLine("accessing string");
                 return input.String;
             }
         }
         public override IValue Run() {
             IValue result = Target._Run();
+            //Console.WriteLine("about to access var");
             Console.WriteLine(CalcOutput(result.Var));
+            //Console.WriteLine("done");
             return result;
         }
         public override string Print() {

@@ -42,7 +42,8 @@ namespace Tools {
                 "dig", "d", "tool", "t", "plant", "p",
                 "harvest", "h", "cancel", "continue", "end",
                 "new", "null", "class",
-                "public", "private", "protected", "static"
+                "public", "private", "protected", "static",
+                "try", "catch", "throw"
             };
         }
         public Operations(CountingReader reader, bool verbose) {
@@ -70,7 +71,7 @@ namespace Tools {
 
         private void Print(string input) {
             if(verbose) {
-                Console.WriteLine(input);
+                Console.WriteLine($"{input} ({Row}, {Col})");
             }
         }
 
@@ -145,6 +146,20 @@ namespace Tools {
                     Print("parsing out statement");
                     IOperator carrying = ParseExpression();
                     returning.AddValue(new Operators.ReturnType("harvest", Row, Col, carrying));
+                } else if(read.Type == TokenTypes.OPERATOR && read.Val == "try") {
+                    Print("parsing try/catch");
+                    RequireSymbol("{");
+                    IOperator tryScope = ParseScope();
+                    RequireSymbol("}");
+                    LexEntry next = Read();
+                    if(next.Type == TokenTypes.OPERATOR && next.Val == "catch") {
+                        RequireSymbol("{");
+                        IOperator catchScope = ParseScope();
+                        RequireSymbol("}");
+                        returning.AddValue(new Operators.TryCatch(tryScope, catchScope, stack, Row, Col));
+                    } else {
+                        throw Error("Expecting catch phrase after try {}");
+                    }
                 } else {
                     Print("parsing expression");
                     Stored = read;
@@ -548,6 +563,11 @@ namespace Tools {
                 if(returned.Val == "null") {
                     Print("parsing NULL");
                     return new Operators.NullValue(Row, Col);
+                }
+                if(returned.Val == "throw") {
+                    Print("parsing throw statement");
+                    IOperator throwing = ParseExpression();
+                    return new Operators.Throw(throwing, stack, Row, Col);
                 }
                 if(returned.Val == "class") {
                     Print("parsing class definition");

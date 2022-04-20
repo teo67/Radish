@@ -8,7 +8,7 @@ namespace Tools {
         }
     }
     class Stack {
-        public StackNode Head { get; private set; }
+        public StackNode Head { get; set; }
         private int Length { get; set; }
         public Stack(StackNode head) {
             this.Head = head;
