@@ -19,5 +19,8 @@ namespace Tools.Values {
         public override IValue Function(List<Variable> args) {
             return Carrying;
         }
+        public override string Print() {
+            return $"{Type}({Carrying.Print()})";
+        }
     }
 }

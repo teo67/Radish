@@ -43,5 +43,8 @@ namespace Tools.Values {
         public override bool Equals(IValue other) {
             return other.Default == BasicTypes.FUNCTION && FunctionBody == other.FunctionBody;
         }
+        public override string Print() {
+            return $"function";
+        }
     }
 }

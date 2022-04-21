@@ -26,5 +26,8 @@ namespace Tools.Values {
         public override bool Equals(IValue other) {
             return other.Default == BasicTypes.BOOLEAN && Boolean == other.Boolean;
         }
+        public override string Print() {
+            return $"boolean({Boolean})";
+        }
     }
 }

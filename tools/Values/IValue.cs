@@ -10,5 +10,6 @@ namespace Tools {
         public bool Equals(IValue other); // check equality
         public IOperator FunctionBody { get; } // get function in order to check for equality
         public IValue Function(List<Values.Variable> args); // call value as function with list of values
+        public string Print();
     }
 }

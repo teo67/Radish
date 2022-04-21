@@ -57,7 +57,7 @@ namespace Tools.Values {
         }
         public IValue Var {
             get {
-                return this;
+                return new ValueWithScope(Obj, Resolve().Var, Stack);
             }
             set {
                 foreach(Variable property in Obj.Object) {
@@ -86,6 +86,7 @@ namespace Tools.Values {
             return Resolve().Equals(other);
         }
         public IValue Function(List<Variable> args) {
+            //return Resolve().Function(args);
             Stack.Push(new List<Variable>() {
                 new Variable("this", Obj)
             });
@@ -95,6 +96,10 @@ namespace Tools.Values {
             Stack.Pop();
             ObjectLiteral.CurrentPrivate = saved;
             return returned;
+        }
+        public string Print() {
+            return $"propertyholder({(Held == null ? "null" : Held.Print())})";
+            //return $"propertyholder(held = ({(Held == null ? "null" : Held.Print())}), obj = ({Obj.Print()}))";
         }
     }
 }

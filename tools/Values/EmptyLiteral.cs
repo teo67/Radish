@@ -54,5 +54,8 @@ namespace Tools.Values {
                 throw new RadishException($"Unable to parse {Name} as a function!");
             }
         }
+        public virtual string Print() {
+            throw new RadishException($"Unable to print a {Name} value!");
+        }
     }
 }

@@ -21,5 +21,8 @@ namespace Tools.Values {
         public override bool Equals(IValue other) {
             return other.Default == BasicTypes.STRING && String == other.String;
         }
+        public override string Print() {
+            return $"string({String})";
+        }
     }
 }

@@ -64,5 +64,13 @@ namespace Tools.Values {
         }
 
         public static IValue? CurrentPrivate { get; set; } // stores the object that is currently able to access private / protected properties
+        public override string Print() {
+            string returning = "object(";
+            foreach(Variable var in Object) {
+                returning += $"\n{var.Print()}";
+            }
+            returning += "\n)";
+            return returning;
+        }
     }
 }

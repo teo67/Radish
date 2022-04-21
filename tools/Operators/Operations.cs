@@ -631,7 +631,7 @@ namespace Tools {
                     return new Operators.ObjectDefinition(stack, body, Row, Col);
                 }
             }
-            throw new RadishException($"Could not parse value: {returned.Val} !");
+            throw Error($"Could not parse value: {returned.Val} !");
         }
     }
 }

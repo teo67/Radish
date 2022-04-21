@@ -14,5 +14,8 @@ namespace Tools.Values {
                 return "null";
             }
         }
+        public override string Print() {
+            return $"none";
+        }
     }
 }

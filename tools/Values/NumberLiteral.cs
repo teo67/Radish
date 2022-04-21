@@ -26,5 +26,8 @@ namespace Tools.Values {
         public override bool Equals(IValue other) {
             return Number == other.Number;
         }
+        public override string Print() {
+            return $"number({Number})";
+        }
     }
 }

@@ -1,0 +1,14 @@
+dig C plant class {
+    dig y plant 1
+    dig x plant tool() {
+        holler(this.y)
+    }
+}
+
+dig cone plant new C()
+cone.x()
+cone.x plant cone.x
+cone.x plant cone.x
+cone.x()
+cone.x plant cone.x
+cone.x()

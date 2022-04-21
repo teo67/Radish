@@ -11,12 +11,12 @@ namespace Tools.Operators {
                 return returned;
             } catch {
                 Stack.Head = top; // revert stack in case weird things happened
-                while(RadishException.Entries.Count > len + 1) {
-                    RadishException.Entries.Pop();
-                }
                 Stack.Push(new List<Values.Variable>() {
                     new Values.Variable("error", new Values.StringLiteral(RadishException.Entries.Pop().RMessage, Stack.Get("String")))
                 });
+                while(RadishException.Entries.Count > len) {
+                    RadishException.Entries.Pop();
+                }
                 IValue returned = Right._Run();
                 Stack.Pop();
                 return returned;

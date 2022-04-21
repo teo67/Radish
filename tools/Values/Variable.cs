@@ -73,5 +73,8 @@ namespace Tools.Values {
         public bool Equals(IValue other) {
             return Resolve().Equals(other);
         }
+        public string Print() {
+            return $"variable({Name}, {(Host == null ? "null" : Host.Print())})";
+        }
     }
 }
