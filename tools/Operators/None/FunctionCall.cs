@@ -9,6 +9,7 @@ namespace Tools.Operators {
             RadishException.Append($"at {Left.Print()}()", Row, Col);
             IValue left = Left._Run();
             //Console.WriteLine(left.Print());
+            //Stack.Print();
             IValue returned = left.Function(args);
             RadishException.Pop();
             return returned;

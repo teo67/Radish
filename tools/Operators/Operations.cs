@@ -32,7 +32,7 @@ namespace Tools {
         private bool verbose { get; }
         private CountingReader reader { get; }
         private Lexer lexer { get; }
-        private Stack stack { get; }
+        public Stack stack { get; }
         private Prototypes prototypes { get; }
         static Operations() {
             OpKeywords = new List<string>() {
@@ -43,7 +43,7 @@ namespace Tools {
                 "harvest", "h", "cancel", "continue", "end",
                 "new", "null", "class",
                 "public", "private", "protected", "static",
-                "try", "catch", "throw"
+                "try", "catch", "throw", "import"
             };
         }
         public Operations(CountingReader reader, bool verbose) {
@@ -55,6 +55,7 @@ namespace Tools {
             PrevRow = -1;
             PrevCol = -1;
             prototypes = new Prototypes(this.stack);
+            stack.Push();
         }
 
         public static bool IsKeyword(string input) {
@@ -568,6 +569,11 @@ namespace Tools {
                     Print("parsing throw statement");
                     IOperator throwing = ParseExpression();
                     return new Operators.Throw(throwing, stack, Row, Col);
+                }
+                if(returned.Val == "import") {
+                    Print("parsing import");
+                    IOperator importing = ParseExpression();
+                    return new Operators.Import(stack, importing, Row, Col);
                 }
                 if(returned.Val == "class") {
                     Print("parsing class definition");

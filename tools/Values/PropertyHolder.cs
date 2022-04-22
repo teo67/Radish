@@ -57,7 +57,7 @@ namespace Tools.Values {
         }
         public IValue Var {
             get {
-                return new ValueWithScope(Obj, Resolve().Var, Stack);
+                return Resolve().Var;
             }
             set {
                 foreach(Variable property in Obj.Object) {

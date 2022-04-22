@@ -3,8 +3,12 @@ namespace Tools {
         private StreamReader Container { get; }
         public int row;
         public int col;
+        public static string Path { get; set; }
+        static CountingReader() {
+            Path = "";
+        }
         public CountingReader(string filename) {
-            Container = new StreamReader(filename);
+            Container = new StreamReader(Path + filename);
             row = 1;
             col = 1;
         }

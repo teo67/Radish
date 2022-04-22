@@ -32,16 +32,6 @@ dig tests plant [
         a["x"] plant 1
         harvest b.x == 1
     }),
-    new Test("object function carries over when stored in variable", tool() {
-        dig a plant {
-            dig y plant 0
-            dig x plant tool() {
-                harvest this.y
-            }
-        }
-        dig z plant a.x
-        harvest z() == 0
-    }), 
     new Test("getters and setters", tool() {
         dig b plant 0
         dig a {

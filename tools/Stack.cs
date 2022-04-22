@@ -43,5 +43,19 @@ namespace Tools {
             }
             throw new RadishException($"Unable to find variable {key}!");
         }
+        public void Print() {
+            Console.WriteLine("__");
+            StackNode? viewing = Head;
+            while(viewing != null) {
+                string returning = "[";
+                foreach(Values.Variable var in viewing.Val) {
+                    returning += $"{var.Name}, ";
+                }
+                returning += "]";
+                Console.WriteLine(returning);
+                viewing = viewing.Next;
+            }
+            Console.WriteLine("__");
+        }
     }
 }

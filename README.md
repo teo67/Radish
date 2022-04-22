@@ -48,7 +48,7 @@ holler(li.get(4)) # error #<br>
     <li>Better debugging! Literally it's so bad // DONE</li>
     <li>Add manual exception throwing + try/catch syntax</li>
     <li>Make VSCode extension so that the code doesn't look so bland (also cool file symbol)</li>
-    <li>Add importing/exporting from other files!!!</li>
+    <li>Add importing/exporting from other files!!! // DONE</li>
     <li>Package it so that users can install radish and run files without seeing all of the machinery</li>
     <li>async??</li>
 </ol></p>

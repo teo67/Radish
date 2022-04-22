@@ -13,9 +13,11 @@ namespace Tools {
         public static Stack<RadishExceptionEntry> Entries { get; }
         public static int Row { get; set; }
         public static int Col { get; set; }
+        public static string FileName { get; set; }
         static RadishException() {
             Row = -1;
             Col = -1;
+            FileName = "";
             Entries = new Stack<RadishExceptionEntry>();
         }
         public RadishException(string? message = null, int row = -2, int col = -2) {
@@ -39,12 +41,19 @@ namespace Tools {
                 if(str.Length < (Console.WindowWidth / 2)) {
                     str += "  ";
                 }
-                Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                Console.ForegroundColor = ConsoleColor.DarkGray;
             }
+            ConsoleColor previous = Console.BackgroundColor;
+            Console.BackgroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.WriteLine($"    in {FileName}    ");
+            Console.BackgroundColor = previous;
             Console.ForegroundColor = current;
         }
         public static void Clear() {
             Entries.Clear();
         }
+
+
     }
 }

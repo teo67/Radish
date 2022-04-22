@@ -12,7 +12,9 @@
             throw new Exception("No argument provided!");
         }
         string second = args[0].Substring(index + 1);
-        Tools.Radish radish = new Tools.Radish(first);
+        Tools.CountingReader.Path = first;
+        Tools.RadishException.FileName = "main.radish";
+        Tools.Radish radish = new Tools.Radish("main.radish");
         switch(second) {
             case "r":
             case "run":
