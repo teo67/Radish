@@ -54,3 +54,5 @@ for(dig i plant 0, i < tests.length, i++) {
         throw tests[i].name + " FAILED"
     }
 }
+
+harvest all

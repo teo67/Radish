@@ -16,7 +16,7 @@ namespace Tools {
         }
         public StackNode Push(List<Values.Variable>? head = null) {
             Length++;
-            if(Length > 1470) { // BREAKPOINT 96
+            if(Length > 1000) { // BREAKPOINT 96
                 throw new RadishException("Maximum stack size of 1470 exceeded!");
             }
             Head = new StackNode((head == null) ? new List<Values.Variable>() : head, Head);

@@ -43,7 +43,7 @@ namespace Tools {
                 "harvest", "h", "cancel", "continue", "end",
                 "new", "null", "class",
                 "public", "private", "protected", "static",
-                "try", "catch", "throw", "import"
+                "try", "catch", "throw", "import", "all"
             };
         }
         public Operations(CountingReader reader, bool verbose) {
@@ -564,6 +564,10 @@ namespace Tools {
                 if(returned.Val == "null") {
                     Print("parsing NULL");
                     return new Operators.NullValue(Row, Col);
+                }
+                if(returned.Val == "all") {
+                    Print("parsing ALL");
+                    return new Operators.All(stack, Row, Col);
                 }
                 if(returned.Val == "throw") {
                     Print("parsing throw statement");

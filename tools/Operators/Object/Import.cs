@@ -6,8 +6,8 @@ namespace Tools.Operators {
         }
         public override IValue Run() {
             string name = FileName._Run().String;
-            if(!name.EndsWith(".radish")) {
-                name += ".radish";
+            if(!name.EndsWith(".rdsh")) {
+                name += ".rdsh";
             }
             CountingReader reader;
             try {
@@ -16,11 +16,10 @@ namespace Tools.Operators {
                 throw new RadishException($"Could not find file {name}", Row, Col);
             }
             Operations operations = new Operations(reader, false);
-            string previous = RadishException.FileName;
-            RadishException.FileName = name;
-            operations.ParseScope().Run();
-            RadishException.FileName = previous;
-            return new Values.ObjectLiteral(operations.stack.Pop().Val, Stack.Get("Object"));
+            RadishException.Append($"in {name}", -1, -1);
+            IValue returned = operations.ParseScope().Run();
+            RadishException.Pop();
+            return (returned.Default == BasicTypes.RETURN ? returned.Function(new List<Values.Variable>()) : returned);
         }
     }
 }

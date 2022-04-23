@@ -13,8 +13,8 @@
         }
         string second = args[0].Substring(index + 1);
         Tools.CountingReader.Path = first;
-        Tools.RadishException.FileName = "main.radish";
-        Tools.Radish radish = new Tools.Radish("main.radish");
+        Tools.RadishException.Append("in main.rdsh", -1, -1);
+        Tools.Radish radish = new Tools.Radish("main.rdsh");
         switch(second) {
             case "r":
             case "run":
