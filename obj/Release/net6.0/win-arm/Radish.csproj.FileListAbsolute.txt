@@ -1,0 +1,15 @@
+C:\Users\006co\Desktop\Code\Radish\bin\Release\net6.0\win-arm\Radish.exe
+C:\Users\006co\Desktop\Code\Radish\bin\Release\net6.0\win-arm\Radish.deps.json
+C:\Users\006co\Desktop\Code\Radish\bin\Release\net6.0\win-arm\Radish.runtimeconfig.json
+C:\Users\006co\Desktop\Code\Radish\bin\Release\net6.0\win-arm\Radish.dll
+C:\Users\006co\Desktop\Code\Radish\bin\Release\net6.0\win-arm\ref\Radish.dll
+C:\Users\006co\Desktop\Code\Radish\bin\Release\net6.0\win-arm\Radish.pdb
+C:\Users\006co\Desktop\Code\Radish\obj\Release\net6.0\win-arm\Radish.csproj.AssemblyReference.cache
+C:\Users\006co\Desktop\Code\Radish\obj\Release\net6.0\win-arm\Radish.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\006co\Desktop\Code\Radish\obj\Release\net6.0\win-arm\Radish.AssemblyInfoInputs.cache
+C:\Users\006co\Desktop\Code\Radish\obj\Release\net6.0\win-arm\Radish.AssemblyInfo.cs
+C:\Users\006co\Desktop\Code\Radish\obj\Release\net6.0\win-arm\Radish.csproj.CoreCompileInputs.cache
+C:\Users\006co\Desktop\Code\Radish\obj\Release\net6.0\win-arm\Radish.dll
+C:\Users\006co\Desktop\Code\Radish\obj\Release\net6.0\win-arm\ref\Radish.dll
+C:\Users\006co\Desktop\Code\Radish\obj\Release\net6.0\win-arm\Radish.pdb
+C:\Users\006co\Desktop\Code\Radish\obj\Release\net6.0\win-arm\Radish.genruntimeconfig.cache
