@@ -1,6 +1,7 @@
 <h1>RADISH</h1>
 <p>{ like the vegetable. }</p>
 <br>
+<p>Note: The only current version is for Windows x64. Alternatives for running are "radish run" on Windows (uses .bat file) and "./radi.sh run" on MacOs (uses .sh file).</p>
 <h2>So what's it all about, anyway?</h2>
 <p>Radish is an easy-to-learn, object-oriented programming language written in C#. If you know JavaScript, you know Radish. However, Radish has a few of its own quirks to keep in mind (don't ask why these exist)
     <ul>
