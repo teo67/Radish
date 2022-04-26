@@ -1,2 +1,2 @@
 @echo off
-dotnet run %CD%\~%1
+dotnet run %1

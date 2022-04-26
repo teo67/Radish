@@ -1,2 +1,2 @@
 #!/bin/bash
-dotnet run $pwd\~$1
+dotnet run $1

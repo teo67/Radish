@@ -1,39 +1,36 @@
 ﻿class Program {
     public static void Main(string[] args) {
-        if(args.Length < 1) {
-            throw new Exception("Missing argument!");
+        Tools.Radish? radish = null;
+        string? second = null;
+        try {
+            string first = System.IO.Directory.GetCurrentDirectory() + "\\";
+            second = (args.Length > 0 ? args[0] : "run");
+            Tools.CountingReader.Path = first;
+            Tools.RadishException.Append("in main.rdsh", -1, -1);
+            radish = new Tools.Radish("main.rdsh");
+        } catch(Exception e) {
+            Console.WriteLine($"Error initiating program: {e.Message}");
         }
-        int index = args[0].IndexOf('~');
-        if(index == -1 || index == 0) {
-            throw new Exception("Something went wrong, try again later.");
-        }
-        string first = args[0].Substring(0, index);
-        if(args[0].Length < index + 2) {
-            throw new Exception("No argument provided!");
-        }
-        string second = args[0].Substring(index + 1);
-        Tools.CountingReader.Path = first;
-        Tools.RadishException.Append("in main.rdsh", -1, -1);
-        Tools.Radish radish = new Tools.Radish("main.rdsh");
-        switch(second) {
-            case "r":
-            case "run":
-                radish.Run();
-                break;
-            case "l":
-            case "lex":
-                radish.Lex();
-                break;
-            case "p":
-            case "parse":
-                radish.Parse();
-                break;
-            case "v":
-            case "verbose":
-                radish.Run(true);
-                break;
-            default:
-                throw new Exception($"Invalid argument: {second}!");
+        if(radish != null && second != null) {
+            switch(second) {
+                case "l":
+                case "lex":
+                    radish.Lex();
+                    break;
+                case "p":
+                case "parse":
+                    radish.Parse();
+                    break;
+                case "v":
+                case "verbose":
+                    radish.Run(true);
+                    break;
+                case "r":
+                case "run":
+                default:
+                    radish.Run();
+                    break;
+            }
         }
     }
 }
