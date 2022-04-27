@@ -1,0 +1,5 @@
+C:\Users\006co\Desktop\Code\Radish\release\0.0.3\linux-arm\Radish\Radish
+C:\Users\006co\Desktop\Code\Radish\release\0.0.3\linux-arm\Radish\Radish.dll
+C:\Users\006co\Desktop\Code\Radish\release\0.0.3\linux-arm\Radish\Radish.deps.json
+C:\Users\006co\Desktop\Code\Radish\release\0.0.3\linux-arm\Radish\Radish.runtimeconfig.json
+C:\Users\006co\Desktop\Code\Radish\release\0.0.3\linux-arm\Radish\Radish.pdb

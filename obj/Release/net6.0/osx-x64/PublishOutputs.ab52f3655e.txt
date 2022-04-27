@@ -1,0 +1,5 @@
+C:\Users\006co\Desktop\Code\Radish\releases\0.0.3\osx-x64\Radish
+C:\Users\006co\Desktop\Code\Radish\releases\0.0.3\osx-x64\Radish.dll
+C:\Users\006co\Desktop\Code\Radish\releases\0.0.3\osx-x64\Radish.deps.json
+C:\Users\006co\Desktop\Code\Radish\releases\0.0.3\osx-x64\Radish.runtimeconfig.json
+C:\Users\006co\Desktop\Code\Radish\releases\0.0.3\osx-x64\Radish.pdb

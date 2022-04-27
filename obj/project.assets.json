@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net6.0": {},
-    "net6.0/linux-arm64": {}
+    "net6.0/osx-x64": {}
   },
   "libraries": {},
   "projectFileDependencyGroups": {
@@ -58,7 +58,7 @@
         "warn": true,
         "downloadDependencies": [
           {
-            "name": "Microsoft.NETCore.App.Host.linux-arm64",
+            "name": "Microsoft.NETCore.App.Host.osx-x64",
             "version": "[6.0.1, 6.0.1]"
           }
         ],
@@ -71,7 +71,7 @@
       }
     },
     "runtimes": {
-      "linux-arm64": {
+      "osx-x64": {
         "#import": []
       }
     }

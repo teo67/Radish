@@ -51,7 +51,7 @@
           "warn": true,
           "downloadDependencies": [
             {
-              "name": "Microsoft.NETCore.App.Host.linux-arm64",
+              "name": "Microsoft.NETCore.App.Host.osx-x64",
               "version": "[6.0.1, 6.0.1]"
             }
           ],
@@ -64,7 +64,7 @@
         }
       },
       "runtimes": {
-        "linux-arm64": {
+        "osx-x64": {
           "#import": []
         }
       }
