@@ -1,0 +1,5 @@
+C:\Users\006co\Desktop\Code\Radish\release\win-x86\Radish\Radish.exe
+C:\Users\006co\Desktop\Code\Radish\release\win-x86\Radish\Radish.dll
+C:\Users\006co\Desktop\Code\Radish\release\win-x86\Radish\Radish.deps.json
+C:\Users\006co\Desktop\Code\Radish\release\win-x86\Radish\Radish.runtimeconfig.json
+C:\Users\006co\Desktop\Code\Radish\release\win-x86\Radish\Radish.pdb
