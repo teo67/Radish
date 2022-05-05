@@ -49,12 +49,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.NETCore.App.Host.osx-x64",
-              "version": "[6.0.1, 6.0.1]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -64,7 +58,7 @@
         }
       },
       "runtimes": {
-        "osx-x64": {
+        "win-x64": {
           "#import": []
         }
       }

@@ -66,7 +66,7 @@ namespace Tools {
             Print($"requiring {input}");
             LexEntry next = Read();
             if(!(next.Type == TokenTypes.SYMBOL && next.Val == input)) {
-                throw new RadishException($"Error: expected symbol: {input}");
+                throw Error($"Error: expected symbol: {input}");
             }
         }
 

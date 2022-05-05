@@ -1,10 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "/NIKF6ptgEwNFmVZCQ8jTFdy9bUdLZGyjX1X4jAZKVjLR8WTjEfSW3uoNZaKWGHze2a9Bo4e6mOZZLQ1hKrFRQ==",
+  "dgSpecHash": "gFDOq45UWMO+Fk4jOlz232XTefyZeSER9JTaoQe2WeDcutcdV/Ukg4BniTilQ0b+6LGDFRmqHmVLFlMTUqUdOA==",
   "success": true,
   "projectFilePath": "C:\\Users\\006co\\Desktop\\Code\\Radish\\Radish.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\006co\\.nuget\\packages\\microsoft.netcore.app.host.osx-x64\\6.0.1\\microsoft.netcore.app.host.osx-x64.6.0.1.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }

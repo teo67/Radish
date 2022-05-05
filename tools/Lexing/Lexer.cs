@@ -43,6 +43,7 @@ namespace Tools {
             dict.Add(' ', CharTypes.whitespace);
             dict.Add('\n', CharTypes.whitespace);
             dict.Add('\r', CharTypes.whitespace);
+            dict.Add('\xa0', CharTypes.whitespace);
             dict.Add(quoteChar, CharTypes.quotes);
             dict.Add(hashChar, CharTypes.hashtags);
         }

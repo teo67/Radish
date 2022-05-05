@@ -1,5 +1,0 @@
-dig i plant 0
-while(yes) {
-    holler(i)
-    i += 2
-}
