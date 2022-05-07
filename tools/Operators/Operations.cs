@@ -241,15 +241,23 @@ namespace Tools {
             });
         }
 
-        private List<string> ParseArgs() {
-            return ParseLi<List<string>>(() => {
-                return new List<string>();
-            }, (List<string> returning) => {
+        private (List<string>, List<IOperator?>) ParseArgs() {
+            return ParseLi<(List<string>, List<IOperator?>)>(() => {
+                return (new List<string>(), new List<IOperator?>());
+            }, ((List<string>, List<IOperator?>) returning) => {
                 LexEntry key = Read();
                 if(key.Type != TokenTypes.KEYWORD) {
                     Error("Expecting a function parameter!");
                 }
-                returning.Add(key.Val);
+                LexEntry next = Read();
+                IOperator? exp = null;
+                if(next.Val == "plant" || next.Val == "p") {
+                    exp = ParseExpression();
+                } else {
+                    Stored = next;
+                }
+                returning.Item1.Add(key.Val);
+                returning.Item2.Add(exp);
             });
         }
 
@@ -533,10 +541,10 @@ namespace Tools {
                                 }
                                 RequireSymbol("{");
                                 if(newType.Val == "plant" || newType.Val == "p") {
-                                    give = new Operators.FunctionDefinition(stack, new List<string>() { "input" }, ParseScope(), Row, Col);
+                                    give = new Operators.FunctionDefinition(stack, new List<string>() { "input" }, new List<IOperator?>() { null }, ParseScope(), Row, Col);
 
                                 } else if(newType.Val == "harvest" || newType.Val == "h") {
-                                    _get = new Operators.FunctionDefinition(stack, new List<string>(), ParseScope(), Row, Col);
+                                    _get = new Operators.FunctionDefinition(stack, new List<string>(), new List<IOperator?>(), ParseScope(), Row, Col);
                                 } else {
                                     throw new RadishException("Only plant and harvest functions are valid in this context!");
                                 }
@@ -553,12 +561,12 @@ namespace Tools {
                 if(returned.Val == "tool" || returned.Val == "t") {
                     Print("parsing function definition");
                     RequireSymbol("(");
-                    List<string> args = ParseArgs();
+                    (List<string>, List<IOperator?>) args = ParseArgs();
                     RequireSymbol(")");
                     RequireSymbol("{");
                     Operators.ExpressionSeparator body = ParseScope();
                     RequireSymbol("}");
-                    Operators.FunctionDefinition def = new Operators.FunctionDefinition(stack, args, body, Row, Col);
+                    Operators.FunctionDefinition def = new Operators.FunctionDefinition(stack, args.Item1, args.Item2, body, Row, Col);
                     return def;
                 }
                 if(returned.Val == "null") {

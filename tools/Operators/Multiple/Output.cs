@@ -25,10 +25,11 @@ namespace Tools.Operators {
                     string returning = "{\n";
                     foreach(Values.Variable item in input.Object) {
                         returning += new System.String(' ', spaces);
-                        returning += $"{item.Name} [{item.ProtectionLevel}]";
-                        if(item.Default != BasicTypes.NONE) {
+                        returning += item.Name;
+                        IValue? saved = item.Host;
+                        if(saved != null) {
                             returning += ": ";
-                            returning += CalcOutput(item.Var, spaces + 2);
+                            returning += CalcOutput(saved, spaces + 2);
                         }
                         returning += "\n";
                     }
