@@ -43,7 +43,7 @@ namespace Tools {
                 "harvest", "h", "cancel", "continue", "end",
                 "new", "null", "class",
                 "public", "private", "protected", "static",
-                "try", "catch", "throw", "import", "all"
+                "try", "catch", "throw", "import", "all", "pass"
             };
         }
         public Operations(CountingReader reader, bool verbose) {
@@ -581,6 +581,11 @@ namespace Tools {
                     Print("parsing throw statement");
                     IOperator throwing = ParseExpression();
                     return new Operators.Throw(throwing, stack, Row, Col);
+                }
+                if(returned.Val == "pass") {
+                    Print("parsing inverse await");
+                    IOperator passing = ParseExpression();
+                    return new Operators.Pass(passing, Row, Col);
                 }
                 if(returned.Val == "import") {
                     Print("parsing import");
