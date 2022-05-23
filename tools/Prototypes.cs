@@ -108,12 +108,6 @@ namespace Tools { // adds basic prototypes to call stack
                     )
                 , Function)
             ));
-
-            top.Add(new Values.Variable("wait", new Values.FunctionLiteral(stack, 
-                        new List<string>() { "input" }, new List<IOperator?>() { null }, new Operators.ExpressionSeparator(-1, -1,
-                            new List<IOperator>() {
-                                new Operators.Wait(new Operators.Reference(stack, "input", -1, -1), -1, -1)
-                            }), Function)));
         }
     }
 }

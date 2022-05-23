@@ -582,11 +582,6 @@ namespace Tools {
                     IOperator throwing = ParseExpression();
                     return new Operators.Throw(throwing, stack, Row, Col);
                 }
-                if(returned.Val == "pass") {
-                    Print("parsing inverse await");
-                    IOperator passing = ParseExpression();
-                    return new Operators.Pass(passing, Row, Col);
-                }
                 if(returned.Val == "import") {
                     Print("parsing import");
                     IOperator importing = ParseExpression();

@@ -24,6 +24,7 @@ namespace Tools.Operators {
                     nonstatics.Add(popped[i]);
                     if(popped[i].Name == "constructor") {
                         fun = popped[i].Var;
+                        fun.IsSuper = true;
                     }
                 }
             }

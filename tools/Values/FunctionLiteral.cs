@@ -1,11 +1,12 @@
 namespace Tools.Values {
     class FunctionLiteral : EmptyLiteral {
-        private Stack Stack { get; }
-        private List<string> ArgNames { get; }
-        private List<IOperator?> Defaults { get; }
+        protected Stack Stack { get; }
+        protected List<string> ArgNames { get; }
+        protected List<IOperator?> Defaults { get; }
         public override IOperator FunctionBody { get; }
         public override IValue? Base { get; }
         public override List<Variable> Object { get; } // setter is only used when defining a class
+        public override bool IsSuper { get; set; }
         public FunctionLiteral(Stack stack, List<string> argNames, List<IOperator?> defaults, IOperator body, IValue func) : base("tool") {
             this.Stack = stack;
             this.ArgNames = argNames;
@@ -13,6 +14,7 @@ namespace Tools.Values {
             this.FunctionBody = body;
             this.Base = func;
             this.Object = new List<Variable>();
+            this.IsSuper = false;
         }
         public override BasicTypes Default {
             get {
@@ -39,6 +41,17 @@ namespace Tools.Values {
                     }
                 }
                 Stack.Head.Val.Add(new Variable(ArgNames[i], host));
+            }
+            if(IsSuper) {
+                //Console.WriteLine("calling super!");
+                IValue? proto = ObjectLiteral.Get(this, "prototype", Stack, this);
+                if(proto != null) {
+                    IValue? super = (proto.Base == null) ? null : Values.ObjectLiteral.Get(proto.Base, "constructor", Stack, proto.Base); 
+                    if(super != null) {
+                        Stack.Head.Val.Add(new Variable("super", super));
+                    }
+                }
+                
             }
             IValue result = FunctionBody._Run();
             Stack.Pop();

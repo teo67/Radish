@@ -76,5 +76,13 @@ namespace Tools.Values {
         public string Print() {
             return $"variable({Name}, {(Host == null ? "null" : Host.Print())})";
         }
+        public bool IsSuper {
+            get {
+                return Resolve().IsSuper;
+            }
+            set {
+                Resolve().IsSuper = value;
+            }
+        }
     }
 }

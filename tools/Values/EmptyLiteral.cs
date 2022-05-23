@@ -57,5 +57,13 @@ namespace Tools.Values {
         public virtual string Print() {
             throw new RadishException($"Unable to print a {Name} value!");
         }
+        public virtual bool IsSuper {
+            get {
+                return false;
+            }
+            set {
+                throw new RadishException($"Error: Attempted to use non-constructor variable as a constructor!");
+            }
+        }
     }
 }

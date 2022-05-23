@@ -14,15 +14,15 @@ namespace Tools.Operators {
             if(returned != null) {
                 inheriting = returned;
             }
-            IValue? super = (inheriting.Base == null) ? null : Values.ObjectLiteral.Get(inheriting.Base, "constructor", Stack, inheriting.Base);
+            //IValue? super = (inheriting.Base == null) ? null : Values.ObjectLiteral.Get(inheriting.Base, "constructor", Stack, inheriting.Base);
             IValue returning = new Values.ObjectLiteral(new List<Values.Variable>(), inheriting);
             Stack.Push();
             Stack.Head.Val.Add(new Values.Variable("this", returning));
             IValue? saved = Values.ObjectLiteral.CurrentPrivate;
             Values.ObjectLiteral.CurrentPrivate = returning;
-            if(super != null) {
-                Stack.Head.Val.Add(new Values.Variable("super", super));
-            }
+            // if(super != null) {
+            //     Stack.Head.Val.Add(new Values.Variable("super", super));
+            // }
             _class.Function(args);
             Stack.Pop();
             Values.ObjectLiteral.CurrentPrivate = saved;
