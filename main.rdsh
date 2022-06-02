@@ -1,18 +1,14 @@
-dig C plant class {
-	dig constructor plant tool() {
-		holler("lo")
-	}
+d A p class {
+    d b p 0
+    d static c p 0
+   # d constructor p t() {
+
+    }#
 }
-dig A plant class : C {
-	dig constructor plant tool() {
-		super()
-		holler("yello")
-	}
+d B p class : A {
+    d constructor p t(a) {
+        holler(super)
+    }
 }
-dig B plant class : A {
-	dig constructor plant tool() {
-		super()
-		holler("ello")
-	}
-}
-new B()
+holler(A.c)
+holler(A.prototype.constructor.prototype.b)

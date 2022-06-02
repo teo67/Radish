@@ -13,7 +13,7 @@ namespace Tools.Operators {
                 throw new RadishException("Unexpected return statement inside a class definition!");
             }
             List<Values.Variable> popped = Stack.Pop().Val;
-            IValue fun = new Values.FunctionLiteral(Stack, new List<string>(), new List<IOperator?>(), new Operators.ExpressionSeparator(Row, Col), Stack.Get("Function").Var);
+            IValue? fun = null;
             // empty constructor in case class has none
             List<Values.Variable> statics = new List<Values.Variable>();
             List<Values.Variable> nonstatics = new List<Values.Variable>();
@@ -27,6 +27,10 @@ namespace Tools.Operators {
                         fun.IsSuper = true;
                     }
                 }
+            }
+            if(fun == null) {
+                fun = new Values.FunctionLiteral(Stack, new List<string>(), new List<IOperator?>(), new Operators.ExpressionSeparator(Row, Col), Stack.Get("Function").Var);
+                nonstatics.Add(new Values.Variable("constructor", fun));
             }
             IValue fromStack = Stack.Get(Inheriting).Var;
             IValue? _base = Values.ObjectLiteral.Get(fromStack, "prototype", Stack, fromStack);
