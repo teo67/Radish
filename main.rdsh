@@ -1,0 +1,14 @@
+d A p class {
+    d b p 0
+    d static c p 0
+   # d constructor p t() {
+
+    }#
+}
+d B p class : A {
+    d constructor p t(a) {
+        holler(super)
+    }
+}
+holler(A.c)
+holler(A.prototype.constructor.prototype.b)
