@@ -1,7 +1,6 @@
 <h1>RADISH</h1>
 <p>{ like the vegetable. }</p>
 <br>
-<p>Note: The only current version is for Windows x64. Alternatives for running are "radish run" on Windows (uses .bat file) and "./radi.sh run" on MacOs (uses .sh file).</p>
 <h2>So what's it all about, anyway?</h2>
 <p>Radish is an easy-to-learn, object-oriented programming language written in C#. If you know JavaScript, you know Radish. However, Radish has a few of its own quirks to keep in mind (don't ask why these exist)
     <ul>
@@ -47,9 +46,9 @@ holler(li.get(4)) # error #<br>
     <li>Add tags for object/class properties, such as static, public/private/protected, etc // DONE</li>
     <li>Farm theme! // DONE</li>
     <li>Better debugging! Literally it's so bad // DONE</li>
-    <li>Add manual exception throwing + try/catch syntax</li>
-    <li>Make VSCode extension so that the code doesn't look so bland (also cool file symbol)</li>
+    <li>Add manual exception throwing + try/catch syntax // DONE</li>
+    <li>Make VSCode extension so that the code doesn't look so bland (also cool file symbol) // ALMOST DONE</li>
     <li>Add importing/exporting from other files!!! // DONE</li>
-    <li>Package it so that users can install radish and run files without seeing all of the machinery</li>
+    <li>Package it so that users can install radish and run files without seeing all of the machinery // DONE</li>
     <li>async??</li>
 </ol></p>

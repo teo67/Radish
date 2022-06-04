@@ -1,5 +1,0 @@
-C:\Users\006co\Desktop\Code\Radish\release\0.0.1\win-arm\Radish.exe
-C:\Users\006co\Desktop\Code\Radish\release\0.0.1\win-arm\Radish.dll
-C:\Users\006co\Desktop\Code\Radish\release\0.0.1\win-arm\Radish.deps.json
-C:\Users\006co\Desktop\Code\Radish\release\0.0.1\win-arm\Radish.runtimeconfig.json
-C:\Users\006co\Desktop\Code\Radish\release\0.0.1\win-arm\Radish.pdb

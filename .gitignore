@@ -2,3 +2,11 @@ update.bat
 afterinstall.txt
 releasenotes.md
 setup.iss
+Radish/
+release/
+radish.wxs
+license.rtf
+banner.bmp
+dialog.bmp
+bin/
+obj/

@@ -1,5 +1,6 @@
 ﻿class Program {
     public static void Main(string[] args) {
+        //Console.WriteLine("Hello, world!");
         Tools.Radish? radish = null;
         string? second = null;
         try {
