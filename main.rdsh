@@ -1,14 +1,19 @@
-d A p class {
-    d b p 0
-    d static c p 0
-   # d constructor p t() {
-
-    }#
-}
-d B p class : A {
-    d constructor p t(a) {
-        holler(super)
+d b p {
+    d B p class {
+        d constructor p t() {
+            holler("goodbye")
+        }
+        d static test p t(a1) {
+            harvest {
+                d a p a1
+            }
+        }
     }
 }
-holler(A.c)
-holler(A.prototype.constructor.prototype.b)
+d A p class : b.B.test(24) {
+    d constructor p t() {
+        holler("hello world")
+    }
+}
+d a p new A()
+holler(a.a)

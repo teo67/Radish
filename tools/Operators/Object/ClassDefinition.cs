@@ -1,8 +1,8 @@
 namespace Tools.Operators {
     class ClassDefinition : VariableOperator {
         private IOperator Body { get; }
-        private string Inheriting { get; }
-        public ClassDefinition(Stack stack, IOperator body, string inheriting, int row, int col) : base(stack, row, col) {
+        private IOperator? Inheriting { get; }
+        public ClassDefinition(Stack stack, IOperator body, IOperator? inheriting, int row, int col) : base(stack, row, col) {
             this.Body = body;
             this.Inheriting = inheriting;
         }
@@ -32,7 +32,7 @@ namespace Tools.Operators {
                 fun = new Values.FunctionLiteral(Stack, new List<string>(), new List<IOperator?>(), new Operators.ExpressionSeparator(Row, Col), Stack.Get("Function").Var);
                 nonstatics.Add(new Values.Variable("constructor", fun));
             }
-            IValue fromStack = Stack.Get(Inheriting).Var;
+            IValue fromStack = Inheriting == null ? Stack.Get("Object").Var : Inheriting._Run().Var;
             IValue? _base = Values.ObjectLiteral.Get(fromStack, "prototype", Stack, fromStack);
             if(_base == null) {
                 _base = fromStack;

@@ -470,12 +470,12 @@ namespace Tools {
             return ParseCalls();
         }
         
-        private IOperator ParseCalls() {
+        private IOperator ParseCalls(bool allowParens = true) {
             Print("begin calls");
             IOperator current = ParseLowest();
             LexEntry next = Read();
             Func<bool> checkCheck = (() => {
-                if(next.Val == "(") {
+                if(next.Val == "(" && allowParens) {
                     Print("parsing function call");
                     IOperator args = ParseList();
                     RequireSymbol(")");
@@ -589,10 +589,10 @@ namespace Tools {
                 }
                 if(returned.Val == "class") {
                     Print("parsing class definition");
-                    string _base = "Object";
+                    IOperator? _base = null;
                     LexEntry next = Read();
                     if(next.Type == TokenTypes.SYMBOL && next.Val == ":") {
-                        _base = Read().Val;
+                        _base = ParseExpression();
                     } else {
                         Stored = next;
                     }
@@ -605,13 +605,13 @@ namespace Tools {
                 }
                 if(returned.Val == "new") {
                     Print("parsing class instantiation");
-                    LexEntry next = Read();
+                    IOperator next = ParseCalls(false);
                     Print("parsing opening paren.");
                     RequireSymbol("(");
                     IOperator args = ParseList();
                     Print("parsing closing paren.");
                     RequireSymbol(")");
-                    return new Operators.New(stack, next.Val, args, Row, Col);
+                    return new Operators.New(stack, next, args, Row, Col);
                 }
             } else if(returned.Type == TokenTypes.STRING) {
                 Print("parsing string");
