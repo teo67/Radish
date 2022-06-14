@@ -1,19 +1,2 @@
-d b p {
-    d B p class {
-        d constructor p t() {
-            holler("goodbye")
-        }
-        d static test p t(a1) {
-            harvest {
-                d a p a1
-            }
-        }
-    }
-}
-d A p class : b.B.test(24) {
-    d constructor p t() {
-        holler("hello world")
-    }
-}
-d a p new A()
-holler(a.a)
+d c p import "c"
+c()

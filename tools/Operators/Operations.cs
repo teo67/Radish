@@ -23,6 +23,7 @@
         -> find 1, 2, 3, 4, 5, 6 -> find print keyword followed by ( -> find 1, 2, 3, 4 -> find keyword -> find + -> find 5, 6 -> find literal -> resolve through 1 -> find )
         -> resolve until 0 -> find r -> resolve 0 -> find } -> resolve 0
 */
+
 namespace Tools {
     class Operations {
         private static List<string> OpKeywords { get; }
@@ -33,7 +34,6 @@ namespace Tools {
         private CountingReader reader { get; }
         private Lexer lexer { get; }
         public Stack stack { get; }
-        private Prototypes prototypes { get; }
         static Operations() {
             OpKeywords = new List<string>() {
                 // keywords that should be parsed as operators
@@ -50,12 +50,11 @@ namespace Tools {
             this.reader = reader;
             this.verbose = verbose;
             this.lexer = new Lexer(reader);
-            this.stack = new Stack(new StackNode(new List<Values.Variable>()));
+            this.stack = new Stack(new StackNode(Prototypes.FirstLayer));
             Stored = null;
             PrevRow = -1;
             PrevCol = -1;
-            prototypes = new Prototypes(this.stack);
-            stack.Push();
+            stack.Push(); 
         }
 
         public static bool IsKeyword(string input) {
@@ -585,7 +584,7 @@ namespace Tools {
                 if(returned.Val == "import") {
                     Print("parsing import");
                     IOperator importing = ParseExpression();
-                    return new Operators.Import(stack, importing, Row, Col);
+                    return new Operators.Import(stack, importing, Row, Col, reader.Filename);
                 }
                 if(returned.Val == "class") {
                     Print("parsing class definition");

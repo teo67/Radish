@@ -1,0 +1,5 @@
+dig a plant 123
+dig c plant tool() {
+    harvest a
+}
+harvest c

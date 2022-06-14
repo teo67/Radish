@@ -3,14 +3,16 @@ namespace Tools {
         private StreamReader Container { get; }
         public int row;
         public int col;
-        public static string Path { get; set; }
-        static CountingReader() {
-            Path = "";
-        }
+        public string Filename { get; }
         public CountingReader(string filename) {
-            Container = new StreamReader(Path + filename);
+            Container = new StreamReader(filename);
             row = 1;
             col = 1;
+            int lastIndex = filename.LastIndexOf('/');
+            if(lastIndex == -1) {
+                throw new Exception("Invalid file path!");
+            }
+            Filename = filename.Substring(0, lastIndex);
         }
         public bool EndOfStream {
             get {

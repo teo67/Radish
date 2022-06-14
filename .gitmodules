@@ -1,0 +1,3 @@
+[submodule "Radish-Standard-Library"]
+	path = Radish-Standard-Library
+	url = https://github.com/teo67/Radish-Standard-Library.git
