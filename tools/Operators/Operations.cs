@@ -33,7 +33,8 @@ namespace Tools {
         private bool verbose { get; }
         private CountingReader reader { get; }
         private Lexer lexer { get; }
-        public Stack stack { get; }
+        private Stack stack { get; }
+        private bool IsStandard { get; }
         static Operations() {
             OpKeywords = new List<string>() {
                 // keywords that should be parsed as operators
@@ -46,11 +47,12 @@ namespace Tools {
                 "try", "catch", "throw", "import", "all", "pass"
             };
         }
-        public Operations(CountingReader reader, bool verbose) {
+        public Operations(CountingReader reader, bool verbose, bool isStandard) {
             this.reader = reader;
             this.verbose = verbose;
             this.lexer = new Lexer(reader);
-            this.stack = new Stack(new StackNode(Prototypes.FirstLayer));
+            this.stack = new Stack(Librarian.FirstLayer);
+            this.IsStandard = isStandard;
             Stored = null;
             PrevRow = -1;
             PrevCol = -1;
@@ -623,6 +625,9 @@ namespace Tools {
                 return new Operators.Boolean(returned.Val == "yes", stack, Row, Col);
             } else if(returned.Type == TokenTypes.KEYWORD) {
                 Print("parsing variable");
+                if(IsStandard) {
+                    return new Operators.StandardRef(stack, returned.Val, Row, Col);
+                }
                 return new Operators.Reference(stack, returned.Val, Row, Col);
             } else if(returned.Type == TokenTypes.SYMBOL) {
                 if(returned.Val == "(") {

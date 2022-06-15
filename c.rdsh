@@ -1,5 +1,5 @@
-dig a plant 123
-dig c plant tool() {
-    harvest a
+dig a plant 3.14
+dig b plant tool() {
+    OUTPUT(a)
 }
-harvest c
+harvest b

@@ -26,7 +26,7 @@ namespace Tools.Values {
                 return true;
             }
         }
-        public override IValue Function(List<Variable> args) {
+        public override IValue Function(List<Variable> args, IValue? _this) {
             Stack.Push();
             for(int i = 0; i < ArgNames.Count; i++) {
                 IValue? host = null;
@@ -44,21 +44,28 @@ namespace Tools.Values {
             }
             if(IsSuper) {
                 //Console.WriteLine("calling super!");
-                IValue? proto = ObjectLiteral.Get(this, "prototype", Stack, this);
+                IValue? proto = ObjectLiteral.DeepGet(this, "prototype", Stack, this);
                 if(proto != null) {
-                    IValue? super = (proto.Base == null) ? null : Values.ObjectLiteral.Get(proto.Base, "constructor", Stack, proto.Base); 
+                    proto = proto.Var;
+                    IValue? super = (proto.Base == null) ? null : Values.ObjectLiteral.DeepGet(proto.Base, "constructor", Stack, proto.Base); 
                     if(super != null) {
-                        Stack.Head.Val.Add(new Variable("super", super));
+                        Stack.Head.Val.Add(new Variable("super", super.Var));
                     }
                 }
                 
             }
+            IValue? saved = ObjectLiteral.CurrentPrivate;
+            if(_this != null) {
+                Stack.Head.Val.Add(new Variable("this", _this));
+                ObjectLiteral.CurrentPrivate = _this;
+            }
             IValue result = FunctionBody._Run();
             Stack.Pop();
+            ObjectLiteral.CurrentPrivate = saved;
             if(result.Default != BasicTypes.RETURN) {
                 return result; // this will be null
             }
-            return result.Function(new List<Variable>());
+            return result.Function(new List<Variable>(), null);
         }
         public override bool Equals(IValue other) {
             return other.Default == BasicTypes.FUNCTION && FunctionBody == other.FunctionBody;

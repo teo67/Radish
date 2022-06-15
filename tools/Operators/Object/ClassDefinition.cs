@@ -33,7 +33,7 @@ namespace Tools.Operators {
                 nonstatics.Add(new Values.Variable("constructor", fun));
             }
             IValue fromStack = Inheriting == null ? Stack.Get("Object").Var : Inheriting._Run().Var;
-            IValue? _base = Values.ObjectLiteral.Get(fromStack, "prototype", Stack, fromStack);
+            IValue? _base = Values.ObjectLiteral.DeepGet(fromStack, "prototype", Stack, fromStack);
             if(_base == null) {
                 _base = fromStack;
             }

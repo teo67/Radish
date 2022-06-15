@@ -1,11 +1,11 @@
 namespace Tools.Values {
     class PropertyHolder : IValue {
-        private IValue? Held { get; }
+        private Variable? Held { get; }
         private string Name { get; }
         private IValue Obj { get; }
         private Stack Stack { get; }
         private ProtectionLevels ProtectionLevel { get; }
-        public PropertyHolder(IValue? held, string name, IValue obj, Stack stack, ProtectionLevels protectionLevel) {
+        public PropertyHolder(Variable? held, string name, IValue obj, Stack stack, ProtectionLevels protectionLevel) {
             //Console.WriteLine($"creating property holder with value {held}, name {name}");
             this.Held = held;
             this.Name = name;
@@ -27,15 +27,16 @@ namespace Tools.Values {
             if(Held == null) {
                 throw new RadishException($"No value stored in object property {Name}!");
             }
-            return Held;
+            IValue? previous = Held.ThisRef;
+            Held.ThisRef = Obj;
+            IValue saved = Held.Var;
+            Held.ThisRef = previous;
+            return saved;
         }
 
         public BasicTypes Default {
             get {
-                if(Held == null) {
-                    return BasicTypes.NONE;
-                }
-                return Held.Default;
+                return BasicTypes.NONE;
             }
         }
         public double Number {
@@ -69,21 +70,14 @@ namespace Tools.Values {
                 return Resolve().Var;
             }
             set {
-                foreach(Variable property in Obj.Object) {
-                    if(property.Name == Name) {
-                        Stack.Push(new List<Variable>() { // in case of setter function
-                            new Variable("this", Obj)
-                        });
-                        IValue? saved = ObjectLiteral.CurrentPrivate;
-                        ObjectLiteral.CurrentPrivate = Obj;
-                        property.Var = value; // trigger setter of property / variable
-                        Stack.Pop();
-                        ObjectLiteral.CurrentPrivate = saved;
-                        return;
-                    }
+                if(Held == null) {
+                    Obj.Object.Add(new Variable(Name, value, ProtectionLevel));
+                } else {
+                    IValue? previous = Held.ThisRef;
+                    Held.ThisRef = Obj;
+                    Held.Var = value;
+                    Held.ThisRef = previous;
                 }
-                //Console.WriteLine($"adding new property: {Name}");
-                Obj.Object.Add(new Variable(Name, value, ProtectionLevel));
             }
         }
         public IOperator FunctionBody {
@@ -94,16 +88,9 @@ namespace Tools.Values {
         public bool Equals(IValue other) {
             return Resolve().Equals(other);
         }
-        public IValue Function(List<Variable> args) {
+        public IValue Function(List<Variable> args, IValue? _this) {
             //return Resolve().Function(args);
-            Stack.Push(new List<Variable>() {
-                new Variable("this", Obj)
-            });
-            IValue? saved = ObjectLiteral.CurrentPrivate;
-            ObjectLiteral.CurrentPrivate = Obj;
-            IValue returned = Resolve().Function(args);
-            Stack.Pop();
-            ObjectLiteral.CurrentPrivate = saved;
+            IValue returned = Resolve().Function(args, Obj);
             return returned;
         }
         public string Print() {

@@ -43,7 +43,7 @@ namespace Tools.Values {
                 throw new RadishException($"Unable to parse {Name} as a variable!");
             }
         }
-        public virtual IValue Function(List<Variable> args) {
+        public virtual IValue Function(List<Variable> args, IValue? _this) {
             throw new RadishException($"Unable to parse {Name} as a function!");
         }
         public virtual bool Equals(IValue other) {

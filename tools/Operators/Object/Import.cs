@@ -20,17 +20,26 @@ namespace Tools.Operators {
                 modPath = modPath.Substring(0, lastI);
                 name = name.Substring(3);
             }
+            string realPath = modPath + "/" + name;
+            IValue? libd = Librarian.Import(realPath);
+            if(libd != null) {
+                return libd; // no need to import something twice
+            }
             CountingReader reader;
             try {
-                reader = new CountingReader(modPath + "/" + name);
+                reader = new CountingReader(realPath);
             } catch {
                 throw new RadishException($"Could not find file {name}", Row, Col);
             }
-            Operations operations = new Operations(reader, false);
-            RadishException.Append($"in {modPath + "/" + name}", -1, -1);
+            Operations operations = new Operations(reader, false, false);
+            RadishException.Append($"in {realPath}", -1, -1);
             IValue returned = operations.ParseScope().Run();
             RadishException.Pop();
-            return (returned.Default == BasicTypes.RETURN ? returned.Function(new List<Values.Variable>()) : returned);
+            if(returned.Default == BasicTypes.RETURN) { 
+                returned = returned.Function(new List<Values.Variable>(), null);
+            }
+            Librarian.Imports.Add(realPath, returned);
+            return returned;
         }
     }
 }

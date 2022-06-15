@@ -5,6 +5,9 @@ namespace Tools.Operators {
             this.VarName = varName;
         }
         public override IValue Run() {
+            if(Librarian.Standard.Contains(VarName)) {
+                return Librarian.Lookup(VarName, Row, Col);
+            }
             return Stack.Get(VarName);
         }
         public override string Print() {

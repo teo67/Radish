@@ -5,14 +5,14 @@ namespace Tools.Values {
         public override IValue? Host {
             get {
                 //Console.WriteLine($"TEST: accessing getter {Name}");
-                return (Get == null) ? null : Get.Function(new List<Variable>());
+                return (Get == null) ? null : Get.Function(new List<Variable>(), ThisRef);
             }
             protected set {
                 //Console.WriteLine($"TEST: accessing setter {Name}");
                 if(Set == null) {
                     throw new RadishException("No harvest function has been declared for this property!");
                 }
-                Set.Function(new List<Variable>() { new Variable("input", value) });
+                Set.Function(new List<Variable>() { new Variable("input", value) }, ThisRef);
             }
         }
 

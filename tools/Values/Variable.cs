@@ -4,6 +4,7 @@ namespace Tools.Values {
         public string Name { get; }
         public ProtectionLevels ProtectionLevel { get; }
         public bool IsStatic { get; }
+        public IValue? ThisRef { get; set; } // temporary
         public Variable(string name, IValue? host = null, ProtectionLevels protectionLevel = ProtectionLevels.PUBLIC, bool isStatic = false, bool ignoreHost = false) {
             this.Name = name;
             if(!ignoreHost) {
@@ -11,6 +12,7 @@ namespace Tools.Values {
             }
             this.ProtectionLevel = protectionLevel;
             this.IsStatic = isStatic;
+            this.ThisRef = null;
         }
         private IValue Resolve() {
             IValue? returned = Host;
@@ -22,11 +24,6 @@ namespace Tools.Values {
         public BasicTypes Default {
             get {
                 return BasicTypes.NONE; // in order to get the true value of a variable, you have to do .Var.Default
-                // IValue? returned = Host;
-                // if(returned == null) {
-                //     return BasicTypes.NONE;
-                // }
-                // return returned.Default; // ^
             }
         }
         public double Number {
@@ -62,8 +59,8 @@ namespace Tools.Values {
                 Host = value;
             }
         }
-        public IValue Function(List<Variable> args) {
-            return Resolve().Function(args);
+        public IValue Function(List<Variable> args, IValue? _this) {
+            return Resolve().Function(args, _this);
         }
         public IOperator FunctionBody { 
             get {

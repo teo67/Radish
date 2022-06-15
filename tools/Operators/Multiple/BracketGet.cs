@@ -10,8 +10,8 @@ namespace Tools.Operators {
         public override IValue Run() {
             IValue result = Left._Run().Var;
             string nameR = Name._Run().String;
-            (IValue?, ProtectionLevels) gotten = Values.ObjectLiteral.DeepGet(result, nameR, Stack, result);
-            return new Values.PropertyHolder(gotten.Item1, nameR, result, Stack, gotten.Item2);
+            Values.Variable? gotten = Values.ObjectLiteral.DeepGet(result, nameR, Stack, result);
+            return new Values.PropertyHolder(gotten, nameR, result, Stack, gotten == null ? ProtectionLevels.PUBLIC : gotten.ProtectionLevel);
         }
 
         public override string Print() {

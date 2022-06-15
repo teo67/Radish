@@ -9,7 +9,7 @@ namespace Tools {
         public IValue? Base { get; }
         public bool Equals(IValue other); // check equality
         public IOperator FunctionBody { get; } // get function in order to check for equality
-        public IValue Function(List<Values.Variable> args); // call value as function with list of values
+        public IValue Function(List<Values.Variable> args, IValue? _this); // call value as function with list of values
         public string Print();
         public bool IsSuper { get; set; }
     }

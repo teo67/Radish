@@ -10,22 +10,12 @@ namespace Tools.Operators {
             List<Values.Variable> args = Args._Run().Object;
             IValue _class = ClassName._Run().Var;
             IValue inheriting = Stack.Get("Object").Var;
-            IValue? returned = Values.ObjectLiteral.Get(_class, "prototype", Stack, _class);
+            IValue? returned = Values.ObjectLiteral.DeepGet(_class, "prototype", Stack, _class);
             if(returned != null) {
-                inheriting = returned;
+                inheriting = returned.Var;
             }
-            //IValue? super = (inheriting.Base == null) ? null : Values.ObjectLiteral.Get(inheriting.Base, "constructor", Stack, inheriting.Base);
             IValue returning = new Values.ObjectLiteral(new List<Values.Variable>(), inheriting);
-            Stack.Push();
-            Stack.Head.Val.Add(new Values.Variable("this", returning));
-            IValue? saved = Values.ObjectLiteral.CurrentPrivate;
-            Values.ObjectLiteral.CurrentPrivate = returning;
-            // if(super != null) {
-            //     Stack.Head.Val.Add(new Values.Variable("super", super));
-            // }
-            _class.Function(args);
-            Stack.Pop();
-            Values.ObjectLiteral.CurrentPrivate = saved;
+            _class.Function(args, returning);
             return returning;
         }
 

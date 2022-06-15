@@ -9,11 +9,11 @@ namespace Tools.Operators {
         public override IValue Run() {
             IValue result = Left._Run().Var;
             //Console.WriteLine(result);
-            (IValue?, ProtectionLevels) gotten = Values.ObjectLiteral.DeepGet(result, Name, Stack, result);
+            Values.Variable? gotten = Values.ObjectLiteral.DeepGet(result, Name, Stack, result);
             //Console.WriteLine(gotten.Item1 == null ? "null" : gotten.Item1.Print());
             //Console.WriteLine(gotten.Item1);
             //Console.WriteLine($"property at {Row}, {Col}");
-            return new Values.PropertyHolder(gotten.Item1, Name, result, Stack, gotten.Item2);
+            return new Values.PropertyHolder(gotten, Name, result, Stack, gotten == null ? ProtectionLevels.PUBLIC : gotten.ProtectionLevel);
 
         }
 

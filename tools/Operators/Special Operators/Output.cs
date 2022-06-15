@@ -1,15 +1,15 @@
 namespace Tools.Operators {
-    class Output : Operator {
-        private IOperator Target { get; }
-        public Output(IOperator target, int row, int col) : base(row, col) {
-            this.Target = target;
+    class Output : VariableOperator {
+        private IOperator Input { get; }
+        public Output(IOperator input, Stack stack) : base(stack, -1, -1) {
+            this.Input = input;
         }
 
-        private string CalcOutput(IValue input, int spaces = 2) {
+        private string CalcOutput(Tools.IValue input, int spaces = 2) {
             //Console.WriteLine("accessed");
-            if(input.Default == BasicTypes.OBJECT) {
+            if(input.Default == Tools.BasicTypes.OBJECT) {
                 //Console.WriteLine("obj");
-                if(Values.ObjectLiteral.ValidateArray(input)) {
+                if(Tools.Values.ObjectLiteral.ValidateArray(input)) {
                     //Console.WriteLine("arr");
                     string returning = "[";
                     for(int i = 0; i < input.Object.Count; i++) {
@@ -23,10 +23,10 @@ namespace Tools.Operators {
                 } else {
                     //Console.WriteLine("passed array check");
                     string returning = "{\n";
-                    foreach(Values.Variable item in input.Object) {
+                    foreach(Tools.Values.Variable item in input.Object) {
                         returning += new System.String(' ', spaces);
                         returning += item.Name;
-                        IValue? saved = item.Host;
+                        Tools.IValue? saved = item.Host;
                         if(saved != null) {
                             returning += ": ";
                             returning += CalcOutput(saved, spaces + 2);
@@ -37,22 +37,19 @@ namespace Tools.Operators {
                     returning += "}";
                     return returning;
                 }
-            } else if(input.Default == BasicTypes.FUNCTION) {
+            } else if(input.Default == Tools.BasicTypes.FUNCTION) {
                 return "{Function}";
             } else {
                 //Console.WriteLine("accessing string");
                 return input.String;
             }
         }
-        public override IValue Run() {
-            IValue result = Target._Run();
+        public override Tools.IValue Run() {
+            Tools.IValue result = Input._Run();
             //Console.WriteLine("about to access var");
             Console.WriteLine(CalcOutput(result.Var));
             //Console.WriteLine("done");
             return result;
-        }
-        public override string Print() {
-            return $"holler({Target.Print()})";
         }
     }
 }

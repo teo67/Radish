@@ -20,39 +20,22 @@ namespace Tools.Values {
             return other.Default == BasicTypes.OBJECT && Object == other.Object;
         }
 
-        public static (IValue?, ProtectionLevels) DeepGet(IValue target, string key, Stack stack, IValue originalTarget) {
+        public static Variable? DeepGet(IValue target, string key, Stack stack, IValue originalTarget) {
             foreach(Variable property in target.Object) {
                 //Console.WriteLine(property.Name);
                 if(property.Name == key) {
                     // public = any access, current object = modifier doesn't matter, derived object = modifier doesn't matter as long as it isn't private
                     if(property.ProtectionLevel == ProtectionLevels.PUBLIC || (ObjectLiteral.CurrentPrivate != null && ((ObjectLiteral.CurrentPrivate == target) || (ObjectLiteral.CurrentPrivate.Base != null && ObjectLiteral.CurrentPrivate.Base == target) || (ObjectLiteral.CurrentPrivate == originalTarget && property.ProtectionLevel != ProtectionLevels.PRIVATE)))) {
-                        stack.Push(new List<Variable>() { // in case of setter function
-                            new Variable("this", originalTarget)
-                        });
-                        IValue? saved = ObjectLiteral.CurrentPrivate;
-                        ObjectLiteral.CurrentPrivate = originalTarget;
-
-                        IValue? reported = property.Host; // save host to ivalue and return, voila
-                        //Console.WriteLine(key);
-                        //Console.WriteLine(reported);
-                        stack.Pop();
-                        ObjectLiteral.CurrentPrivate = saved;
-                        // if(key == "Name") {
-                        //     throw new Exception("a");
-                        // }
-                        return (reported, property.ProtectionLevel);
+                        return property;
                     }
                 }
             }
             if(target.Base == null) {
-                return (null, ProtectionLevels.PUBLIC);
+                return null;
             }
             return DeepGet(target.Base, key, stack, originalTarget);
         }
 
-        public static IValue? Get(IValue target, string key, Stack stack, IValue originalTarget) {
-            return ObjectLiteral.DeepGet(target, key, stack, originalTarget).Item1;
-        }
         public static bool ValidateArray(IValue target) {
             IValue _target = target.Var;
             for(int i = 0; i < _target.Object.Count; i++) {

@@ -7,7 +7,7 @@ namespace Tools {
 
         public void Run(bool verbose = false) {
             try {
-                Operations operations = new Operations(reader, verbose);
+                Operations operations = new Operations(reader, verbose, false);
                 operations.ParseScope().Run();
             } catch {
                 RadishException.Print();
@@ -28,7 +28,7 @@ namespace Tools {
 
         public void Parse() {
             try {
-                Console.WriteLine(new Operations(reader, false).ParseScope().Print());
+                Console.WriteLine(new Operations(reader, false, false).ParseScope().Print());
             } catch {
                 RadishException.Print();
             }
