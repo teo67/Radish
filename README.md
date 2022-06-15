@@ -4,12 +4,12 @@
 <h2>So what's it all about, anyway?</h2>
 <p>Radish is an easy-to-learn, object-oriented programming language written in C#. If you know JavaScript, you know Radish. However, Radish has a few of its own quirks to keep in mind (don't ask why these exist)
     <ul>
-        <li>To declare a variable, use "dig" or just "d"<br><em>Example: make name</em></li>
-        <li>To set the value of a variable, use "plant" or the plain old = symbol<br><em>Example: make name set "Theo"</em></li>
+        <li>To declare a variable, use "dig" or just "d"<br><em>Example: dig name</em></li>
+        <li>To set the value of a variable, use "plant" or "p"<br><em>Example: dig name plant "Theo"</em></li>
         <li>Radish currently supports only multiline comments, just start and end your comment with #<br><em>Example: # this is a comment #</em><br>As a side note, Radish is completely linebreak blind. That's right, no semicolons. You can write as many statements on the same line as you want!</li>
-        <li>Functions are declared using either "tool" or "t"<br><em>Example: make sayHi set f(name) {
-            output(name)
-        }</em><br>Oh yeah, forgot to mention that the print function is called output.</li>
+        <li>Functions are declared using either "tool" or "t"<br><em>Example: dig sayHi plant tool(name) {
+            holler(name)
+        }</em><br>Oh yeah, forgot to mention that the print function is called holler.</li>
         <li>There are a few other details, but you'll get used to them along the way.</li>
     </ul>
 In terms of OOP, perhaps a demonstration would be the best way to explain. See if you can figure out what this code does:<br><em>
