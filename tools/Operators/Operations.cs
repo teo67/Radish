@@ -35,6 +35,7 @@ namespace Tools {
         private Lexer lexer { get; }
         private Stack stack { get; }
         private bool IsStandard { get; }
+        private Librarian Librarian { get; }
         static Operations() {
             OpKeywords = new List<string>() {
                 // keywords that should be parsed as operators
@@ -47,10 +48,11 @@ namespace Tools {
                 "try", "catch", "throw", "import", "all", "pass"
             };
         }
-        public Operations(CountingReader reader, bool verbose, bool isStandard) {
+        public Operations(CountingReader reader, bool verbose, bool isStandard, Librarian librarian) {
             this.reader = reader;
             this.verbose = verbose;
             this.lexer = new Lexer(reader);
+            this.Librarian = librarian;
             this.stack = new Stack(Librarian.FirstLayer);
             this.IsStandard = isStandard;
             Stored = null;
@@ -107,13 +109,13 @@ namespace Tools {
             if(Stored != null) {
                 LexEntry saved = Stored;
                 Stored = null;
-                //Print(saved.Val);
+                Print(saved.Val);
                 return saved;
             }
             PrevCol = reader.col;
             PrevRow = reader.row;
             LexEntry ran = lexer.Run();
-            //Print(ran.Val);
+            Print(ran.Val);
             return ran;
         }
 
@@ -262,254 +264,213 @@ namespace Tools {
             });
         }
 
-        private IOperator ParseAssignment(IOperator current, Func<IOperator, IOperator, IOperator> translate) {
-            Print("parsing variable assignment");
-            IOperator after = ParseCombiners();
-            return new Operators.Assignment(current, translate(current, after), Row, Col);
+        private IOperator Parse(string name, Func<string, IOperator, IOperator?> run, Func<IOperator> previous) {
+            Print($"Parsing {name}");
+            IOperator current = previous();
+            LexEntry? next = null;
+            bool done = false;
+            while(!done) {
+                Print($"About to read for {name}");
+                next = Read();
+                done = true;
+                if(next.Type == TokenTypes.OPERATOR) {
+                    IOperator? result = run(next.Val, current);
+                    if(result != null) {
+                        current = result;
+                        done = false;
+                    }
+                }
+            }
+            Stored = next;
+            return current;
         }
 
         private IOperator ParseExpression() {
-            Print("begin expression");
-            IOperator current = ParseCombiners();
-            LexEntry next = Read();
-            Func<bool> check = (() => {
-                if(next.Type == TokenTypes.OPERATOR) {
-                    switch(next.Val) {
-                        case "plant":
-                        case "p":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return after; });
-                            break;
-                        case "+=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Add(stack, current, after, Row, Col); });
-                            break;
-                        case "-=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Subtract(stack, current, after, Row, Col); });
-                            break;
-                        case "*=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Multiply(stack, current, after, Row, Col); });
-                            break;
-                        case "/=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Divide(stack, current, after, Row, Col); });
-                            break;
-                        case "%=":
-                            current = ParseAssignment(current, (IOperator current, IOperator after) => { return new Operators.Modulo(stack, current, after, Row, Col); });
-                            break;
-                        case "++":
-                            current = new Operators.Assignment(current, new Operators.Add(stack, current, new Operators.Number(stack, 1, Row, Col), Row, Col), Row, Col);
-                            break;
-                        case "--":
-                            current = new Operators.Assignment(current, new Operators.Subtract(stack, current, new Operators.Number(stack, 1, Row, Col), Row, Col), Row, Col);
-                            break;
-                        default:
-                            Stored = next;
-                            return false;
+            List<Func<string, IOperator, Operators.SimpleOperator?>> others = new List<Func<string, IOperator, Operators.SimpleOperator?>>() {
+                    IsCombiners, IsComparators, IsTerms, IsFactors
+            };
+            return Parse("Expression", (string val, IOperator current) => {
+                if(val == "plant" || val == "p") {
+                    return new Operators.Assignment(current, ParseCombiners(), Row, Col);
+                } else if(val.EndsWith("=")) {
+                    string edited = val.Substring(0, val.Length - 1);
+                    Operators.SimpleOperator? returning = null;
+                    for(int i = 0; i < others.Count && returning == null; i++) {
+                        returning = others[i](edited, current);
                     }
-                    return true;
-                }
-                Stored = next; // cancel viewing
-                return false;
-            });
-            while(check()) {
-                next = Read();
-            }
-            return current;
+                    if(returning != null) {
+                        returning.IsAssigning = true; // mark as assignment
+                    }
+                    return returning;
+                    }
+                return null;
+            }, ParseCombiners);
         }
 
-        private IOperator ParseCombiners() {
-            Print("begin combiners");
-            IOperator current = ParseComparators();
-            LexEntry next = Read();
-            Func<bool> check = (() => {
-                if(next.Type == TokenTypes.OPERATOR) {
-                    if(next.Val == "&&") {
-                        Print("parsing and");
-                        IOperator after = ParseComparators();
-                        current = new Operators.And(stack, current, after, Row, Col);
-                        return true;
-                    }
-                    if(next.Val == "||") {
-                        Print("parsing or");
-                        IOperator after = ParseComparators();
-                        current = new Operators.Or(stack, current, after, Row, Col);
-                        return true;
-                    }
-                }
-                Stored = next; // cancel viewing
-                return false;
-            });
-            while(check()) {
-                next = Read();
+        private Operators.SimpleOperator? IsCombiners(string val, IOperator current) {
+            switch(val) {
+                case "&&":
+                    return new Operators.And(stack, current, ParseComparators(), Row, Col);
+                case "||":
+                    return new Operators.Or(stack, current, ParseComparators(), Row, Col);
+                case "&":
+                    return new Operators.BitwiseAnd(stack, current, ParseComparators(), Row, Col);
+                case "|":
+                    return new Operators.BitwiseOr(stack, current, ParseComparators(), Row, Col);
+                case "^":
+                    return new Operators.XOr(stack, current, ParseComparators(), Row, Col);
+                default:
+                    return null;
             }
-            return current;
+        }
+        private IOperator ParseCombiners() {
+            return Parse("Combiners", IsCombiners, ParseComparators);
+        }
+
+        private Operators.SimpleOperator? IsComparators(string val, IOperator current) {
+            switch(val) {
+                case "==":
+                    return new Operators.EqualsEquals(stack, current, ParseShifts(), Row, Col);
+                case ">=":
+                    return new Operators.MoreThanOrEquals(stack, current, ParseShifts(), Row, Col);
+                case "<=":
+                    return new Operators.LessThanOrEquals(stack, current, ParseShifts(), Row, Col);
+                case ">":
+                    return new Operators.MoreThan(stack, current, ParseShifts(), Row, Col);
+                case "<":
+                    return new Operators.LessThan(stack, current, ParseShifts(), Row, Col);
+                case "!=":
+                    return new Operators.NotEquals(stack, current, ParseShifts(), Row, Col);
+                default:
+                    return null;
+            }
         }
 
         private IOperator ParseComparators() {
-            Print("begin comparators");
-            IOperator current = ParseTerms();
-            LexEntry next = Read();
-            Func<bool> check = (() => {
-                if(next.Type == TokenTypes.OPERATOR) {
-                    if(next.Val == "==") {
-                        Print("parsing double equals");
-                        IOperator after = ParseTerms();
-                        current = new Operators.EqualsEquals(stack, current, after, Row, Col);
-                        return true;
-                    }
-                    if(next.Val == ">=") {
-                        Print("parsing more than equals");
-                        IOperator after = ParseTerms();
-                        current = new Operators.MoreThanOrEquals(stack, current, after, Row, Col);
-                        return true;
-                    }
-                    if(next.Val == "<=") {
-                        Print("parsing less than equals");
-                        IOperator after = ParseTerms();
-                        current = new Operators.LessThanOrEquals(stack, current, after, Row, Col);
-                        return true;
-                    }
-                    if(next.Val == ">") {
-                        Print("parsing more than");
-                        IOperator after = ParseTerms();
-                        current = new Operators.MoreThan(stack, current, after, Row, Col);
-                        return true;
-                    }
-                    if(next.Val == "<") {
-                        Print("parsing less than");
-                        IOperator after = ParseTerms();
-                        current = new Operators.LessThan(stack, current, after, Row, Col);
-                        return true;
-                    }
-                    if(next.Val == "!=") {
-                        Print("parsing not equals");
-                        IOperator after = ParseTerms();
-                        current = new Operators.Invert(stack, new Operators.EqualsEquals(stack, current, after, Row, Col), Row, Col);
-                        return true;
-                    }
-                }
-                Stored = next; // cancel viewing
-                return false;
-            });
-            while(check()) {
-                next = Read();
+            return Parse("Comparators", IsComparators, ParseShifts);
+        }
+
+        private Operators.SimpleOperator? IsShifts(string val, IOperator current) {
+            switch(val) {
+                case ">>":
+                    return new Operators.RightShift(stack, current, ParseTerms(), Row, Col);
+                case "<<":
+                    return new Operators.LeftShift(stack, current, ParseTerms(), Row, Col);
+                default:
+                    return null;
             }
-            return current;
+        }
+
+        private IOperator ParseShifts() {
+            return Parse("Shifts", IsShifts, ParseTerms);
+        }
+
+        private Operators.SimpleOperator? IsTerms(string val, IOperator current) {
+            switch(val) {
+                case "+":
+                    return new Operators.Add(stack, current, ParseFactors(), Row, Col);
+                case "-":
+                    return new Operators.Subtract(stack, current, ParseFactors(), Row, Col);
+                default:
+                    return null;
+            }
         }
 
         private IOperator ParseTerms() {
-            Print("begin terms");
-            IOperator current = ParseFactors();
-            LexEntry next = Read();
-            Func<bool> check = (() => {
-                if(next.Type == TokenTypes.OPERATOR) {
-                    if(next.Val == "+") {
-                        Print("parsing plus");
-                        IOperator after = ParseFactors();
-                        current = new Operators.Add(stack, current, after, Row, Col);
-                        return true;
-                    }
-                    if(next.Val == "-") {
-                        Print("parsing minus");
-                        IOperator after = ParseFactors();
-                        current = new Operators.Subtract(stack, current, after, Row, Col);
-                        return true;
-                    }
-                }
-                Stored = next; // cancel viewing
-                return false;
-            });
-            while(check()) {
-                next = Read();
+            return Parse("Terms", IsTerms, ParseFactors);
+        }
+
+        private Operators.SimpleOperator? IsFactors(string val, IOperator current) {
+            switch(val) {
+                case "*":
+                    return new Operators.Multiply(stack, current, ParseNegatives(), Row, Col);
+                case "/":
+                    return new Operators.Divide(stack, current, ParseNegatives(), Row, Col);
+                case "%":
+                    return new Operators.Modulo(stack, current, ParseNegatives(), Row, Col);
+                default:
+                    return null;
             }
-            return current;
         }
 
         private IOperator ParseFactors() {
-            Print("begin factors");
-            IOperator current = ParseNegatives();
-            LexEntry next = Read();
-            Func<bool> check = (() => {
-                if(next.Type == TokenTypes.OPERATOR) {
-                    if(next.Val == "*") {
-                        Print("parsing multiply");
-                        IOperator after = ParseNegatives();
-                        current = new Operators.Multiply(stack, current, after, Row, Col);
-                        return true;
-                    }
-                    if(next.Val == "/") {
-                        Print("parsing divide");
-                        IOperator after = ParseNegatives();
-                        current = new Operators.Divide(stack, current, after, Row, Col);
-                        return true;
-                    }
-                    if(next.Val == "%") {
-                        Print("parsing modulo");
-                        IOperator after = ParseNegatives();
-                        current = new Operators.Modulo(stack, current, after, Row, Col);
-                        return true;
-                    }
-                }
-                Stored = next; // cancel viewing
-                return false;
-            });
-            while(check()) {
-                next = Read();
-            }
-            return current;
+            return Parse("Factors", IsFactors, ParseNegatives);
         }
 
         private IOperator ParseNegatives() {
             LexEntry returned = Read();
             if(returned.Type == TokenTypes.OPERATOR) {
                 if(returned.Val == "-") {
-                    return new Operators.Multiply(stack, new Operators.Number(stack, -1.0, Row, Col), ParseNegatives(), Row, Col);
+                    return new Operators.Negative(stack, ParsePosts(), Row, Col);
                 }
                 if(returned.Val == "!") {
-                    return new Operators.Invert(stack, ParseNegatives(), Row, Col);
+                    return new Operators.Invert(stack, ParsePosts(), Row, Col);
+                }
+                if(returned.Val == "~") {
+                    return new Operators.Flip(stack, ParsePosts(), Row, Col);
                 }
             }
             Stored = returned;
-            return ParseCalls();
+            return ParsePosts();
         }
-        
+
+        private IOperator ParsePosts() {
+            Print("begin posts");
+            IOperator before = ParseCalls();
+            LexEntry? returned = null;
+            bool done = false;
+            while(!done) {
+                Print("reading for posts");
+                returned = Read();
+                if(returned.Type == TokenTypes.OPERATOR) {
+                    if(returned.Val == "++") {
+                        before = new Operators.Increment(stack, before, Row, Col);
+                    } else if(returned.Val == "--") {
+                        before = new Operators.Decrement(stack, before, Row, Col);
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            }
+            Stored = returned;
+            return before;
+        }
+
         private IOperator ParseCalls(bool allowParens = true) {
             Print("begin calls");
             IOperator current = ParseLowest();
-            LexEntry next = Read();
-            Func<bool> checkCheck = (() => {
-                if(next.Val == "(" && allowParens) {
-                    Print("parsing function call");
-                    IOperator args = ParseList();
-                    RequireSymbol(")");
-                    current = new Operators.FunctionCall(current, args, stack, Row, Col);
-                    return true;
-                }
-                if(next.Val == "[") {
-                    Print("parsing object accessor via array brackets");
-                    IOperator exp = ParseExpression();
-                    RequireSymbol("]");
-                    current = new Operators.BracketGet(current, exp, stack, Row, Col);
-                    return true;
-                }
-                return false;
-            });
-            Func<bool> check = (() => {
+            LexEntry? next = null;
+            bool done = false;
+            while(!done) {
+                done = true;
+                Print("reading for calls");
+                next = Read();
                 if(next.Type == TokenTypes.SYMBOL) {
-                    while(checkCheck()) {
-                        next = Read();
+                    bool doneDone = false;
+                    while(!doneDone) {
+                        if(next.Val == "(" && allowParens) {
+                            IOperator args = ParseList();
+                            RequireSymbol(")");
+                            current = new Operators.FunctionCall(current, args, stack, Row, Col);
+                            next = Read();
+                        } else if(next.Val == "[") {
+                            IOperator exp = ParseExpression();
+                            RequireSymbol("]");
+                            current = new Operators.BracketGet(current, exp, stack, Row, Col);
+                            next = Read();
+                        } else {
+                            doneDone = true;
+                        }
                     }
                     if(next.Val == ".") {
-                        Print("parsing accessor");
-                        LexEntry read = Read();
-                        current = new Operators.Get(current, read.Val, stack, Row, Col);
-                        return true;
+                        current = new Operators.Get(current, Read().Val, stack, Row, Col);
+                        done = false;
                     }
                 }
-                Stored = next; // cancel viewing
-                return false;
-            });
-            while(check()) {
-                next = Read();
             }
+            Stored = next;
             return current;
         }
 
@@ -586,7 +547,7 @@ namespace Tools {
                 if(returned.Val == "import") {
                     Print("parsing import");
                     IOperator importing = ParseExpression();
-                    return new Operators.Import(stack, importing, Row, Col, reader.Filename);
+                    return new Operators.Import(stack, importing, Row, Col, reader.Filename, Librarian);
                 }
                 if(returned.Val == "class") {
                     Print("parsing class definition");
@@ -626,9 +587,9 @@ namespace Tools {
             } else if(returned.Type == TokenTypes.KEYWORD) {
                 Print("parsing variable");
                 if(IsStandard) {
-                    return new Operators.StandardRef(stack, returned.Val, Row, Col);
+                    return new Operators.StandardRef(stack, returned.Val, Row, Col, Librarian);
                 }
-                return new Operators.Reference(stack, returned.Val, Row, Col);
+                return new Operators.Reference(stack, returned.Val, Row, Col, Librarian);
             } else if(returned.Type == TokenTypes.SYMBOL) {
                 if(returned.Val == "(") {
                     Print("parsing opening paren.");

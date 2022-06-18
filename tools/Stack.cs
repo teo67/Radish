@@ -31,7 +31,7 @@ namespace Tools {
             Head = Head.Next;
             return saved;
         }
-        public Values.Variable Get(string key) {
+        public Values.Variable? SafeGet(string key) {
             StackNode? viewing = Head;
             while(viewing != null) {
                 foreach(Values.Variable variable in viewing.Val) {
@@ -41,7 +41,14 @@ namespace Tools {
                 }
                 viewing = viewing.Next;
             }
-            throw new RadishException($"Unable to find variable {key}!");
+            return null;
+        }
+        public Values.Variable Get(string key) {
+            Values.Variable? returned = SafeGet(key);
+            if(returned == null) {
+                throw new RadishException($"Unable to find variable {key}!");
+            }
+            return returned;
         }
         public void Print() {
             Console.WriteLine("__");

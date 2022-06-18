@@ -2,9 +2,11 @@ namespace Tools.Operators {
     class Import : VariableOperator {
         private IOperator FileName { get; }
         private string Path { get; }
-        public Import(Stack stack, IOperator fileName, int row, int col, string path) : base(stack, row, col) {
+        private Librarian Librarian { get; }
+        public Import(Stack stack, IOperator fileName, int row, int col, string path, Librarian librarian) : base(stack, row, col) {
             this.FileName = fileName;
             this.Path = path;
+            this.Librarian = librarian;
         }
         public override IValue Run() {
             string name = FileName._Run().String;
@@ -31,7 +33,7 @@ namespace Tools.Operators {
             } catch {
                 throw new RadishException($"Could not find file {name}", Row, Col);
             }
-            Operations operations = new Operations(reader, false, false);
+            Operations operations = new Operations(reader, false, false, Librarian);
             RadishException.Append($"in {realPath}", -1, -1);
             IValue returned = operations.ParseScope().Run();
             RadishException.Pop();

@@ -5,9 +5,10 @@ namespace Tools {
             reader = new CountingReader(filename);
         }
 
-        public void Run(bool verbose = false) {
+        public void Run(bool verbose = false, bool uselib = true) {
             try {
-                Operations operations = new Operations(reader, verbose, false);
+                Librarian librarian = new Librarian(uselib);
+                Operations operations = new Operations(reader, verbose, false, librarian);
                 operations.ParseScope().Run();
             } catch {
                 RadishException.Print();
@@ -28,7 +29,8 @@ namespace Tools {
 
         public void Parse() {
             try {
-                Console.WriteLine(new Operations(reader, false, false).ParseScope().Print());
+                Librarian librarian = new Librarian(false);
+                Console.WriteLine(new Operations(reader, true, false, librarian).ParseScope().Print());
             } catch {
                 RadishException.Print();
             }

@@ -1,1 +1,1 @@
-holler("test".getValue())
+holler(1 << 2)
