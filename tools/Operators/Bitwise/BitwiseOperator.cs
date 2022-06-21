@@ -1,6 +1,6 @@
 namespace Tools.Operators {
-    class BitwiseOperator : SimpleVariableOperator {
-        public BitwiseOperator(Stack stack, IOperator left, IOperator right, string name, int row, int col) : base(stack, left, right, name, row, col) {}
+    class BitwiseOperator : SimpleOperator {
+        public BitwiseOperator(IOperator left, IOperator right, string name, int row, int col) : base(left, right, name, row, col) {}
         public virtual int GetResult(int left, int right) {
             throw new RadishException("Cannot get the result of an empty bitwise operator!", Row, Col);
         }
@@ -14,7 +14,7 @@ namespace Tools.Operators {
                 throw new RadishException("Bitwise operations can only be performed on integer values!", Row, Col);
             }
             int result = GetResult(leftI, rightI);
-            return new Values.NumberLiteral((double)result, Stack.Get("Number").Var);
+            return new Values.NumberLiteral((double)result);
         }
     }
 }

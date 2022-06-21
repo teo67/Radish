@@ -10,7 +10,7 @@ namespace Tools.Operators {
             if(result.Default == BasicTypes.RETURN) {
                 throw new RadishException("Unexpected return statement in an object literal definition!");
             }
-            return new Values.ObjectLiteral(Stack.Pop().Val, Stack.Get("Object").Var);
+            return new Values.ObjectLiteral(Stack.Pop().Val, useProto: true);
         }
 
         public override string Print() {

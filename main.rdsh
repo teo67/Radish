@@ -1,1 +1,3 @@
-holler(1 << 2)
+for(dig i plant 0, i <= 100, i++) {
+    holler(i)
+}

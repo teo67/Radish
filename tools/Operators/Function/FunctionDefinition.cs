@@ -9,7 +9,7 @@ namespace Tools.Operators {
             this.Body = body;
         }
         public override IValue Run() {
-            return new Values.FunctionLiteral(Stack, Args, Defaults, Body, Stack.Get("Function").Var);
+            return new Values.FunctionLiteral(Stack, Args, Defaults, Body);
         }
         public override string Print() {
             return "anonymous function";

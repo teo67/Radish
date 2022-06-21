@@ -29,15 +29,20 @@ namespace Tools.Operators {
                 }
             }
             if(fun == null) {
-                fun = new Values.FunctionLiteral(Stack, new List<string>(), new List<IOperator?>(), new Operators.ExpressionSeparator(Row, Col), Stack.Get("Function").Var);
+                fun = new Values.FunctionLiteral(Stack, new List<string>(), new List<IOperator?>(), new Operators.ExpressionSeparator(Row, Col));
                 nonstatics.Add(new Values.Variable("constructor", fun));
             }
-            IValue fromStack = Inheriting == null ? Stack.Get("Object").Var : Inheriting._Run().Var;
-            IValue? _base = Values.ObjectLiteral.DeepGet(fromStack, "prototype", Stack, fromStack);
-            if(_base == null) {
-                _base = fromStack;
+            IValue proto;
+            if(Inheriting == null) {
+                proto = new Values.ObjectLiteral(nonstatics, useProto: true);
+            } else {
+                IValue fromStack = Inheriting._Run().Var;
+                IValue? _base = Values.ObjectLiteral.DeepGet(fromStack, "prototype", fromStack);
+                if(_base == null) {
+                    _base = fromStack;
+                }
+                proto = new Values.ObjectLiteral(nonstatics, _base);
             }
-            IValue proto = new Values.ObjectLiteral(nonstatics, _base);
             foreach(Values.Variable _static in statics) {
                 fun.Object.Add(_static);
             }

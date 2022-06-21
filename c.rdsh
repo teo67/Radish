@@ -2,4 +2,5 @@ dig a plant 3.14
 dig b plant tool() {
     OUTPUT(a)
 }
+import "main"
 harvest b

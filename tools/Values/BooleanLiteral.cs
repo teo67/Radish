@@ -1,11 +1,12 @@
 namespace Tools.Values {
     class BooleanLiteral : EmptyLiteral {
+        public static IValue? Proto { private get; set; }
         public override bool Boolean { get; }
         public override IValue? Base { get; }
         public override List<Variable> Object { get; }
-        public BooleanLiteral(bool input, IValue boo) : base("boolean") {
+        public BooleanLiteral(bool input) : base("boolean") {
             this.Boolean = input;
-            this.Base = boo;
+            this.Base = Proto == null ? null : Proto.Var;
             this.Object = new List<Variable>();
         }
         public override  BasicTypes Default {

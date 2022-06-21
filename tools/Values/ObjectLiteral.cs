@@ -1,10 +1,18 @@
 namespace Tools.Values {
     class ObjectLiteral : EmptyLiteral {
+        public static IValue? Proto { private get; set; }
+        public static IValue? ArrayProto { get; set; }
         public override List<Variable> Object { get; }
         public override IValue? Base { get; }
-        public ObjectLiteral(List<Variable> properties, IValue? _base = null) : base("object") {
+        public ObjectLiteral(List<Variable> properties, IValue? _base = null, bool useProto = false, bool useArrayProto = false) : base("object") {
             this.Object = properties;
-            this.Base = _base;
+            if(useProto) {
+                Base = Proto == null ? null : Proto.Var;
+            } else if(useArrayProto) {
+                Base = ArrayProto == null ? null : ArrayProto.Var;
+            } else {
+                Base = _base;
+            }
         }
         public override BasicTypes Default {
             get {
@@ -20,7 +28,7 @@ namespace Tools.Values {
             return other.Default == BasicTypes.OBJECT && Object == other.Object;
         }
 
-        public static Variable? DeepGet(IValue target, string key, Stack stack, IValue originalTarget) {
+        public static Variable? DeepGet(IValue target, string key, IValue originalTarget) {
             foreach(Variable property in target.Object) {
                 //Console.WriteLine(property.Name);
                 if(property.Name == key) {
@@ -33,17 +41,7 @@ namespace Tools.Values {
             if(target.Base == null) {
                 return null;
             }
-            return DeepGet(target.Base, key, stack, originalTarget);
-        }
-
-        public static bool ValidateArray(IValue target) {
-            IValue _target = target.Var;
-            for(int i = 0; i < _target.Object.Count; i++) {
-                if(_target.Object[i].Name != $"{i}") {
-                    return false;
-                }
-            }
-            return true;
+            return DeepGet(target.Base, key, originalTarget);
         }
 
         public static IValue? CurrentPrivate { get; set; } // stores the object that is currently able to access private / protected properties

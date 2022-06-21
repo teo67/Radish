@@ -1,11 +1,12 @@
 namespace Tools.Values {
     class StringLiteral : EmptyLiteral {
+        public static IValue? Proto { private get; set; }
         public override string String { get; }
         public override IValue? Base { get; }
         public override List<Variable> Object { get; }
-        public StringLiteral(string input, IValue str) : base("string") {
+        public StringLiteral(string input) : base("string") {
             this.String = input;
-            this.Base = str;
+            this.Base = Proto == null ? null : Proto.Var;
             this.Object = new List<Variable>();
         }
         public override BasicTypes Default {

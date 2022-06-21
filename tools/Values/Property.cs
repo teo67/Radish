@@ -20,5 +20,8 @@ namespace Tools.Values {
             this.Get = _get;
             this.Set = _set;
         }
+        public override Variable Clone() {
+            return new Property(Name, Get, Set, ProtectionLevel, IsStatic);
+        }
     }
 }

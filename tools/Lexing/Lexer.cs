@@ -12,14 +12,17 @@ namespace Tools {
         }
         private Dictionary<char, CharTypes> dict;
         private char dotChar;
-        private char quoteChar;
         private char hashChar;
         private CountingReader reader { get; }
+        private Dictionary<char, char> backslashes;
         public Lexer(CountingReader reader) {
             this.reader = reader;
             dict = new Dictionary<char, CharTypes>();
+            backslashes = new Dictionary<char, char>() {
+                { 'n', '\n' },
+                { 't', '\t' }
+            };
             dotChar = '.';
-            quoteChar = '"';
             hashChar = '#';
             string numbers = "0123456789";
             string letters = "abcdefghijklmnopqrstuvwxyz";
@@ -31,7 +34,7 @@ namespace Tools {
             for(int i = 0; i < numbers.Length; i++) {
                 dict.Add(numbers[i], CharTypes.digit);
             }
-            string ops = "+-/*<>|&!=%\\";
+            string ops = "+-/*<>|&!=%\\^~";
             for(int i = 0; i < ops.Length; i++) {
                 dict.Add(ops[i], CharTypes.operators);
             }
@@ -45,7 +48,8 @@ namespace Tools {
             dict.Add('\r', CharTypes.whitespace);
             dict.Add('\xa0', CharTypes.whitespace);
             dict.Add('\t', CharTypes.whitespace);
-            dict.Add(quoteChar, CharTypes.quotes);
+            dict.Add('"', CharTypes.quotes);
+            dict.Add('\'', CharTypes.quotes);
             dict.Add(hashChar, CharTypes.hashtags);
         }
         
@@ -58,10 +62,10 @@ namespace Tools {
         }
 
         private TokenTypes GetTokenType(TokenTypes current, CharTypes adding, string currentRaw) { // same = no change
-            if(current == TokenTypes.COMMENT && currentRaw.IndexOf(hashChar) == currentRaw.LastIndexOf(hashChar)) { // being in a comment gets first priority
+            if(current == TokenTypes.COMMENT && (currentRaw.Length == 1 || currentRaw[currentRaw.Length - 1] != hashChar)) { // being in a comment gets first priority
                 return TokenTypes.SAME;
             }
-            if(current == TokenTypes.STRING && currentRaw.IndexOf(quoteChar) == currentRaw.LastIndexOf(quoteChar)) { // then being in a string
+            if(current == TokenTypes.STRING && (currentRaw.Length == 1 || (currentRaw[currentRaw.Length - 1] != '"' && currentRaw[currentRaw.Length - 1] != '\''))) { // then being in a string
                 return TokenTypes.SAME;
             }
             switch(adding) {
@@ -98,10 +102,6 @@ namespace Tools {
                 //Console.WriteLine($"Lexer returning {type}: {currentRaw}");
                 return new LexEntry(type, currentRaw);
             }
-            if(current == TokenTypes.STRING) {
-                return new LexEntry(current, currentRaw.Substring(1, currentRaw.Length - 2));
-            }
-            //Console.WriteLine($"Lexer returning {current}: {currentRaw}");
             return new LexEntry(current, currentRaw);
         }
 
@@ -111,19 +111,33 @@ namespace Tools {
             }
             string currentRaw = "";
             TokenTypes current = TokenTypes.NONE;
+            bool skip = false;
             do {
                 char read = (char)reader.Peek();
-                TokenTypes newToken = GetTokenType(current, GetCharType(read), currentRaw);
-                if(newToken == TokenTypes.SAME) {
+                if(read == '\\' && current == TokenTypes.STRING) {
                     reader.Read();
-                    currentRaw += read;
-                } else {
-                    if(current != TokenTypes.COMMENT && current != TokenTypes.NONE) {
-                        return Convert(current, currentRaw);
+                    char next = reader.Peek();
+                    reader.Read();
+                    if(backslashes.ContainsKey(next)) {
+                        currentRaw += backslashes[next];
+                    } else {
+                        currentRaw += next;
                     }
-                    reader.Read();
-                    current = newToken;
-                    currentRaw = Char.ToString(read);
+                    skip = true;
+                } else {
+                    TokenTypes newToken = GetTokenType(current, GetCharType(read), currentRaw);
+                    if(skip || newToken == TokenTypes.SAME) {
+                        skip = false;
+                        reader.Read();
+                        currentRaw += read;
+                    } else {
+                        if(current != TokenTypes.COMMENT && current != TokenTypes.NONE) {
+                            return Convert(current, currentRaw);
+                        }
+                        reader.Read();
+                        current = newToken;
+                        currentRaw = Char.ToString(read);
+                    }
                 }
             } while(!reader.EndOfStream);
             if(current == TokenTypes.COMMENT || current == TokenTypes.NONE) {

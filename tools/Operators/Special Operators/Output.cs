@@ -1,16 +1,16 @@
 namespace Tools.Operators {
-    class Output : VariableOperator {
+    class Output : Operator {
         private IOperator Input { get; }
-        public Output(IOperator input, Stack stack) : base(stack, -1, -1) {
+        public Output(IOperator input) : base(-1, -1) {
             this.Input = input;
         }
 
         private string CalcOutput(Tools.IValue input, int spaces = 2) {
-            //Console.WriteLine("accessed");
             if(input.Default == Tools.BasicTypes.OBJECT) {
-                //Console.WriteLine("obj");
-                if(Tools.Values.ObjectLiteral.ValidateArray(input)) {
-                    //Console.WriteLine("arr");
+                if(input.Base == Values.ObjectLiteral.ArrayProto) {
+                    if(spaces >= 8) {
+                        return "{Array}";
+                    }
                     string returning = "[";
                     for(int i = 0; i < input.Object.Count; i++) {
                         returning += CalcOutput(input.Object[i].Var, spaces + 2);
@@ -21,6 +21,9 @@ namespace Tools.Operators {
                     returning += "]";
                     return returning;
                 } else {
+                    if(spaces >= 8) {
+                        return "{Object}";
+                    }
                     //Console.WriteLine("passed array check");
                     string returning = "{\n";
                     foreach(Tools.Values.Variable item in input.Object) {
@@ -40,7 +43,6 @@ namespace Tools.Operators {
             } else if(input.Default == Tools.BasicTypes.FUNCTION) {
                 return "{Function}";
             } else {
-                //Console.WriteLine("accessing string");
                 return input.String;
             }
         }
@@ -50,6 +52,9 @@ namespace Tools.Operators {
             Console.WriteLine(CalcOutput(result.Var));
             //Console.WriteLine("done");
             return result;
+        }
+        public override string Print() {
+            return $"(output {Input.Print()})";
         }
     }
 }

@@ -1,7 +1,7 @@
 namespace Tools.Operators {
-    class ListSeparator : VariableOperator {
+    class ListSeparator : Operator {
         public List<IOperator> Children { get; }
-        public ListSeparator(Stack stack, int row, int col, List<IOperator>? children = null) : base(stack, row, col) {
+        public ListSeparator(int row, int col, List<IOperator>? children = null) : base(row, col) {
             this.Children = (children == null) ? new List<IOperator>() : children;
         }
         public override IValue Run() {
@@ -9,7 +9,7 @@ namespace Tools.Operators {
             for(int i = 0; i < Children.Count; i++) {
                 adding.Add(new Values.Variable($"{i}", Children[i]._Run().Var));
             }
-            return new Values.ObjectLiteral(adding, Stack.Get("Array").Var);
+            return new Values.ObjectLiteral(adding, useArrayProto: true);
         }
         public void AddValue(IOperator adding) {
             Children.Add(adding);

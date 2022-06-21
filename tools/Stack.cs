@@ -17,7 +17,7 @@ namespace Tools {
         public StackNode Push(List<Values.Variable>? head = null) {
             Length++;
             if(Length > 1000) { // BREAKPOINT 96
-                throw new RadishException("Maximum stack size of 1470 exceeded!");
+                throw new RadishException("Maximum stack size exceeded!");
             }
             Head = new StackNode((head == null) ? new List<Values.Variable>() : head, Head);
             return Head;
@@ -42,13 +42,6 @@ namespace Tools {
                 viewing = viewing.Next;
             }
             return null;
-        }
-        public Values.Variable Get(string key) {
-            Values.Variable? returned = SafeGet(key);
-            if(returned == null) {
-                throw new RadishException($"Unable to find variable {key}!");
-            }
-            return returned;
         }
         public void Print() {
             Console.WriteLine("__");

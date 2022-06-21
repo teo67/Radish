@@ -1,5 +1,6 @@
 namespace Tools.Values {
     class FunctionLiteral : EmptyLiteral {
+        public static IValue? Proto { private get; set; }
         protected Stack Stack { get; }
         protected List<string> ArgNames { get; }
         protected List<IOperator?> Defaults { get; }
@@ -7,12 +8,12 @@ namespace Tools.Values {
         public override IValue? Base { get; }
         public override List<Variable> Object { get; } // setter is only used when defining a class
         public override bool IsSuper { get; set; }
-        public FunctionLiteral(Stack stack, List<string> argNames, List<IOperator?> defaults, IOperator body, IValue func) : base("tool") {
+        public FunctionLiteral(Stack stack, List<string> argNames, List<IOperator?> defaults, IOperator body) : base("tool") {
             this.Stack = stack;
             this.ArgNames = argNames;
             this.Defaults = defaults;
             this.FunctionBody = body;
-            this.Base = func;
+            this.Base = Proto == null ? null : Proto.Var;
             this.Object = new List<Variable>();
             this.IsSuper = false;
         }
@@ -44,10 +45,10 @@ namespace Tools.Values {
             }
             if(IsSuper) {
                 //Console.WriteLine("calling super!");
-                IValue? proto = ObjectLiteral.DeepGet(this, "prototype", Stack, this);
+                IValue? proto = ObjectLiteral.DeepGet(this, "prototype", this);
                 if(proto != null) {
                     proto = proto.Var;
-                    IValue? super = (proto.Base == null) ? null : Values.ObjectLiteral.DeepGet(proto.Base, "constructor", Stack, proto.Base); 
+                    IValue? super = (proto.Base == null) ? null : Values.ObjectLiteral.DeepGet(proto.Base, "constructor", proto.Base); 
                     if(super != null) {
                         Stack.Head.Val.Add(new Variable("super", super.Var));
                     }

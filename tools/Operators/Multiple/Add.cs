@@ -1,12 +1,12 @@
 namespace Tools.Operators {
-    class Add : SimpleVariableOperator {
-        public Add(Stack stack, IOperator left, IOperator right, int row, int col) : base(stack, left, right, "+", row, col) {}
+    class Add : SimpleOperator {
+        public Add(IOperator left, IOperator right, int row, int col) : base(left, right, "+", row, col) {}
         public override IValue Combine(IValue leftResult, IValue rightResult) {
             if(leftResult.Default == BasicTypes.NUMBER) {
-                return new Values.NumberLiteral(leftResult.Number + rightResult.Number, Stack.Get("Number").Var);
+                return new Values.NumberLiteral(leftResult.Number + rightResult.Number);
             }
             if(leftResult.Default == BasicTypes.STRING) {
-                return new Values.StringLiteral(leftResult.String + rightResult.String, Stack.Get("String").Var);
+                return new Values.StringLiteral(leftResult.String + rightResult.String);
             }
             throw new RadishException("Only numbers and strings can be combined using addition!");
         }

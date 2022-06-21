@@ -6,21 +6,29 @@ namespace Tools { // adds basic prototypes to call stack
         private string? PathToLibrary { get; }
         private Stack ImportStack { get; }
         private List<Values.Variable> StandardSpecials { get; }
+        public Stack<string> CurrentlyImporting { get; }
         public Librarian(bool uselib = true) {
+            CurrentlyImporting = new Stack<string>();
             Imports = new Dictionary<string, IValue>();
             List<Values.Variable> layer = new List<Values.Variable>();
-            IValue Object = new Values.ObjectLiteral(new List<Values.Variable>(), null);
-            layer.Add(new Values.Variable("Object", Object));
-            IValue Number = new Values.ObjectLiteral(new List<Values.Variable>(), Object);
-            layer.Add(new Values.Variable("Number", Number));
-            IValue String = new Values.ObjectLiteral(new List<Values.Variable>(), Object);
-            layer.Add(new Values.Variable("String", String));
-            IValue Array = new Values.ObjectLiteral(new List<Values.Variable>(), Object);
-            layer.Add(new Values.Variable("Array", Array));
-            IValue Boolean = new Values.ObjectLiteral(new List<Values.Variable>(), Object);
-            layer.Add(new Values.Variable("Boolean", Boolean));
-            IValue Function = new Values.ObjectLiteral(new List<Values.Variable>(), Object);
-            layer.Add(new Values.Variable("Function", Function));
+            Values.Variable Object = new Values.Variable("Object", new Values.ObjectLiteral(new List<Values.Variable>(), null));
+            layer.Add(Object);
+            Values.ObjectLiteral.Proto = Object;
+            Values.Variable Number = new Values.Variable("Number", new Values.ObjectLiteral(new List<Values.Variable>(), useProto: true));
+            layer.Add(Number);
+            Values.NumberLiteral.Proto = Number;
+            Values.Variable String = new Values.Variable("String", new Values.ObjectLiteral(new List<Values.Variable>(), useProto: true));
+            layer.Add(String);
+            Values.StringLiteral.Proto = String;
+            Values.Variable Array = new Values.Variable("Array", new Values.ObjectLiteral(new List<Values.Variable>(), useProto: true));
+            layer.Add(Array);
+            Values.ObjectLiteral.ArrayProto = Array;
+            Values.Variable Boolean = new Values.Variable("Boolean", new Values.ObjectLiteral(new List<Values.Variable>(), useProto: true));
+            layer.Add(Boolean);
+            Values.BooleanLiteral.Proto = Boolean;
+            Values.Variable Function = new Values.Variable("Function", new Values.ObjectLiteral(new List<Values.Variable>(), useProto: true));
+            layer.Add(Function);
+            Values.FunctionLiteral.Proto = Function;
             FirstLayer = new StackNode(layer);
             Standard = new List<string>();
             ImportStack = new Stack(FirstLayer);
@@ -48,12 +56,12 @@ namespace Tools { // adds basic prototypes to call stack
                     }
                 }
                 StandardSpecials.Add(
-                    new Values.Variable("OUTPUT", new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, new Operators.Output(new Operators.Reference(ImportStack, "input", -1, -1, this), ImportStack), Function))
+                    new Values.Variable("OUTPUT", new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, new Operators.Output(new Operators.Reference(ImportStack, "input", -1, -1, this))))
                 );
                 Lookup("PROTOTYPES", -1, -1); // we lookup prototypes at the beginning to add properties to literal classes
                 //this will directly edit the first layer of the stack
             } else {
-                layer.Add(new Values.Variable("holler", new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, new Operators.Output(new Operators.Reference(ImportStack, "input", -1, -1, this), ImportStack), Function)));
+                layer.Add(new Values.Variable("holler", new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, new Operators.Output(new Operators.Reference(ImportStack, "input", -1, -1, this)))));
                 // add a basic holler function just so radish is still usable
             }
         }
@@ -96,7 +104,7 @@ namespace Tools { // adds basic prototypes to call stack
                 throw new RadishException($"Could not find a standard library definition for {path}", row, col);
             }
             Operations operations = new Operations(reader, false, true, this); // only case in which it's okay to set last arg to true
-            RadishException.Append($"in {path}", -1, -1);
+            RadishException.Append($"in {path}", -1, -1, false);
             IValue returned = operations.ParseScope().Run();
             RadishException.Pop();
             if(returned.Default == BasicTypes.RETURN) { 

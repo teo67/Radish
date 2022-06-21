@@ -3,14 +3,12 @@ namespace Tools.Values {
         private Variable? Held { get; }
         private string Name { get; }
         private IValue Obj { get; }
-        private Stack Stack { get; }
         private ProtectionLevels ProtectionLevel { get; }
-        public PropertyHolder(Variable? held, string name, IValue obj, Stack stack, ProtectionLevels protectionLevel) {
+        public PropertyHolder(Variable? held, string name, IValue obj, ProtectionLevels protectionLevel) {
             //Console.WriteLine($"creating property holder with value {held}, name {name}");
             this.Held = held;
             this.Name = name;
             this.Obj = obj;
-            this.Stack = stack;
             this.ProtectionLevel = protectionLevel;
         }
 
@@ -73,10 +71,24 @@ namespace Tools.Values {
                 if(Held == null) {
                     Obj.Object.Add(new Variable(Name, value, ProtectionLevel));
                 } else {
-                    IValue? previous = Held.ThisRef;
-                    Held.ThisRef = Obj;
-                    Held.Var = value;
-                    Held.ThisRef = previous;
+                    Variable? setting = null;
+                    if(Obj.Object.Contains(Held)) {
+                        setting = Held;
+                    } else {
+                        foreach(Variable vari in Obj.Object) {
+                            if(vari.Name == Name) {
+                                setting = vari;
+                            }
+                        }
+                        if(setting == null) {
+                            setting = Held.Clone();
+                            Obj.Object.Add(setting);
+                        }
+                    }
+                    IValue? previous = setting.ThisRef;
+                    setting.ThisRef = Obj;
+                    setting.Var = value;
+                    setting.ThisRef = previous;
                 }
             }
         }

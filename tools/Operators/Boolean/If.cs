@@ -1,8 +1,6 @@
 namespace Tools.Operators {
-    class If : SimpleOperator {
-        private Stack Stack { get; }
-        public If(Stack stack, IOperator left, IOperator right, int row, int col) : base(left, right, "if", row, col) {
-            this.Stack = stack;
+    class If : SimpleVariableOperator {
+        public If(Stack stack, IOperator left, IOperator right, int row, int col) : base(stack, left, right, "if", row, col) {
         } // left is condition, right is scope
         public bool Check() {
             return Left._Run().Boolean;

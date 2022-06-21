@@ -81,5 +81,8 @@ namespace Tools.Values {
                 Resolve().IsSuper = value;
             }
         }
+        public virtual Variable Clone() {
+            return new Variable(Name, Host, ProtectionLevel, IsStatic);
+        }
     }
 }
