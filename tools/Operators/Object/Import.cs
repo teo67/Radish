@@ -5,7 +5,11 @@ namespace Tools.Operators {
         private Librarian Librarian { get; }
         public Import(IOperator fileName, int row, int col, string path, Librarian librarian) : base(row, col) {
             this.FileName = fileName;
-            this.Path = path;
+            int lastI = path.LastIndexOf('/');
+            if(lastI == -1) {
+                throw new RadishException($"Invalid import path: {fileName}!", Row, Col);
+            }
+            this.Path = path.Substring(0, lastI);
             this.Librarian = librarian;
         }
         public override IValue Run() {
@@ -37,10 +41,11 @@ namespace Tools.Operators {
                 throw new RadishException($"Could not find file {name}", Row, Col);
             }
             Operations operations = new Operations(reader, false, false, Librarian);
-            RadishException.Append($"in {realPath}", -1, -1, false);
+            string previous = RadishException.FileName;
+            RadishException.FileName = realPath;
             Librarian.CurrentlyImporting.Push(realPath);
             IValue returned = operations.ParseScope().Run();
-            RadishException.Pop();
+            RadishException.FileName = previous;
             Librarian.CurrentlyImporting.Pop();
             if(returned.Default == BasicTypes.RETURN) { 
                 returned = returned.Function(new List<Values.Variable>(), null);

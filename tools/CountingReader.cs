@@ -8,11 +8,7 @@ namespace Tools {
             Container = new StreamReader(filename);
             row = 1;
             col = 1;
-            int lastIndex = filename.LastIndexOf('/');
-            if(lastIndex == -1) {
-                throw new Exception("Invalid file path!");
-            }
-            Filename = filename.Substring(0, lastIndex);
+            Filename = filename;
         }
         public bool EndOfStream {
             get {

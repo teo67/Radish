@@ -6,6 +6,7 @@ namespace Tools {
             dot,
             quotes,
             hashtags, 
+            semis,
             whitespace,
             operators,
             symbols, // these cant be chained and are immediately parsed when added
@@ -13,6 +14,7 @@ namespace Tools {
         private Dictionary<char, CharTypes> dict;
         private char dotChar;
         private char hashChar;
+        private char semi;
         private CountingReader reader { get; }
         private Dictionary<char, char> backslashes;
         public Lexer(CountingReader reader) {
@@ -24,6 +26,7 @@ namespace Tools {
             };
             dotChar = '.';
             hashChar = '#';
+            semi = ';';
             string numbers = "0123456789";
             string letters = "abcdefghijklmnopqrstuvwxyz";
             for(int i = 0; i < letters.Length; i++) {
@@ -51,6 +54,7 @@ namespace Tools {
             dict.Add('"', CharTypes.quotes);
             dict.Add('\'', CharTypes.quotes);
             dict.Add(hashChar, CharTypes.hashtags);
+            dict.Add(semi, CharTypes.semis);
         }
         
         private CharTypes GetCharType(char input) {
@@ -65,6 +69,9 @@ namespace Tools {
             if(current == TokenTypes.COMMENT && (currentRaw.Length == 1 || currentRaw[currentRaw.Length - 1] != hashChar)) { // being in a comment gets first priority
                 return TokenTypes.SAME;
             }
+            if(current == TokenTypes.SEMIS && (currentRaw.Length == 1 || currentRaw[currentRaw.Length - 1] != semi)) { // being in a comment gets first priority
+                return TokenTypes.SAME;
+            }
             if(current == TokenTypes.STRING && (currentRaw.Length == 1 || (currentRaw[currentRaw.Length - 1] != '"' && currentRaw[currentRaw.Length - 1] != '\''))) { // then being in a string
                 return TokenTypes.SAME;
             }
@@ -73,6 +80,8 @@ namespace Tools {
                     return TokenTypes.STRING;
                 case CharTypes.hashtags:
                     return TokenTypes.COMMENT;
+                case CharTypes.semis:
+                    return TokenTypes.SEMIS;
                 case CharTypes.whitespace:
                     return TokenTypes.NONE;
                 case CharTypes.letter:
@@ -131,7 +140,7 @@ namespace Tools {
                         reader.Read();
                         currentRaw += read;
                     } else {
-                        if(current != TokenTypes.COMMENT && current != TokenTypes.NONE) {
+                        if(current != TokenTypes.COMMENT && current != TokenTypes.NONE && current != TokenTypes.SEMIS) {
                             return Convert(current, currentRaw);
                         }
                         reader.Read();
@@ -140,7 +149,7 @@ namespace Tools {
                     }
                 }
             } while(!reader.EndOfStream);
-            if(current == TokenTypes.COMMENT || current == TokenTypes.NONE) {
+            if(current == TokenTypes.COMMENT || current == TokenTypes.NONE || current == TokenTypes.SEMIS) {
                 return new LexEntry(TokenTypes.ENDOFFILE, "");
             }
             return Convert(current, currentRaw);

@@ -14,9 +14,9 @@
         Tools.Radish? radish = null;
         try {
             string first = System.IO.Directory.GetCurrentDirectory();
-            first = first.Replace('\\', '/'); // we use forward slashes
-            Tools.RadishException.Append("in main.rdsh", -1, -1, false);
-            radish = new Tools.Radish(first + "/main.rdsh");
+            first = first.Replace('\\', '/') + "/main.rdsh"; // we use forward slashes
+            Tools.RadishException.FileName = first;
+            radish = new Tools.Radish(first);
         } catch(Exception e) {
             Console.WriteLine($"Error initiating program: {e.Message}");
         }

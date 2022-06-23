@@ -8,7 +8,8 @@ namespace Tools.Values {
         public override IValue? Base { get; }
         public override List<Variable> Object { get; } // setter is only used when defining a class
         public override bool IsSuper { get; set; }
-        public FunctionLiteral(Stack stack, List<string> argNames, List<IOperator?> defaults, IOperator body) : base("tool") {
+        private string FileName { get; }
+        public FunctionLiteral(Stack stack, List<string> argNames, List<IOperator?> defaults, IOperator body, string fileName) : base("tool") {
             this.Stack = stack;
             this.ArgNames = argNames;
             this.Defaults = defaults;
@@ -16,6 +17,7 @@ namespace Tools.Values {
             this.Base = Proto == null ? null : Proto.Var;
             this.Object = new List<Variable>();
             this.IsSuper = false;
+            this.FileName = fileName;
         }
         public override BasicTypes Default {
             get {
@@ -60,7 +62,10 @@ namespace Tools.Values {
                 Stack.Head.Val.Add(new Variable("this", _this));
                 ObjectLiteral.CurrentPrivate = _this;
             }
+            string previous = RadishException.FileName;
+            RadishException.FileName = FileName;
             IValue result = FunctionBody._Run();
+            RadishException.FileName = previous;
             Stack.Pop();
             ObjectLiteral.CurrentPrivate = saved;
             if(result.Default != BasicTypes.RETURN) {

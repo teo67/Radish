@@ -4,7 +4,7 @@ namespace Tools.Operators {
         }
         public override IValue Run() {
             List<Values.Variable> args = Right._Run().Object;
-            RadishException.Append($"at {Left.Print()}()", Row, Col, false);
+            RadishException.Append($"at {Left.Print()}()", Row, Col, "", false);
             IValue left = Left._Run();
             IValue returned = left.Function(args, null);
             RadishException.Pop();

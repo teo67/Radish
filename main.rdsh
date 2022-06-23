@@ -1,3 +1,2 @@
-for(dig i plant 0, i <= 100, i++) {
-    holler(i)
-}
+d a p import "c"
+a()

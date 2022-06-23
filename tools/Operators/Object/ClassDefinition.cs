@@ -2,9 +2,11 @@ namespace Tools.Operators {
     class ClassDefinition : VariableOperator {
         private IOperator Body { get; }
         private IOperator? Inheriting { get; }
-        public ClassDefinition(Stack stack, IOperator body, IOperator? inheriting, int row, int col) : base(stack, row, col) {
+        private string FileName { get; }
+        public ClassDefinition(Stack stack, IOperator body, IOperator? inheriting, int row, int col, string fileName) : base(stack, row, col) {
             this.Body = body;
             this.Inheriting = inheriting;
+            this.FileName = fileName;
         }
         public override IValue Run() {
             Stack.Push();
@@ -29,7 +31,7 @@ namespace Tools.Operators {
                 }
             }
             if(fun == null) {
-                fun = new Values.FunctionLiteral(Stack, new List<string>(), new List<IOperator?>(), new Operators.ExpressionSeparator(Row, Col));
+                fun = new Values.FunctionLiteral(Stack, new List<string>(), new List<IOperator?>(), new Operators.ExpressionSeparator(Row, Col), FileName);
                 nonstatics.Add(new Values.Variable("constructor", fun));
             }
             IValue proto;

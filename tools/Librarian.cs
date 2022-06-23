@@ -55,13 +55,14 @@ namespace Tools { // adds basic prototypes to call stack
                         Standard.Add(dirName);
                     }
                 }
-                StandardSpecials.Add(
-                    new Values.Variable("OUTPUT", new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, new Operators.Output(new Operators.Reference(ImportStack, "input", -1, -1, this))))
-                );
+                StandardSpecials.Add(new Values.Variable("OUTPUT", new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, new Operators.Output(new Operators.Reference(ImportStack, "input", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add(new Values.Variable("LOG", new Values.FunctionLiteral(ImportStack, new List<string>() { "loginput", "logbase" }, new List<IOperator?>() { null, null }, new Operators.Log(new Operators.Reference(ImportStack, "loginput", -1, -1, this), new Operators.Reference(ImportStack, "logbase", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add(new Values.Variable("ARRLEN", new Values.FunctionLiteral(ImportStack, new List<string>() { "arrinput" }, new List<IOperator?>() { null }, new Operators.ArrayLength(new Operators.Reference(ImportStack, "arrinput", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add(new Values.Variable("STRLEN", new Values.FunctionLiteral(ImportStack, new List<string>() { "strinput" }, new List<IOperator?>() { null }, new Operators.StringLength(new Operators.Reference(ImportStack, "strinput", -1, -1, this)), "Standard Library")));
                 Lookup("PROTOTYPES", -1, -1); // we lookup prototypes at the beginning to add properties to literal classes
                 //this will directly edit the first layer of the stack
             } else {
-                layer.Add(new Values.Variable("holler", new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, new Operators.Output(new Operators.Reference(ImportStack, "input", -1, -1, this)))));
+                layer.Add(new Values.Variable("holler", new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, new Operators.Output(new Operators.Reference(ImportStack, "input", -1, -1, this)), "Standard Library")));
                 // add a basic holler function just so radish is still usable
             }
         }
@@ -104,9 +105,10 @@ namespace Tools { // adds basic prototypes to call stack
                 throw new RadishException($"Could not find a standard library definition for {path}", row, col);
             }
             Operations operations = new Operations(reader, false, true, this); // only case in which it's okay to set last arg to true
-            RadishException.Append($"in {path}", -1, -1, false);
+            string previous = RadishException.FileName;
+            RadishException.FileName = path;
             IValue returned = operations.ParseScope().Run();
-            RadishException.Pop();
+            RadishException.FileName = previous;
             if(returned.Default == BasicTypes.RETURN) { 
                 returned = returned.Function(new List<Values.Variable>(), null);
             }

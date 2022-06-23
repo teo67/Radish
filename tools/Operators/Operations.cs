@@ -394,7 +394,18 @@ namespace Tools {
         }
 
         private IOperator ParseFactors() {
-            return Parse("Factors", IsFactors, ParseNegatives);
+            return Parse("Factors", IsFactors, ParseExponents);
+        }
+
+        private Operators.SimpleOperator? IsExponent(string val, IOperator current, Func<IOperator> previous) {
+            if(val == "**") {
+                return new Operators.Exponent(current, previous(), Row, Col);
+            }
+            return null;
+        }
+
+        private IOperator ParseExponents() {
+            return Parse("Exponents", IsExponent, ParseNegatives);
         }
 
         private IOperator ParseNegatives() {
@@ -511,10 +522,10 @@ namespace Tools {
                                 }
                                 RequireSymbol("{");
                                 if(newType.Val == "plant" || newType.Val == "p") {
-                                    give = new Operators.FunctionDefinition(stack, new List<string>() { "input" }, new List<IOperator?>() { null }, ParseScope(), Row, Col);
+                                    give = new Operators.FunctionDefinition(stack, new List<string>() { "input" }, new List<IOperator?>() { null }, ParseScope(), Row, Col, reader.Filename);
 
                                 } else if(newType.Val == "harvest" || newType.Val == "h") {
-                                    _get = new Operators.FunctionDefinition(stack, new List<string>(), new List<IOperator?>(), ParseScope(), Row, Col);
+                                    _get = new Operators.FunctionDefinition(stack, new List<string>(), new List<IOperator?>(), ParseScope(), Row, Col, reader.Filename);
                                 } else {
                                     throw new RadishException("Only plant and harvest functions are valid in this context!");
                                 }
@@ -541,7 +552,7 @@ namespace Tools {
                     RequireSymbol("{");
                     Operators.ExpressionSeparator body = ParseScope();
                     RequireSymbol("}");
-                    Operators.FunctionDefinition def = new Operators.FunctionDefinition(stack, args.Item1, args.Item2, body, Row, Col);
+                    Operators.FunctionDefinition def = new Operators.FunctionDefinition(stack, args.Item1, args.Item2, body, Row, Col, reader.Filename);
                     return def;
                 }
                 if(returned.Val == "null") {
@@ -559,7 +570,7 @@ namespace Tools {
                 }
                 if(returned.Val == "import") {
                     Print("parsing import");
-                    IOperator importing = ParseNegatives();
+                    IOperator importing = ParseExpression();
                     return new Operators.Import(importing, Row, Col, reader.Filename, Librarian);
                 }
                 if(returned.Val == "class") {
@@ -576,7 +587,7 @@ namespace Tools {
                     IOperator body = ParseScope();
                     Print("parsing closing braces");
                     RequireSymbol("}");
-                    return new Operators.ClassDefinition(stack, body, _base, Row, Col);
+                    return new Operators.ClassDefinition(stack, body, _base, Row, Col, reader.Filename);
                 }
                 if(returned.Val == "new") {
                     Print("parsing class instantiation");
