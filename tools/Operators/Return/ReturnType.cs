@@ -11,7 +11,7 @@ namespace Tools.Operators {
             this.Stored = stored;
         }
         public override IValue Run() {
-            return new Values.ReturnType(Type, (Stored == null) ? new Values.NoneLiteral() : Stored._Run());
+            return new Values.ReturnType(Type, (Stored == null) ? new Values.NoneLiteral() : Stored._Run().Var);
         }
         public override string Print() {
             return $"({Type} {((Stored == null) ? "none" : Stored.Print())}";

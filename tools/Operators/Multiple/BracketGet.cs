@@ -8,10 +8,15 @@ namespace Tools.Operators {
             this.Name = name;
         }
         public override IValue Run() {
-            IValue result = Left._Run().Var;
+            IValue result = Left._Run();
+            IValue evald = result.Var;
+            if(evald.Default == BasicTypes.STRING) {
+                int index = (int)Name._Run().Number;
+                return new Values.Character(result, index, "" + evald.String[index]);
+            }
             string nameR = Name._Run().String;
-            Values.Variable? gotten = Values.ObjectLiteral.DeepGet(result, nameR, result);
-            return new Values.PropertyHolder(gotten, nameR, result, gotten == null ? ProtectionLevels.PUBLIC : gotten.ProtectionLevel);
+            Values.Variable? gotten = Values.ObjectLiteral.DeepGet(evald, nameR, evald);
+            return new Values.PropertyHolder(gotten, nameR, evald, gotten == null ? ProtectionLevels.PUBLIC : gotten.ProtectionLevel);
         }
 
         public override string Print() {

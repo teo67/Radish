@@ -41,7 +41,7 @@ namespace Tools {
                 // keywords that should be parsed as operators
                 "if", "elseif", "else", 
                 "while", "for", 
-                "dig", "d", "tool", "t", "plant", "p", "prune",
+                "dig", "d", "tool", "t", "plant", "p", "uproot",
                 "harvest", "h", "cancel", "continue", "end",
                 "new", "null", "class",
                 "public", "private", "protected", "static",
@@ -571,7 +571,7 @@ namespace Tools {
                 if(returned.Val == "import") {
                     Print("parsing import");
                     IOperator importing = ParseExpression();
-                    return new Operators.Import(importing, Row, Col, reader.Filename, Librarian);
+                    return new Operators.Import(importing, Row, Col, reader.Filename, Librarian, IsStandard);
                 }
                 if(returned.Val == "class") {
                     Print("parsing class definition");

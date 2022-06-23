@@ -11,7 +11,7 @@ namespace Tools.Operators {
             IValue? returning = null;
             for(int i = 0; i < asVar.Count; i++) {
                 if(asVar[i].Name == Name) {
-                    returning = asVar[i];
+                    returning = asVar[i].Var;
                     asVar.RemoveAt(i);
                 }
             }

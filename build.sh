@@ -1,4 +1,5 @@
 dotnet build
+rm -r -f Radish
 mkdir Radish
 cd Radish
 mkdir bin

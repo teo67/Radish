@@ -3,7 +3,8 @@ namespace Tools.Operators {
         private IOperator FileName { get; }
         private string Path { get; }
         private Librarian Librarian { get; }
-        public Import(IOperator fileName, int row, int col, string path, Librarian librarian) : base(row, col) {
+        private bool IsStandard { get; }
+        public Import(IOperator fileName, int row, int col, string path, Librarian librarian, bool isStandard) : base(row, col) {
             this.FileName = fileName;
             int lastI = path.LastIndexOf('/');
             if(lastI == -1) {
@@ -11,6 +12,7 @@ namespace Tools.Operators {
             }
             this.Path = path.Substring(0, lastI);
             this.Librarian = librarian;
+            this.IsStandard = isStandard;
         }
         public override IValue Run() {
             string name = FileName._Run().String;
@@ -40,7 +42,7 @@ namespace Tools.Operators {
             } catch {
                 throw new RadishException($"Could not find file {name}", Row, Col);
             }
-            Operations operations = new Operations(reader, false, false, Librarian);
+            Operations operations = new Operations(reader, false, IsStandard, Librarian);
             string previous = RadishException.FileName;
             RadishException.FileName = realPath;
             Librarian.CurrentlyImporting.Push(realPath);
