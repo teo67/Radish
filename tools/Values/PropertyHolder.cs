@@ -12,7 +12,7 @@ namespace Tools.Values {
             this.ProtectionLevel = protectionLevel;
         }
 
-        public bool IsSuper {
+        public IValue? IsSuper {
             get {
                 return Resolve().IsSuper;
             }
