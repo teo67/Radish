@@ -1,0 +1,6 @@
+holler("hello \"world\"")
+holler("hello '10 * 10' worlds!")
+holler("hello"[0])
+# output: hello "world"
+hello 100 worlds!
+h #

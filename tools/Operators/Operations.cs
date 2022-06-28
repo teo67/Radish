@@ -45,7 +45,7 @@ namespace Tools {
                 "harvest", "h", "cancel", "continue", "end",
                 "new", "null", "class",
                 "public", "private", "protected", "static",
-                "try", "catch", "throw", "import", "all", "pass"
+                "try", "catch", "throw", "import", "all"
             };
         }
         public Operations(CountingReader reader, bool verbose, bool isStandard, Librarian librarian) {
