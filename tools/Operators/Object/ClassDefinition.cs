@@ -10,7 +10,7 @@ namespace Tools.Operators {
         }
         public override IValue Run() {
             Stack.Push();
-            Values.Variable constr = new Values.Variable("constructor", new Values.FunctionLiteral(Stack, new List<string>(), new List<IOperator?>(), new NullValue(Row, Col), FileName));
+            Values.Variable constr = new Values.Variable("constructor", new Values.FunctionLiteral(Stack, new List<string>(), new List<IOperator?>(), false, new NullValue(Row, Col), FileName));
             Stack.Head.Val.Add(constr);
             IValue result = Body._Run();
             if(result.Default == BasicTypes.RETURN) {

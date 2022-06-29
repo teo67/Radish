@@ -42,7 +42,7 @@ namespace Tools {
                 "if", "elseif", "else", 
                 "while", "for", 
                 "dig", "d", "tool", "t", "plant", "p", "uproot",
-                "harvest", "h", "cancel", "continue", "end",
+                "harvest", "h", "cancel", "continue", "end", "fill",
                 "new", "null", "class",
                 "public", "private", "protected", "static",
                 "try", "catch", "throw", "import", "all"
@@ -244,11 +244,19 @@ namespace Tools {
             });
         }
 
-        private (List<string>, List<IOperator?>) ParseArgs() {
-            return ParseLi<(List<string>, List<IOperator?>)>(() => {
+        private (List<string>, List<IOperator?>, bool) ParseArgs() {
+            bool fill = false;
+            (List<string>, List<IOperator?>) result = ParseLi<(List<string>, List<IOperator?>)>(() => {
                 return (new List<string>(), new List<IOperator?>());
             }, ((List<string>, List<IOperator?>) returning) => {
+                if(fill) {
+                    throw new RadishException("If a function contains a 'fill' argument, it must be after all other arguments.", Row, Col);
+                }
                 LexEntry key = Read();
+                if(key.Type == TokenTypes.OPERATOR && key.Val == "fill") {
+                    fill = true;
+                    key = Read();
+                }
                 if(key.Type != TokenTypes.KEYWORD) {
                     Error("Expecting a function parameter!");
                 }
@@ -262,6 +270,7 @@ namespace Tools {
                 returning.Item1.Add(key.Val);
                 returning.Item2.Add(exp);
             });
+            return (result.Item1, result.Item2, fill);
         }
 
         private IOperator Parse(string name, Func<string, IOperator, Func<IOperator>, IOperator?> run, Func<IOperator> previous) {
@@ -522,10 +531,10 @@ namespace Tools {
                                 }
                                 RequireSymbol("{");
                                 if(newType.Val == "plant" || newType.Val == "p") {
-                                    give = new Operators.FunctionDefinition(stack, new List<string>() { "input" }, new List<IOperator?>() { null }, ParseScope(), Row, Col, reader.Filename);
+                                    give = new Operators.FunctionDefinition(stack, new List<string>() { "input" }, new List<IOperator?>() { null }, false, ParseScope(), Row, Col, reader.Filename);
 
                                 } else if(newType.Val == "harvest" || newType.Val == "h") {
-                                    _get = new Operators.FunctionDefinition(stack, new List<string>(), new List<IOperator?>(), ParseScope(), Row, Col, reader.Filename);
+                                    _get = new Operators.FunctionDefinition(stack, new List<string>(), new List<IOperator?>(), false, ParseScope(), Row, Col, reader.Filename);
                                 } else {
                                     throw new RadishException("Only plant and harvest functions are valid in this context!");
                                 }
@@ -547,12 +556,12 @@ namespace Tools {
                 if(returned.Val == "tool" || returned.Val == "t") {
                     Print("parsing function definition");
                     RequireSymbol("(");
-                    (List<string>, List<IOperator?>) args = ParseArgs();
+                    (List<string>, List<IOperator?>, bool) args = ParseArgs();
                     RequireSymbol(")");
                     RequireSymbol("{");
                     Operators.ExpressionSeparator body = ParseScope();
                     RequireSymbol("}");
-                    Operators.FunctionDefinition def = new Operators.FunctionDefinition(stack, args.Item1, args.Item2, body, Row, Col, reader.Filename);
+                    Operators.FunctionDefinition def = new Operators.FunctionDefinition(stack, args.Item1, args.Item2, args.Item3, body, Row, Col, reader.Filename);
                     return def;
                 }
                 if(returned.Val == "null") {

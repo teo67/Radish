@@ -7,7 +7,7 @@ namespace Tools.Operators {
 
         private string CalcOutput(Tools.IValue input, int spaces = 2) {
             if(input.Default == Tools.BasicTypes.OBJECT) {
-                if(input.Base == Values.ObjectLiteral.ArrayProto) {
+                if(Values.ObjectLiteral.ArrayProto != null && input.Base == Values.ObjectLiteral.ArrayProto.Var) {
                     if(spaces >= 8) {
                         return "{Array}";
                     }

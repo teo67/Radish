@@ -1,6 +1,4 @@
-holler("hello \"world\"")
-holler("hello '10 * 10' worlds!")
-holler("hello"[0])
-# output: hello "world"
-hello 100 worlds!
-h #
+dig a plant tool (fill a) {
+    holler(a)
+}
+a(1, 2, 3, 4, 5)

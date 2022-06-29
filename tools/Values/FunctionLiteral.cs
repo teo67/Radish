@@ -1,18 +1,20 @@
 namespace Tools.Values {
     class FunctionLiteral : EmptyLiteral {
         public static IValue? Proto { private get; set; }
-        protected Stack Stack { get; }
-        protected List<string> ArgNames { get; }
-        protected List<IOperator?> Defaults { get; }
+        private Stack Stack { get; }
+        private List<string> ArgNames { get; }
+        private List<IOperator?> Defaults { get; }
+        private bool Fill { get; }
         public override IOperator FunctionBody { get; }
         public override IValue? Base { get; }
         public override List<Variable> Object { get; } // setter is only used when defining a class
         public override IValue? IsSuper { get; set; }
         private string FileName { get; }
-        public FunctionLiteral(Stack stack, List<string> argNames, List<IOperator?> defaults, IOperator body, string fileName) : base("tool") {
+        public FunctionLiteral(Stack stack, List<string> argNames, List<IOperator?> defaults, bool fill, IOperator body, string fileName) : base("tool") {
             this.Stack = stack;
             this.ArgNames = argNames;
             this.Defaults = defaults;
+            this.Fill = fill;
             this.FunctionBody = body;
             this.Base = Proto == null ? null : Proto.Var;
             this.Object = new List<Variable>();
@@ -31,7 +33,7 @@ namespace Tools.Values {
         }
         public override IValue Function(List<Variable> args, IValue? _this) {
             Stack.Push();
-            for(int i = 0; i < ArgNames.Count; i++) {
+            for(int i = 0; i < ArgNames.Count - (Fill ? 1 : 0); i++) {
                 IValue? host = null;
                 if(args.Count > i) {
                     host = args[i].Var;
@@ -44,6 +46,20 @@ namespace Tools.Values {
                     }
                 }
                 Stack.Head.Val.Add(new Variable(ArgNames[i], host));
+            }
+            if(Fill) {
+                IValue? host = null;
+                IOperator? def = Defaults[ArgNames.Count - 1];
+                if(def != null && args.Count < ArgNames.Count) {
+                    host = def._Run().Var;
+                } else {
+                    List<Values.Variable> arr = new List<Variable>();
+                    for(int i = ArgNames.Count - 1; i < args.Count; i++) {
+                        arr.Add(new Values.Variable($"{i - ArgNames.Count + 1}", args[i].Var));
+                    }
+                    host = new Values.ObjectLiteral(arr, useArrayProto: true);
+                }
+                Stack.Head.Val.Add(new Variable(ArgNames[ArgNames.Count - 1], host));
             }
             if(IsSuper != null) {
                 Stack.Head.Val.Add(new Variable("super", IsSuper)); 
