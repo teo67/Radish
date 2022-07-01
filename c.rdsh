@@ -1,4 +1,2 @@
-d c p 10
-h t() {
-    holler(c)
-}
+d a p 2
+holler(a)

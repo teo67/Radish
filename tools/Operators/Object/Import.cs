@@ -46,7 +46,7 @@ namespace Tools.Operators {
             string previous = RadishException.FileName;
             RadishException.FileName = realPath;
             Librarian.CurrentlyImporting.Push(realPath);
-            IValue returned = operations.ParseScope().Run(Stack);
+            IValue returned = operations.ParseScope().Run(operations.stack);
             RadishException.FileName = previous;
             Librarian.CurrentlyImporting.Pop();
             if(returned.Default == BasicTypes.RETURN) { 
