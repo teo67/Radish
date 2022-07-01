@@ -4,10 +4,10 @@ namespace Tools.Operators {
         public ListSeparator(int row, int col, List<IOperator>? children = null) : base(row, col) {
             this.Children = (children == null) ? new List<IOperator>() : children;
         }
-        public override IValue Run() {
+        public override IValue Run(Stack Stack) {
             List<Values.Variable> adding = new List<Values.Variable>();
             for(int i = 0; i < Children.Count; i++) {
-                adding.Add(new Values.Variable($"{i}", Children[i]._Run().Var));
+                adding.Add(new Values.Variable($"{i}", Children[i]._Run(Stack).Var));
             }
             return new Values.ObjectLiteral(adding, useArrayProto: true);
         }

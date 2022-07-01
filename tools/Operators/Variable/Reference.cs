@@ -1,12 +1,12 @@
 namespace Tools.Operators {
-    class Reference : VariableOperator {
+    class Reference : Operator {
         private string VarName { get; }
         private Librarian Librarian { get; }
-        public Reference(Stack stack, string varName, int row, int col, Librarian librarian) : base(stack, row, col) {
+        public Reference(string varName, int row, int col, Librarian librarian) : base(row, col) {
             this.VarName = varName;
             this.Librarian = librarian;
         }
-        public override IValue Run() {
+        public override IValue Run(Stack Stack) {
             IValue? returned = Stack.SafeGet(VarName);
             if(returned != null) {
                 return returned;

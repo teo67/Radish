@@ -25,7 +25,7 @@ namespace Tools.Values {
             }
         }
         public override bool Equals(IValue other) {
-            return Number == other.Number;
+            return other.Default == BasicTypes.NUMBER && Number == other.Number;
         }
         public override string Print() {
             return $"number({Number})";

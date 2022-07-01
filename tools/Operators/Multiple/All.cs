@@ -1,7 +1,7 @@
 namespace Tools.Operators {
-    class All : VariableOperator {
-        public All(Stack stack, int row, int col) : base(stack, row, col) {}
-        public override IValue Run() {
+    class All : Operator {
+        public All(int row, int col) : base(row, col) {}
+        public override IValue Run(Stack Stack) {
             return new Values.ObjectLiteral(Stack.Head.Val, useProto: true);
         }
         public override string Print() {

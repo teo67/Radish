@@ -6,9 +6,9 @@ namespace Tools.Operators {
             this.ClassName = className;
             this.Args = args;
         }
-        public override IValue Run() {
-            List<Values.Variable> args = Args._Run().Object;
-            IValue _class = ClassName._Run().Var;
+        public override IValue Run(Stack Stack) {
+            List<Values.Variable> args = Args._Run(Stack).Object;
+            IValue _class = ClassName._Run(Stack).Var;
             IValue? inheriting = null;
             IValue? returned = Values.ObjectLiteral.DeepGet(_class, "prototype", _class);
             if(returned != null) {

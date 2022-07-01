@@ -1,11 +1,11 @@
 namespace Tools.Operators {
     class Operator : IOperator {
-        public IValue _Run() {
+        public IValue _Run(Stack Stack) {
             int r = RadishException.Row;
             int c = RadishException.Col;
             RadishException.Row = this.Row;
             RadishException.Col = this.Col;
-            IValue saved = Run();
+            IValue saved = Run(Stack);
             RadishException.Row = r;
             RadishException.Col = c;
             return saved;
@@ -13,7 +13,7 @@ namespace Tools.Operators {
         public virtual string Print() {
             throw new RadishException("Cannot print an operator!");
         }
-        public virtual IValue Run() {
+        public virtual IValue Run(Stack Stack) {
             throw new RadishException("Cannot run an operator!");
         }
         public virtual int Row { get; }

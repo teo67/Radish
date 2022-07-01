@@ -4,8 +4,8 @@ namespace Tools.Operators {
         public Decrement(IOperator stored, int row, int col) : base(row, col) {
             this.Stored = stored;
         }
-        public override IValue Run() {
-            IValue result = Stored._Run();
+        public override IValue Run(Stack Stack) {
+            IValue result = Stored._Run(Stack);
             result.Var = new Values.NumberLiteral(result.Number - 1);
             return result;
         }

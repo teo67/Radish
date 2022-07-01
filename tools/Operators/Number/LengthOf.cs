@@ -4,8 +4,8 @@ namespace Tools.Operators {
         public LengthOf(IOperator arr, int row, int col) : base(row, col) {
             this.Arr = arr;
         }
-        public override IValue Run() {
-            IValue returned = Arr._Run().Var;
+        public override IValue Run(Stack Stack) {
+            IValue returned = Arr._Run(Stack).Var;
             if(returned.Default == BasicTypes.OBJECT) {
                 return new Values.NumberLiteral(returned.Object.Count);
             } else if(returned.Default == BasicTypes.STRING) {

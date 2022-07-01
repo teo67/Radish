@@ -1,4 +1,0 @@
-dig a plant tool (fill a) {
-    holler(a)
-}
-a(1, 2, 3, 4, 5)

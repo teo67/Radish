@@ -4,10 +4,10 @@ namespace Tools.Operators {
         public IfChain(int row, int col, List<If>? children = null) : base(row, col) {
             this.Children = (children == null) ? new List<If>() : children;
         }
-        public override IValue Run() {
+        public override IValue Run(Stack Stack) {
             foreach(If child in Children) {
-                if(child.Check()) {
-                    return child._Run();
+                if(child.Check(Stack)) {
+                    return child._Run(Stack);
                 }
             }
             return new Values.NoneLiteral();

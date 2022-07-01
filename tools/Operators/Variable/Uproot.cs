@@ -1,10 +1,10 @@
 namespace Tools.Operators {
-    class Uproot : VariableOperator {
+    class Uproot : Operator {
         private string VarName { get; }
-        public Uproot(Stack stack, string varName, int row, int col) : base(stack, row, col) {
+        public Uproot(string varName, int row, int col) : base(row, col) {
             this.VarName = varName;
         }
-        public override IValue Run() {
+        public override IValue Run(Stack Stack) {
             IValue? returning = null;
             for(int i = 0; i < Stack.Head.Val.Count; i++) {
                 if(Stack.Head.Val[i].Name == VarName) {

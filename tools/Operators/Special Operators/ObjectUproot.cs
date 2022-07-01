@@ -6,9 +6,9 @@ namespace Tools.Operators {
             this.Obj = obj;
             this.Key = key;
         }
-        public override IValue Run() {
-            List<Values.Variable> obj = Obj._Run().Object;
-            string key = Key._Run().String;
+        public override IValue Run(Stack Stack) {
+            List<Values.Variable> obj = Obj._Run(Stack).Object;
+            string key = Key._Run(Stack).String;
             for(int i = 0; i < obj.Count; i++) {
                 if(obj[i].Name == key) {
                     IValue saved = obj[i].Var;

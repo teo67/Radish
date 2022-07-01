@@ -33,6 +33,14 @@ namespace Tools.Values {
         }
         public override IValue Function(List<Variable> args, IValue? _this) {
             Stack.Push();
+            if(IsSuper != null) {
+                Stack.Head.Val.Add(new Variable("super", IsSuper)); 
+            }
+            IValue? saved = ObjectLiteral.CurrentPrivate;
+            if(_this != null) {
+                Stack.Head.Val.Add(new Variable("this", _this));
+                ObjectLiteral.CurrentPrivate = _this;
+            }
             for(int i = 0; i < ArgNames.Count - (Fill ? 1 : 0); i++) {
                 IValue? host = null;
                 if(args.Count > i) {
@@ -40,7 +48,7 @@ namespace Tools.Values {
                 } else {
                     IOperator? def = Defaults[i];
                     if(def != null) {
-                        host = def._Run().Var;
+                        host = def._Run(Stack).Var;
                     } else {
                         throw new RadishException($"The following required argument was unsupplied: {ArgNames[i]}");
                     }
@@ -51,7 +59,7 @@ namespace Tools.Values {
                 IValue? host = null;
                 IOperator? def = Defaults[ArgNames.Count - 1];
                 if(def != null && args.Count < ArgNames.Count) {
-                    host = def._Run().Var;
+                    host = def._Run(Stack).Var;
                 } else {
                     List<Values.Variable> arr = new List<Variable>();
                     for(int i = ArgNames.Count - 1; i < args.Count; i++) {
@@ -61,17 +69,9 @@ namespace Tools.Values {
                 }
                 Stack.Head.Val.Add(new Variable(ArgNames[ArgNames.Count - 1], host));
             }
-            if(IsSuper != null) {
-                Stack.Head.Val.Add(new Variable("super", IsSuper)); 
-            }
-            IValue? saved = ObjectLiteral.CurrentPrivate;
-            if(_this != null) {
-                Stack.Head.Val.Add(new Variable("this", _this));
-                ObjectLiteral.CurrentPrivate = _this;
-            }
             string previous = RadishException.FileName;
             RadishException.FileName = FileName;
-            IValue result = FunctionBody._Run();
+            IValue result = FunctionBody._Run(Stack);
             RadishException.FileName = previous;
             Stack.Pop();
             ObjectLiteral.CurrentPrivate = saved;

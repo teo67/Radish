@@ -1,12 +1,12 @@
 namespace Tools.Operators {
-    class TryCatch : SimpleVariableOperator {
-        public TryCatch(IOperator left, IOperator right, Stack stack, int row, int col) : base(stack, left, right, "-> catch ->", row, col) {}
-        public override IValue Run() {
+    class TryCatch : SimpleOperator {
+        public TryCatch(IOperator left, IOperator right, int row, int col) : base(left, right, "-> catch ->", row, col) {}
+        public override IValue Run(Stack Stack) {
             StackNode top = Stack.Head;
             int len = RadishException.Entries.Count;
             try {
                 Stack.Push();
-                IValue returned = Left._Run(); // breakpoint will be here
+                IValue returned = Left._Run(Stack); // breakpoint will be here
                 Stack.Pop();
                 return returned;
             } catch {
@@ -17,7 +17,7 @@ namespace Tools.Operators {
                 while(RadishException.Entries.Count > len) {
                     RadishException.Entries.Pop();
                 }
-                IValue returned = Right._Run();
+                IValue returned = Right._Run(Stack);
                 Stack.Pop();
                 return returned;
             }

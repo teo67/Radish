@@ -10,8 +10,8 @@ namespace Tools.Operators {
             this.Type = type;
             this.Stored = stored;
         }
-        public override IValue Run() {
-            return new Values.ReturnType(Type, (Stored == null) ? new Values.NoneLiteral() : Stored._Run().Var);
+        public override IValue Run(Stack Stack) {
+            return new Values.ReturnType(Type, (Stored == null) ? new Values.NoneLiteral() : Stored._Run(Stack).Var);
         }
         public override string Print() {
             return $"({Type} {((Stored == null) ? "none" : Stored.Print())}";

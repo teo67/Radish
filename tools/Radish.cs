@@ -9,7 +9,7 @@ namespace Tools {
             try {
                 Librarian librarian = new Librarian(uselib);
                 Operations operations = new Operations(reader, verbose, false, librarian);
-                operations.ParseScope().Run();
+                operations.ParseScope().Run(operations.stack);
             } catch {
                 RadishException.Print();
             }

@@ -4,10 +4,10 @@ namespace Tools.Operators {
         public ExpressionSeparator(int row, int col, List<IOperator>? children = null) : base(row, col) {
             this.Children = (children == null) ? new List<IOperator>() : children;
         }
-        public override IValue Run() {
+        public override IValue Run(Stack Stack) {
             foreach(IOperator child in Children) {
                 //Console.WriteLine("looking for result");
-                IValue result = child._Run();
+                IValue result = child._Run(Stack);
                 //Console.WriteLine("got result");
                 //Console.WriteLine(result.Default);
                 if(result.Default == BasicTypes.RETURN) {

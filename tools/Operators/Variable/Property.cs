@@ -1,16 +1,16 @@
 namespace Tools.Operators {
-    class Property : VariableOperator {
+    class Property : Operator {
         private string Name { get; }
         private IOperator? Give { get; }
         private IOperator? Get { get; }
         private List<string> Modifiers { get; }
-        public Property(Stack stack, string name, IOperator? give, IOperator? _get, List<string> modifiers, int row, int col) : base(stack, row, col) {
+        public Property(string name, IOperator? give, IOperator? _get, List<string> modifiers, int row, int col) : base(row, col) {
             this.Name = name;
             this.Give = give;
             this.Get = _get;
             this.Modifiers = modifiers;
         }
-        public override IValue Run() {
+        public override IValue Run(Stack Stack) {
             ProtectionLevels lvl = ProtectionLevels.PUBLIC;
             Dictionary<string, ProtectionLevels> dict = new Dictionary<string, ProtectionLevels>() {
                 { "public",  ProtectionLevels.PUBLIC }, 
@@ -32,7 +32,7 @@ namespace Tools.Operators {
                 }
             }
             
-            Values.Variable adding = new Values.Property(Name, (Get == null) ? null : Get._Run(), (Give == null) ? null : Give._Run(), lvl, isStatic);
+            Values.Variable adding = new Values.Property(Name, (Get == null) ? null : Get._Run(Stack), (Give == null) ? null : Give._Run(Stack), lvl, isStatic);
             Stack.Head.Val.Add(adding);
             return adding;
         }

@@ -6,8 +6,8 @@ namespace Tools.Operators {
             this.Left = left;
             this.Name = name;
         }
-        public override IValue Run() {
-            IValue result = Left._Run().Var;
+        public override IValue Run(Stack Stack) {
+            IValue result = Left._Run(Stack).Var;
             //Console.WriteLine(result);
             Values.Variable? gotten = Values.ObjectLiteral.DeepGet(result, Name, result);
             //Console.WriteLine(gotten.Item1 == null ? "null" : gotten.Item1.Print());

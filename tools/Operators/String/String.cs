@@ -6,11 +6,11 @@ namespace Tools.Operators {
             this.StringParts = stringParts;
             this.Interpolations = interpolations;
         }
-        public override IValue Run() {
+        public override IValue Run(Stack Stack) {
             string returning = "";
             for(int i = 0; i < Interpolations.Count; i++) {
                 returning += StringParts[i];
-                returning += Interpolations[i]._Run().String;
+                returning += Interpolations[i]._Run(Stack).String;
             }
             returning += StringParts[StringParts.Count - 1];
             return new Values.StringLiteral(returning);

@@ -4,7 +4,7 @@ namespace Tools.Operators {
         public Number(double stored, int row, int col) : base(row, col) {
             this.Stored = stored;
         }
-        public override IValue Run() {
+        public override IValue Run(Stack Stack) {
             return new Values.NumberLiteral(Stored);
         }
         public override string Print() {

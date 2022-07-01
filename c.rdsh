@@ -1,0 +1,4 @@
+d c p 10
+h t() {
+    holler(c)
+}

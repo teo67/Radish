@@ -1,12 +1,12 @@
 namespace Tools.Operators {
-    class Declaration : VariableOperator {
+    class Declaration : Operator {
         private string VarName { get; }
         private List<string> Modifiers { get; }
-        public Declaration(Stack stack, string varName, List<string> modifiers, int row, int col) : base(stack, row, col) {
+        public Declaration(string varName, List<string> modifiers, int row, int col) : base(row, col) {
             this.VarName = varName;
             this.Modifiers = modifiers;
         }
-        public override IValue Run() {
+        public override IValue Run(Stack Stack) {
             ProtectionLevels lvl = ProtectionLevels.PUBLIC;
             Dictionary<string, ProtectionLevels> dict = new Dictionary<string, ProtectionLevels>() {
                 { "public",  ProtectionLevels.PUBLIC }, 

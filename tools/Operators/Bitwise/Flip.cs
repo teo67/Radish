@@ -4,8 +4,8 @@ namespace Tools.Operators {
         public Flip(IOperator target, int row, int col) : base(row, col) {
             this.Target = target;
         }
-        public override IValue Run() {
-            IValue result = Target._Run().Var;
+        public override IValue Run(Stack Stack) {
+            IValue result = Target._Run(Stack).Var;
             if(result.Default != BasicTypes.NUMBER) {
                 throw new RadishException("Bitwise operations can only be performed on numbers!", Row, Col);
             }

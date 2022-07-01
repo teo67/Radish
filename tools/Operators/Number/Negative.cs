@@ -4,8 +4,8 @@ namespace Tools.Operators {
         public Negative(IOperator stored, int row, int col) : base(row, col) {
             this.Stored = stored;
         }
-        public override IValue Run() {
-            IValue result = Stored._Run().Var;
+        public override IValue Run(Stack Stack) {
+            IValue result = Stored._Run(Stack).Var;
             return new Values.NumberLiteral(result.Number * -1);
         }
         public override string Print() {

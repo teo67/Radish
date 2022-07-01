@@ -4,7 +4,7 @@ namespace Tools.Operators {
         public Boolean(bool stored, int row, int col) : base(row, col) {
             this.Stored = stored;
         }
-        public override IValue Run() {
+        public override IValue Run(Stack Stack) {
             return new Values.BooleanLiteral(Stored);
         }
         public override string Print() {

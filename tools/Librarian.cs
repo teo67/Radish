@@ -48,17 +48,17 @@ namespace Tools { // adds basic prototypes to call stack
                         Standard.Add(dirName);
                     }
                 }
-                StandardSpecials.Add(new Values.Variable("OUTPUT", new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, false, new Operators.Output(new Operators.Reference(ImportStack, "input", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add(new Values.Variable("LOG", new Values.FunctionLiteral(ImportStack, new List<string>() { "loginput", "logbase" }, new List<IOperator?>() { null, null }, false, new Operators.Log(new Operators.Reference(ImportStack, "loginput", -1, -1, this), new Operators.Reference(ImportStack, "logbase", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add(new Values.Variable("ARRLEN", new Values.FunctionLiteral(ImportStack, new List<string>() { "arrinput" }, new List<IOperator?>() { null }, false, new Operators.ArrayLength(new Operators.Reference(ImportStack, "arrinput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add(new Values.Variable("STRLEN", new Values.FunctionLiteral(ImportStack, new List<string>() { "strinput" }, new List<IOperator?>() { null }, false, new Operators.StringLength(new Operators.Reference(ImportStack, "strinput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add(new Values.Variable("DELETE", new Values.FunctionLiteral(ImportStack, new List<string>() { "delobj", "delinput" }, new List<IOperator?>() { null, null }, false, new Operators.ObjectUproot(new Operators.Reference(ImportStack, "delobj", -1, -1, this), new Operators.Reference(ImportStack, "delinput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add(new Values.Variable("CALL", new Values.FunctionLiteral(ImportStack, new List<string>() { "caller", "callinput" }, new List<IOperator?>() { null, null }, false, new Operators.FunctionCall(new Operators.Reference(ImportStack, "caller", -1, -1, this), new Operators.Reference(ImportStack, "callinput", -1, -1, this), -1, -1), "Standard Library")));
+                StandardSpecials.Add(new Values.Variable("OUTPUT", new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, false, new Operators.Output(new Operators.Reference("input", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add(new Values.Variable("LOG", new Values.FunctionLiteral(ImportStack, new List<string>() { "loginput", "logbase" }, new List<IOperator?>() { null, null }, false, new Operators.Log(new Operators.Reference("loginput", -1, -1, this), new Operators.Reference("logbase", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add(new Values.Variable("ARRLEN", new Values.FunctionLiteral(ImportStack, new List<string>() { "arrinput" }, new List<IOperator?>() { null }, false, new Operators.ArrayLength(new Operators.Reference("arrinput", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add(new Values.Variable("STRLEN", new Values.FunctionLiteral(ImportStack, new List<string>() { "strinput" }, new List<IOperator?>() { null }, false, new Operators.StringLength(new Operators.Reference("strinput", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add(new Values.Variable("DELETE", new Values.FunctionLiteral(ImportStack, new List<string>() { "delobj", "delinput" }, new List<IOperator?>() { null, null }, false, new Operators.ObjectUproot(new Operators.Reference("delobj", -1, -1, this), new Operators.Reference("delinput", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add(new Values.Variable("CALL", new Values.FunctionLiteral(ImportStack, new List<string>() { "caller", "callinput", "callthis" }, new List<IOperator?>() { null, null }, false, new Operators.FunctionCall(new Operators.Reference("caller", -1, -1, this), new Operators.Reference("callinput", -1, -1, this), -1, -1, new Operators.Reference("callthis", -1, -1, this)), "Standard Library")));
                 Lookup("PROTOTYPES", -1, -1); // we lookup prototypes at the beginning to add properties to literal classes
                 //this will directly edit the first layer of the stack
             } else {
-                layer.Add(new Values.Variable("holler", new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, false, new Operators.Output(new Operators.Reference(ImportStack, "input", -1, -1, this)), "Standard Library")));
-                // add a basic holler function just so radish is still usable
+                layer.Add(new Values.Variable("holler", new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, false, new Operators.Output(new Operators.Reference("input", -1, -1, this)), "Standard Library")));
+                // add a basic holler function j ust so radish is still usable
             }
         }
 
@@ -102,7 +102,7 @@ namespace Tools { // adds basic prototypes to call stack
             Operations operations = new Operations(reader, false, true, this); // only case in which it's okay to set last arg to true
             string previous = RadishException.FileName;
             RadishException.FileName = path;
-            IValue returned = operations.ParseScope().Run();
+            IValue returned = operations.ParseScope().Run(operations.stack);
             RadishException.FileName = previous;
             if(returned.Default == BasicTypes.RETURN) { 
                 returned = returned.Function(new List<Values.Variable>(), null);

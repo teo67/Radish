@@ -6,8 +6,8 @@ namespace Tools.Operators {
             this.Left = left;
             this.Name = name;
         }
-        public override IValue Run() {
-            List<Values.Variable> asVar = Left._Run().Object;
+        public override IValue Run(Stack Stack) {
+            List<Values.Variable> asVar = Left._Run(Stack).Object;
             IValue? returning = null;
             for(int i = 0; i < asVar.Count; i++) {
                 if(asVar[i].Name == Name) {

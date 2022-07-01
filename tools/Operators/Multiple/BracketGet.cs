@@ -7,14 +7,14 @@ namespace Tools.Operators {
             this.Left = left;
             this.Name = name;
         }
-        public override IValue Run() {
-            IValue result = Left._Run();
+        public override IValue Run(Stack Stack) {
+            IValue result = Left._Run(Stack);
             IValue evald = result.Var;
             if(evald.Default == BasicTypes.STRING) {
-                int index = (int)Name._Run().Number;
+                int index = (int)Name._Run(Stack).Number;
                 return new Values.Character(result, index, "" + evald.String[index]);
             }
-            string nameR = Name._Run().String;
+            string nameR = Name._Run(Stack).String;
             Values.Variable? gotten = Values.ObjectLiteral.DeepGet(evald, nameR, evald);
             return new Values.PropertyHolder(gotten, nameR, evald, gotten == null ? ProtectionLevels.PUBLIC : gotten.ProtectionLevel);
         }

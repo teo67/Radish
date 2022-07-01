@@ -1,18 +1,18 @@
 namespace Tools.Operators {
-    class ClassDefinition : VariableOperator {
+    class ClassDefinition : Operator {
         private IOperator Body { get; }
         private IOperator? Inheriting { get; }
         private string FileName { get; }
-        public ClassDefinition(Stack stack, IOperator body, IOperator? inheriting, int row, int col, string fileName) : base(stack, row, col) {
+        public ClassDefinition(IOperator body, IOperator? inheriting, int row, int col, string fileName) : base(row, col) {
             this.Body = body;
             this.Inheriting = inheriting;
             this.FileName = fileName;
         }
-        public override IValue Run() {
+        public override IValue Run(Stack Stack) {
             Stack.Push();
-            Values.Variable constr = new Values.Variable("constructor", new Values.FunctionLiteral(Stack, new List<string>(), new List<IOperator?>(), false, new NullValue(Row, Col), FileName));
+            Values.Variable constr = new Values.Variable("constructor", new Values.FunctionLiteral(new Stack(Stack.Head), new List<string>(), new List<IOperator?>(), false, new NullValue(Row, Col), FileName));
             Stack.Head.Val.Add(constr);
-            IValue result = Body._Run();
+            IValue result = Body._Run(Stack);
             if(result.Default == BasicTypes.RETURN) {
                 throw new RadishException("Unexpected return statement inside a class definition!");
             }
@@ -34,7 +34,7 @@ namespace Tools.Operators {
             if(Inheriting == null) {
                 proto = new Values.ObjectLiteral(nonstatics, useProto: true);
             } else {
-                IValue fromStack = Inheriting._Run().Var;
+                IValue fromStack = Inheriting._Run(Stack).Var;
                 evaluatedConstr.IsSuper = fromStack;
                 IValue? _base = Values.ObjectLiteral.DeepGet(fromStack, "prototype", fromStack);
                 if(_base == null) {

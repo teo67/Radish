@@ -46,8 +46,8 @@ namespace Tools.Operators {
                 return input.String;
             }
         }
-        public override Tools.IValue Run() {
-            Tools.IValue result = Input._Run();
+        public override Tools.IValue Run(Stack Stack) {
+            Tools.IValue result = Input._Run(Stack);
             //Console.WriteLine("about to access var");
             Console.WriteLine(CalcOutput(result.Var));
             //Console.WriteLine("done");

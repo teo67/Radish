@@ -14,6 +14,11 @@ namespace Tools.Values {
                 return "null";
             }
         }
+        public override bool Boolean {
+            get {
+                return false;
+            }
+        }
         public override string Print() {
             return $"none";
         }

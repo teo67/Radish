@@ -9,7 +9,7 @@ namespace Tools.Operators {
             this._Print = print;
         }
 
-        public override IValue Run() {
+        public override IValue Run(Stack Stack) {
             return __Run(Args);
         }
 

@@ -33,7 +33,7 @@ namespace Tools {
         private bool verbose { get; }
         private CountingReader reader { get; }
         private Lexer lexer { get; }
-        private Stack stack { get; }
+        public Stack stack { get; }
         private bool IsStandard { get; }
         private Librarian Librarian { get; }
         static Operations() {
@@ -134,7 +134,7 @@ namespace Tools {
                     RequireSymbol("{");
                     IOperator scope = ParseScope();
                     RequireSymbol("}");
-                    returning.AddValue(new Operators.While(stack, exp, scope, Row, Col));
+                    returning.AddValue(new Operators.While(exp, scope, Row, Col));
                 } else if(read.Type == TokenTypes.OPERATOR && read.Val == "for") {
                     RequireSymbol("(");
                     Operators.ListSeparator list = ParseList();
@@ -142,7 +142,7 @@ namespace Tools {
                     RequireSymbol("{");
                     IOperator body = ParseScope();
                     RequireSymbol("}");
-                    returning.AddValue(new Operators.Loop(stack, list, body, Row, Col));
+                    returning.AddValue(new Operators.Loop(list, body, Row, Col));
                 } else if(read.Type == TokenTypes.OPERATOR && (read.Val == "cancel" || read.Val == "continue" || read.Val == "end")) {
                     Print("parsing end/c/c statement");
                     returning.AddValue(new Operators.ReturnType(read.Val, Row, Col));
@@ -160,7 +160,7 @@ namespace Tools {
                         RequireSymbol("{");
                         IOperator catchScope = ParseScope();
                         RequireSymbol("}");
-                        returning.AddValue(new Operators.TryCatch(tryScope, catchScope, stack, Row, Col));
+                        returning.AddValue(new Operators.TryCatch(tryScope, catchScope, Row, Col));
                     } else {
                         throw Error("Expecting catch phrase after try {}");
                     }
@@ -192,7 +192,7 @@ namespace Tools {
                 RequireSymbol("{");
                 IOperator scope = ParseScope();
                 RequireSymbol("}");
-                returning.AddValue(new Operators.If(stack, new Operators.Boolean(true, Row, Col), scope, Row, Col));
+                returning.AddValue(new Operators.If(new Operators.Boolean(true, Row, Col), scope, Row, Col));
             } else {
                 Stored = read;
             }
@@ -206,7 +206,7 @@ namespace Tools {
             RequireSymbol("{");
             IOperator scope = ParseScope();
             RequireSymbol("}");
-            return new Operators.If(stack, li, scope, Row, Col);
+            return new Operators.If(li, scope, Row, Col);
         }
 
         private T ParseLi<T>(Func<T> init, Action<T> onEach) {
@@ -531,27 +531,27 @@ namespace Tools {
                                 }
                                 RequireSymbol("{");
                                 if(newType.Val == "plant" || newType.Val == "p") {
-                                    give = new Operators.FunctionDefinition(stack, new List<string>() { "input" }, new List<IOperator?>() { null }, false, ParseScope(), Row, Col, reader.Filename);
+                                    give = new Operators.FunctionDefinition(new List<string>() { "input" }, new List<IOperator?>() { null }, false, ParseScope(), Row, Col, reader.Filename);
 
                                 } else if(newType.Val == "harvest" || newType.Val == "h") {
-                                    _get = new Operators.FunctionDefinition(stack, new List<string>(), new List<IOperator?>(), false, ParseScope(), Row, Col, reader.Filename);
+                                    _get = new Operators.FunctionDefinition(new List<string>(), new List<IOperator?>(), false, ParseScope(), Row, Col, reader.Filename);
                                 } else {
                                     throw new RadishException("Only plant and harvest functions are valid in this context!");
                                 }
                                 RequireSymbol("}");
                             }
                             RequireSymbol("}");
-                            return new Operators.Property(stack, next.Val, give, _get, modifiers, Row, Col);
+                            return new Operators.Property(next.Val, give, _get, modifiers, Row, Col);
                         }
                         Stored = afterNext;
-                        return new Operators.Declaration(stack, next.Val, modifiers, Row, Col);
+                        return new Operators.Declaration(next.Val, modifiers, Row, Col);
                     }
                     throw new RadishException($"Expecting a variable name instead of {next.Val}!");
                 }
                 if(returned.Val == "uproot") {
                     Print("parsing uproot call");
                     LexEntry next = Read();
-                    return new Operators.Uproot(stack, next.Val, Row, Col);
+                    return new Operators.Uproot(next.Val, Row, Col);
                 }
                 if(returned.Val == "tool" || returned.Val == "t") {
                     Print("parsing function definition");
@@ -561,7 +561,7 @@ namespace Tools {
                     RequireSymbol("{");
                     Operators.ExpressionSeparator body = ParseScope();
                     RequireSymbol("}");
-                    Operators.FunctionDefinition def = new Operators.FunctionDefinition(stack, args.Item1, args.Item2, args.Item3, body, Row, Col, reader.Filename);
+                    Operators.FunctionDefinition def = new Operators.FunctionDefinition(args.Item1, args.Item2, args.Item3, body, Row, Col, reader.Filename);
                     return def;
                 }
                 if(returned.Val == "null") {
@@ -570,12 +570,12 @@ namespace Tools {
                 }
                 if(returned.Val == "all") {
                     Print("parsing ALL");
-                    return new Operators.All(stack, Row, Col);
+                    return new Operators.All(Row, Col);
                 }
                 if(returned.Val == "throw") {
                     Print("parsing throw statement");
                     IOperator throwing = ParseExpression();
-                    return new Operators.Throw(throwing, stack, Row, Col);
+                    return new Operators.Throw(throwing, Row, Col);
                 }
                 if(returned.Val == "import") {
                     Print("parsing import");
@@ -596,7 +596,7 @@ namespace Tools {
                     IOperator body = ParseScope();
                     Print("parsing closing braces");
                     RequireSymbol("}");
-                    return new Operators.ClassDefinition(stack, body, _base, Row, Col, reader.Filename);
+                    return new Operators.ClassDefinition(body, _base, Row, Col, reader.Filename);
                 }
                 if(returned.Val == "new") {
                     Print("parsing class instantiation");
@@ -636,9 +636,9 @@ namespace Tools {
             } else if(returned.Type == TokenTypes.KEYWORD) {
                 Print("parsing variable");
                 if(IsStandard) {
-                    return new Operators.StandardRef(stack, returned.Val, Row, Col, Librarian);
+                    return new Operators.StandardRef(returned.Val, Row, Col, Librarian);
                 }
-                return new Operators.Reference(stack, returned.Val, Row, Col, Librarian);
+                return new Operators.Reference(returned.Val, Row, Col, Librarian);
             } else if(returned.Type == TokenTypes.SYMBOL) {
                 if(returned.Val == "(") {
                     Print("parsing opening paren.");
@@ -660,7 +660,7 @@ namespace Tools {
                     Operators.ExpressionSeparator body = ParseScope();
                     Print("parsing closing braces");
                     RequireSymbol("}");
-                    return new Operators.ObjectDefinition(stack, body, Row, Col);
+                    return new Operators.ObjectDefinition(body, Row, Col);
                 }
             }
             throw Error($"Could not parse value: {returned.Val} !");

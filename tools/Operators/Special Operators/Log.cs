@@ -6,9 +6,9 @@ namespace Tools.Operators {
             this.Input = input;
             this.Base = _base;
         }
-        public override Tools.IValue Run() {
-            double input = Input._Run().Number;
-            double _base = Base._Run().Number;
+        public override Tools.IValue Run(Stack Stack) {
+            double input = Input._Run(Stack).Number;
+            double _base = Base._Run(Stack).Number;
             if(input <= 0) {
                 throw new RadishException($"Cannot take the logarithm of {input}, because it is a nonpositive number!", Row, Col);
             }

@@ -13,9 +13,9 @@ namespace Tools.Operators {
         public virtual IValue Combine(IValue leftResult, IValue rightResult) {
             throw new RadishException("Cannot run simple operator!");
         }
-        public override IValue Run() {
-            IValue left = Left._Run();
-            IValue right = Right._Run();
+        public override IValue Run(Stack Stack) {
+            IValue left = Left._Run(Stack);
+            IValue right = Right._Run(Stack);
             IValue result = Combine(left.Var, right.Var).Var;
             if(IsAssigning) {
                 left.Var = result;
