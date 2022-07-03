@@ -1,34 +1,18 @@
 namespace Tools.Operators {
-    class Import : Operator {
-        private IOperator FileName { get; }
-        private string Path { get; }
+    class Import : FileOperator {
         private Librarian Librarian { get; }
         private bool IsStandard { get; }
-        public Import(IOperator fileName, int row, int col, string path, Librarian librarian, bool isStandard) : base(row, col) {
-            this.FileName = fileName;
-            int lastI = path.LastIndexOf('/');
-            if(lastI == -1) {
-                throw new RadishException($"Invalid import path: {fileName}!", Row, Col);
-            }
-            this.Path = path.Substring(0, lastI);
+        private string Path { get; }
+        public Import(IOperator fileName, int row, int col, string path, Librarian librarian, bool isStandard) : base(fileName, row, col) {
             this.Librarian = librarian;
             this.IsStandard = isStandard;
+            this.Path = path;
         }
         public override IValue Run(Stack Stack) {
-            string name = FileName._Run(Stack).String;
-            if(!name.EndsWith(".rdsh")) {
-                name += ".rdsh";
+            string realPath = Convert(Path, Stack);
+            if(!realPath.EndsWith(".rdsh")) {
+                realPath += ".rdsh";
             }
-            string modPath = Path;
-            while(name.StartsWith("../")) {
-                int lastI = modPath.LastIndexOf('/');
-                if(lastI == -1) {
-                    throw new RadishException($"File {name} escapes an invalid number of folders!", Row, Col);
-                }
-                modPath = modPath.Substring(0, lastI);
-                name = name.Substring(3);
-            }
-            string realPath = modPath + "/" + name;
             IValue? libd = Librarian.Import(realPath);
             if(libd != null) {
                 return libd; // no need to import something twice
@@ -40,7 +24,7 @@ namespace Tools.Operators {
             try {
                 reader = new CountingReader(realPath);
             } catch {
-                throw new RadishException($"Could not find file {name}", Row, Col);
+                throw new RadishException($"Could not find file {realPath}", Row, Col);
             }
             Operations operations = new Operations(reader, false, IsStandard, Librarian);
             string previous = RadishException.FileName;

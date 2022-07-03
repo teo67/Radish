@@ -45,7 +45,7 @@ namespace Tools {
                 "harvest", "h", "cancel", "continue", "end", "fill",
                 "new", "null", "class",
                 "public", "private", "protected", "static",
-                "try", "catch", "throw", "import", "all"
+                "try", "catch", "throw", "import", "all", "PATH"
             };
         }
         public Operations(CountingReader reader, bool verbose, bool isStandard, Librarian librarian) {
@@ -571,6 +571,10 @@ namespace Tools {
                 if(returned.Val == "all") {
                     Print("parsing ALL");
                     return new Operators.All(Row, Col);
+                }
+                if(returned.Val == "PATH") {
+                    Print("parsing PATH");
+                    return new Operators.String(new List<string>() { reader.Filename }, new List<IOperator>(), Row, Col);
                 }
                 if(returned.Val == "throw") {
                     Print("parsing throw statement");
