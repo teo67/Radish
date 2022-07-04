@@ -2,6 +2,7 @@
 :: build your own radish
 setlocal enabledelayedexpansion
 dotnet build
+rmdir %cd%\Radish /s /q
 mkdir Radish
 cd Radish
 mkdir bin

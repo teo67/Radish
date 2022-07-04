@@ -45,7 +45,7 @@ namespace Tools {
                 "harvest", "h", "cancel", "continue", "end", "fill",
                 "new", "null", "class",
                 "public", "private", "protected", "static",
-                "try", "catch", "throw", "import", "all", "PATH"
+                "try", "catch", "throw", "import", "all", "PATH", "enum"
             };
         }
         public Operations(CountingReader reader, bool verbose, bool isStandard, Librarian librarian) {
@@ -241,6 +241,14 @@ namespace Tools {
                 return new Operators.ListSeparator(Row, Col);
             }, (Operators.ListSeparator returning) => {
                 returning.AddValue(ParseExpression());
+            });
+        }
+
+        private List<string> ParseEnum() {
+            return ParseLi<List<string>>(() => {
+                return new List<string>();
+            }, (List<string> returning) => {
+                returning.Add(Read().Val);
             });
         }
 
@@ -601,6 +609,13 @@ namespace Tools {
                     Print("parsing closing braces");
                     RequireSymbol("}");
                     return new Operators.ClassDefinition(body, _base, Row, Col, reader.Filename);
+                }
+                if(returned.Val == "enum") {
+                    Print("parsing enum");
+                    RequireSymbol("{");
+                    List<string> list = ParseEnum();
+                    RequireSymbol("}");
+                    return new Operators.Enum(list, Row, Col);
                 }
                 if(returned.Val == "new") {
                     Print("parsing class instantiation");
