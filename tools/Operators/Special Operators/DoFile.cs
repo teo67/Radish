@@ -22,15 +22,18 @@ namespace Tools.Operators {
             }
             IValue edits = Edits._Run(Stack).Var;
             IValue edited = edits.Function(args, null).Var;
-            IValue? str = Values.ObjectLiteral.DeepGet(edited, "write", edited);
-            IValue? delete = Values.ObjectLiteral.DeepGet(edited, "deleteFile", edited);
-            IValue? append = Values.ObjectLiteral.DeepGet(edited, "append", edited);
-            if(append != null && append.Var.Default != BasicTypes.NONE) {
-                file.Seek(0, SeekOrigin.End);
-                file.Write(Encoding.ASCII.GetBytes(append.String));
-            } else if(str != null && str.Var.Default != BasicTypes.NONE) {
-                file.SetLength(0);
-                file.Write(Encoding.ASCII.GetBytes(str.String));
+            IValue? delete = null;
+            if(edited.Default != BasicTypes.NONE) {
+                IValue? str = Values.ObjectLiteral.DeepGet(edited, "write", edited);
+                delete = Values.ObjectLiteral.DeepGet(edited, "deleteFile", edited);
+                IValue? append = Values.ObjectLiteral.DeepGet(edited, "append", edited);
+                if(append != null && append.Var.Default != BasicTypes.NONE) {
+                    file.Seek(0, SeekOrigin.End);
+                    file.Write(Encoding.ASCII.GetBytes(append.String));
+                } else if(str != null && str.Var.Default != BasicTypes.NONE) {
+                    file.SetLength(0);
+                    file.Write(Encoding.ASCII.GetBytes(str.String));
+                }
             }
             reader.Dispose();
             file.Dispose();
