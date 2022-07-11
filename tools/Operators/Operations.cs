@@ -45,7 +45,7 @@ namespace Tools {
                 "harvest", "h", "cancel", "continue", "end", "fill",
                 "new", "null", "class",
                 "public", "private", "protected", "static",
-                "try", "catch", "throw", "import", "all", "PATH", "enum"
+                "try", "catch", "throw", "import", "all", "PATH", "enum", "each", "of", "switch", "case", "default"
             };
         }
         public Operations(CountingReader reader, bool verbose, bool isStandard, Librarian librarian) {
@@ -123,7 +123,7 @@ namespace Tools {
             Print("begin scope");
             Operators.ExpressionSeparator returning = new Operators.ExpressionSeparator(Row, Col);
             LexEntry read = Read();
-            while(read.Type != TokenTypes.ENDOFFILE && !(read.Type == TokenTypes.SYMBOL && read.Val == "}")) {
+            while(read.Type != TokenTypes.ENDOFFILE && !(read.Type == TokenTypes.SYMBOL && read.Val == "}") && !(read.Type == TokenTypes.OPERATOR && (read.Val == "case" || read.Val == "default"))) {
                 if(read.Type == TokenTypes.OPERATOR && read.Val == "if") {
                     Stored = read;
                     returning.AddValue(ParseIfs());
@@ -143,6 +143,44 @@ namespace Tools {
                     IOperator body = ParseScope();
                     RequireSymbol("}");
                     returning.AddValue(new Operators.Loop(list, body, Row, Col));
+                } else if(read.Type == TokenTypes.OPERATOR && read.Val == "each") {
+                    RequireSymbol("(");
+                    LexEntry newRead = Read();
+                    LexEntry of = Read();
+                    if(of.Type != TokenTypes.OPERATOR || of.Val != "of") {
+                        throw Error($"Expecting 'of' instead of '{of.Val}'!");
+                    }
+                    IOperator li = ParseExpression();
+                    RequireSymbol(")");
+                    RequireSymbol("{");
+                    IOperator body = ParseScope();
+                    RequireSymbol("}");
+                    returning.AddValue(new Operators.Each(newRead.Val, li, body, Row, Col));
+                } else if(read.Type == TokenTypes.OPERATOR && read.Val == "switch") {
+                    RequireSymbol("(");
+                    IOperator eval = ParseExpression();
+                    RequireSymbol(")");
+                    RequireSymbol("{");
+                    List<IOperator> checks = new List<IOperator>();
+                    List<IOperator> bodies = new List<IOperator>();
+                    IOperator? def = null;
+                    LexEntry next = Read();
+                    while(next.Type != TokenTypes.ENDOFFILE && !(next.Val == "}" && next.Type == TokenTypes.SYMBOL)) {
+                        if(next.Type == TokenTypes.OPERATOR && next.Val == "default") {
+                            if(def == null) {
+                                def = ParseScope();
+                            } else {
+                                throw Error("Switches may only contain one default scope!");
+                            }
+                        } else if(next.Type == TokenTypes.OPERATOR && next.Val == "case") {
+                            checks.Add(ParseExpression());
+                            bodies.Add(ParseScope());
+                        } else {
+                            throw Error("Switch statements must begin with a case or a default!");
+                        }
+                        next = Read();
+                    }
+                    returning.AddValue(new Operators.Switch(eval, checks, bodies, def, Row, Col));
                 } else if(read.Type == TokenTypes.OPERATOR && (read.Val == "cancel" || read.Val == "continue" || read.Val == "end")) {
                     Print("parsing end/c/c statement");
                     returning.AddValue(new Operators.ReturnType(read.Val, Row, Col));

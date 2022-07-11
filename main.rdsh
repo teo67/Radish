@@ -1,1 +1,6 @@
-holler(math.trig.cot(math.trig.a.sin(1)))
+switch(123) {
+    case 123
+    holleR(1)
+    default
+
+}

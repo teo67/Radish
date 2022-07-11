@@ -1,6 +1,8 @@
 <h1>RADISH</h1>
 <p>{ like the vegetable. }</p>
 <br>
+<h2>Installation</h2>
+<p>Radish's <a href="https://radishpl.com">website</a> provides in-depth instructions on how to install Radish to your computer based on the OS. If you're using this repository on MacOS, there's also an install.sh file that runs the scripts necessary (use sudo bash install.sh to grant admin permissions, as the file needs access to usr/local).</p>
 <h2>So what's it all about, anyway?</h2>
 <p>Radish is an easy-to-learn, object-oriented programming language written in C#. If you know JavaScript, you know Radish. However, Radish has a few of its own quirks to keep in mind (don't ask why these exist)
     <ul>
