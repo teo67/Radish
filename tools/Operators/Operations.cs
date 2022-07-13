@@ -359,7 +359,23 @@ namespace Tools {
                     return returning;
                     }
                 return null;
-            }, ParseCombiners);
+            }, ParseTernaries);
+        }
+
+        private IOperator ParseTernaries() {
+            IOperator cond = ParseCombiners();
+            LexEntry next = Read();
+            if(next.Type == TokenTypes.OPERATOR && next.Val == "?") {
+                IOperator first = ParseTernaries();
+                LexEntry mid = Read();
+                if(!(mid.Type == TokenTypes.SYMBOL && mid.Val == ",")) {
+                    throw Error("Expecting a comma to complete the ternary!");
+                } 
+                IOperator second = ParseTernaries();
+                return new Operators.Ternary(cond, first, second, Row, Col);
+            }
+            Stored = next;
+            return cond;
         }
 
         private Operators.SimpleOperator? IsCombiners(string val, IOperator current, Func<IOperator> previous) {
@@ -384,7 +400,7 @@ namespace Tools {
 
         private Operators.SimpleOperator? IsComparators(string val, IOperator current, Func<IOperator> previous) {
             switch(val) {
-                case "==":
+                case "=":
                     return new Operators.EqualsEquals(current, previous(), Row, Col);
                 case ">=":
                     return new Operators.MoreThanOrEquals(current, previous(), Row, Col);
