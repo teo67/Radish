@@ -10,12 +10,12 @@ namespace Tools.Operators {
         } // left is condition, right is scope
         public override IValue Run(Stack Stack) {
             Stack.Push();
-            Values.Variable every = new Values.Variable(VarName);
-            Stack.Head.Val.Add(every);
-            List<Values.Variable> elements = List._Run(Stack).Object;
-            foreach(Values.Variable vari in elements) {
+            Values.Variable every = new Values.Variable(null);
+            Stack.Head.Val.Add(VarName, every);
+            Dictionary<string, Values.Variable> elements = List._Run(Stack).Object;
+            foreach(KeyValuePair<string, Values.Variable> vari in elements) {
                 Stack.Push();
-                every.Var = vari.Var;
+                every.Var = vari.Value.Var;
                 IValue result = Body._Run(Stack);
                 Stack.Pop();
                 if(result.Default == BasicTypes.RETURN) {

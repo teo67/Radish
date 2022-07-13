@@ -1,8 +1,8 @@
 namespace Tools {
     class StackNode {
-        public List<Values.Variable> Val { get; }
+        public Dictionary<string, Values.Variable> Val { get; }
         public StackNode? Next { get; }
-        public StackNode(List<Values.Variable> val, StackNode? next = null) {
+        public StackNode(Dictionary<string, Values.Variable> val, StackNode? next = null) {
             this.Val = val;
             this.Next = next;
         }
@@ -14,12 +14,12 @@ namespace Tools {
             this.Head = head;
             this.Length = 0;
         }
-        public StackNode Push(List<Values.Variable>? head = null) {
+        public StackNode Push(Dictionary<string, Values.Variable>? head = null) {
             Length++;
             if(Length > 1000) { // BREAKPOINT 96
                 throw new RadishException("Maximum stack size exceeded!");
             }
-            Head = new StackNode((head == null) ? new List<Values.Variable>() : head, Head);
+            Head = new StackNode((head == null) ? new Dictionary<string, Values.Variable>() : head, Head);
             return Head;
         }
         public StackNode Pop() {
@@ -34,10 +34,10 @@ namespace Tools {
         public Values.Variable? SafeGet(string key) {
             StackNode? viewing = Head;
             while(viewing != null) {
-                foreach(Values.Variable variable in viewing.Val) {
-                    if(variable.Name == key && variable.ProtectionLevel == ProtectionLevels.PUBLIC) {
-                        return variable;
-                    }
+                Values.Variable? variable = null;
+                bool gotten = viewing.Val.TryGetValue(key, out variable);
+                if(gotten && variable != null) {
+                    return variable;
                 }
                 viewing = viewing.Next;
             }
@@ -48,8 +48,8 @@ namespace Tools {
             StackNode? viewing = Head;
             while(viewing != null) {
                 string returning = "[";
-                foreach(Values.Variable var in viewing.Val) {
-                    returning += $"{var.Name}, ";
+                foreach(KeyValuePair<string, Values.Variable> var in viewing.Val) {
+                    returning += $"{var.Key}, ";
                 }
                 returning += "]";
                 Console.WriteLine(returning);

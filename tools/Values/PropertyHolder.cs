@@ -52,7 +52,7 @@ namespace Tools.Values {
                 return Resolve().Boolean;
             }
         }
-        public List<Variable> Object {
+        public Dictionary<string, Variable> Object {
             get {
                 return Resolve().Object;
             }
@@ -69,21 +69,13 @@ namespace Tools.Values {
             }
             set {
                 if(Held == null) {
-                    Obj.Object.Add(new Variable(Name, value, ProtectionLevel));
+                    Obj.Object.Add(Name, new Variable(value, ProtectionLevel));
                 } else {
                     Variable? setting = null;
-                    if(Obj.Object.Contains(Held)) {
-                        setting = Held;
-                    } else {
-                        foreach(Variable vari in Obj.Object) {
-                            if(vari.Name == Name) {
-                                setting = vari;
-                            }
-                        }
-                        if(setting == null) {
-                            setting = Held.Clone();
-                            Obj.Object.Add(setting);
-                        }
+                    bool gotten = Obj.Object.TryGetValue(Name, out setting);
+                    if(!gotten || setting == null) {
+                        setting = Held.Clone();
+                        Obj.Object.Add(Name, setting);
                     }
                     IValue? previous = setting.ThisRef;
                     setting.ThisRef = Obj;
@@ -100,7 +92,7 @@ namespace Tools.Values {
         public bool Equals(IValue other) {
             return Resolve().Equals(other);
         }
-        public IValue Function(List<Variable> args, IValue? _this) {
+        public IValue Function(List<IValue> args, IValue? _this) {
             //return Resolve().Function(args);
             IValue returned = Resolve().Function(args, Obj);
             return returned;

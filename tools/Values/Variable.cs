@@ -1,12 +1,10 @@
 namespace Tools.Values {
     class Variable : IValue {
         public virtual IValue? Host { get; protected set; }
-        public string Name { get; }
         public ProtectionLevels ProtectionLevel { get; }
         public bool IsStatic { get; }
         public IValue? ThisRef { get; set; } // temporary
-        public Variable(string name, IValue? host = null, ProtectionLevels protectionLevel = ProtectionLevels.PUBLIC, bool isStatic = false, bool ignoreHost = false) {
-            this.Name = name;
+        public Variable(IValue? host = null, ProtectionLevels protectionLevel = ProtectionLevels.PUBLIC, bool isStatic = false, bool ignoreHost = false) {
             if(!ignoreHost) {
                 this.Host = host;
             }
@@ -17,7 +15,7 @@ namespace Tools.Values {
         private IValue Resolve() {
             IValue? returned = Host;
             if(returned == null) {
-                throw new RadishException($"No value stored in variable {Name}!");
+                throw new RadishException($"No value stored in variable!");
             }
             return returned; // store in a variable so we only call getter once
         }
@@ -41,7 +39,7 @@ namespace Tools.Values {
                 return Resolve().Boolean;
             }
         }
-        public List<Variable> Object {
+        public Dictionary<string, Variable> Object {
             get {
                 return Resolve().Object;
             }
@@ -59,7 +57,7 @@ namespace Tools.Values {
                 Host = value;
             }
         }
-        public IValue Function(List<Variable> args, IValue? _this) {
+        public IValue Function(List<IValue> args, IValue? _this) {
             return Resolve().Function(args, _this);
         }
         public IOperator FunctionBody { 
@@ -71,7 +69,7 @@ namespace Tools.Values {
             return Resolve().Equals(other);
         }
         public string Print() {
-            return $"variable({Name}, {(Host == null ? "null" : Host.Print())})";
+            return $"variable({(Host == null ? "null" : Host.Print())})";
         }
         public IValue? IsSuper {
             get {
@@ -82,7 +80,7 @@ namespace Tools.Values {
             }
         }
         public virtual Variable Clone() {
-            return new Variable(Name, Host, ProtectionLevel, IsStatic);
+            return new Variable(Host, ProtectionLevel, IsStatic);
         }
     }
 }

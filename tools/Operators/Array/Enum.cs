@@ -5,9 +5,9 @@ namespace Tools.Operators {
             this.List = List;
         }
         public override IValue Run(Stack Stack) {
-            List<Values.Variable> num = new List<Values.Variable>();
+            Dictionary<string, Values.Variable> num = new Dictionary<string, Values.Variable>();
             for(int i = 0; i < List.Count; i++) {
-                num.Add(new Values.Variable(List[i], new Values.NumberLiteral(i)));
+                num.Add(List[i], new Values.Variable(new Values.NumberLiteral(i)));
             }
             return new Values.ObjectLiteral(num, useProto: true);
         }

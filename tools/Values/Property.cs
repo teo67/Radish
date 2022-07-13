@@ -5,23 +5,26 @@ namespace Tools.Values {
         public override IValue? Host {
             get {
                 //Console.WriteLine($"TEST: accessing getter {Name}");
-                return (Get == null) ? null : Get.Function(new List<Variable>(), ThisRef);
+                return (Get == null) ? null : Get.Function(new List<IValue>(), ThisRef);
             }
             protected set {
                 //Console.WriteLine($"TEST: accessing setter {Name}");
                 if(Set == null) {
                     throw new RadishException("No harvest function has been declared for this property!");
                 }
-                Set.Function(new List<Variable>() { new Variable("input", value) }, ThisRef);
+                if(value == null) {
+                    throw new RadishException("Unable to set a variable to no value (system error)!");
+                }
+                Set.Function(new List<IValue>() { value }, ThisRef);
             }
         }
 
-        public Property(string name, IValue? _get, IValue? _set, ProtectionLevels protectionLevel = ProtectionLevels.PUBLIC, bool isStatic = false) : base(name, null, protectionLevel, isStatic, true) {
+        public Property(IValue? _get, IValue? _set, ProtectionLevels protectionLevel = ProtectionLevels.PUBLIC, bool isStatic = false) : base(null, protectionLevel, isStatic, true) {
             this.Get = _get;
             this.Set = _set;
         }
         public override Variable Clone() {
-            return new Property(Name, Get, Set, ProtectionLevel, IsStatic);
+            return new Property(Get, Set, ProtectionLevel, IsStatic);
         }
     }
 }

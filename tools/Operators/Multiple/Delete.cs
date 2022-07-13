@@ -7,18 +7,14 @@ namespace Tools.Operators {
             this.Name = name;
         }
         public override IValue Run(Stack Stack) {
-            List<Values.Variable> asVar = Left._Run(Stack).Object;
-            IValue? returning = null;
-            for(int i = 0; i < asVar.Count; i++) {
-                if(asVar[i].Name == Name) {
-                    returning = asVar[i].Var;
-                    asVar.RemoveAt(i);
-                }
-            }
-            if(returning == null) {
+            Dictionary<string, Values.Variable> asVar = Left._Run(Stack).Object;
+            Values.Variable? returning = null;
+            asVar.TryGetValue(Name, out returning);
+            bool deleted = asVar.Remove(Name);
+            if(returning == null || !deleted) {
                 throw new RadishException($"No property {Name} found to delete!", Row, Col);
             }
-            return returning;
+            return returning.Var;
         }
 
         public override string Print() {

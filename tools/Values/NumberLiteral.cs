@@ -3,11 +3,11 @@ namespace Tools.Values {
         public static IValue? Proto { private get; set; }
         public override double Number { get; }
         public override IValue? Base { get; }
-        public override List<Variable> Object { get; }
+        public override Dictionary<string, Variable> Object { get; }
         public NumberLiteral(double input) : base("number") {
             Number = input;
             Base = Proto == null ? null : Proto.Var;
-            Object = new List<Variable>();
+            Object = new Dictionary<string, Variable>();
         }
         public override BasicTypes Default {
             get {

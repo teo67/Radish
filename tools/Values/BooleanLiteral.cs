@@ -3,11 +3,11 @@ namespace Tools.Values {
         public static IValue? Proto { private get; set; }
         public override bool Boolean { get; }
         public override IValue? Base { get; }
-        public override List<Variable> Object { get; }
+        public override Dictionary<string, Variable> Object { get; }
         public BooleanLiteral(bool input) : base("boolean") {
             this.Boolean = input;
             this.Base = Proto == null ? null : Proto.Var;
-            this.Object = new List<Variable>();
+            this.Object = new Dictionary<string, Variable>();
         }
         public override  BasicTypes Default {
             get {

@@ -1,8 +1,8 @@
 namespace Tools.Operators {
     class New : Operator {
-        private IOperator Args { get; }
+        private List<IOperator> Args { get; }
         private IOperator ClassName { get; }
-        public New(IOperator className, IOperator args, int row, int col) : base(row, col) {
+        public New(IOperator className, List<IOperator> args, int row, int col) : base(row, col) {
             this.ClassName = className;
             this.Args = args;
         }

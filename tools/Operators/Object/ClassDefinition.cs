@@ -10,22 +10,22 @@ namespace Tools.Operators {
         }
         public override IValue Run(Stack Stack) {
             Stack.Push();
-            Values.Variable constr = new Values.Variable("constructor", new Values.FunctionLiteral(new Stack(Stack.Head), new List<string>(), new List<IOperator?>(), false, new NullValue(Row, Col), FileName));
-            Stack.Head.Val.Add(constr);
+            Values.Variable constr = new Values.Variable(new Values.FunctionLiteral(new Stack(Stack.Head), new List<string>(), new List<IOperator?>(), false, new NullValue(Row, Col), FileName));
+            Stack.Head.Val.Add("constructor", constr);
             IValue result = Body._Run(Stack);
             if(result.Default == BasicTypes.RETURN) {
                 throw new RadishException("Unexpected return statement inside a class definition!");
             }
-            List<Values.Variable> popped = Stack.Pop().Val;
+            Dictionary<string, Values.Variable> popped = Stack.Pop().Val;
             // empty constructor in case class has none
-            List<Values.Variable> statics = new List<Values.Variable>();
-            List<Values.Variable> nonstatics = new List<Values.Variable>();
-            for(int i = 0; i < popped.Count; i++) {
-                if(popped[i].IsStatic) {
-                    statics.Add(popped[i]);
+            Dictionary<string, Values.Variable> statics = new Dictionary<string, Values.Variable>();
+            Dictionary<string, Values.Variable> nonstatics = new Dictionary<string, Values.Variable>();
+            foreach(KeyValuePair<string, Values.Variable> vari in popped) {
+                if(vari.Value.IsStatic) {
+                    statics.Add(vari.Key, vari.Value);
                 } else {
-                    if(popped[i] != constr) {
-                        nonstatics.Add(popped[i]);
+                    if(vari.Value != constr) {
+                        nonstatics.Add(vari.Key, vari.Value);
                     }
                 }
             }
@@ -42,10 +42,10 @@ namespace Tools.Operators {
                 }
                 proto = new Values.ObjectLiteral(nonstatics, _base);
             }
-            foreach(Values.Variable _static in statics) {
-                evaluatedConstr.Object.Add(_static);
+            foreach(KeyValuePair<string, Values.Variable> _static in statics) {
+                evaluatedConstr.Object.Add(_static.Key, _static.Value);
             }
-            evaluatedConstr.Object.Add(new Values.Variable("prototype", proto));
+            evaluatedConstr.Object.Add("prototype", new Values.Variable(proto));
             return evaluatedConstr;
         }
 

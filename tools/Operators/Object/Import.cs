@@ -34,7 +34,7 @@ namespace Tools.Operators {
             RadishException.FileName = previous;
             Librarian.CurrentlyImporting.Pop();
             if(returned.Default == BasicTypes.RETURN) { 
-                returned = returned.Function(new List<Values.Variable>(), null);
+                returned = returned.Function(new List<IValue>(), null);
             }
             Librarian.Imports.Add(realPath, returned);
             return returned;

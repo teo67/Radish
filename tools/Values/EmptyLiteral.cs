@@ -24,7 +24,7 @@ namespace Tools.Values {
                 throw new RadishException($"Unable to parse {Name} as a boolean!");
             }
         }
-        public virtual List<Variable> Object {
+        public virtual Dictionary<string, Variable> Object {
             get {
                 throw new RadishException($"Unable to parse {Name} as an object!");
             }
@@ -43,7 +43,7 @@ namespace Tools.Values {
                 throw new RadishException($"Unable to parse {Name} as a variable!");
             }
         }
-        public virtual IValue Function(List<Variable> args, IValue? _this) {
+        public virtual IValue Function(List<IValue> args, IValue? _this) {
             throw new RadishException($"Unable to parse {Name} as a function!");
         }
         public virtual bool Equals(IValue other) {

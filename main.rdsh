@@ -1,3 +1,8 @@
-dig a p {
+d A p class {
+    d b p 0
+}
+d B p class : A {
 
-}a
+}
+d c p new B()
+holler(B.prototype.b)

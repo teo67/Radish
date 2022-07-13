@@ -5,9 +5,9 @@ namespace Tools.Operators {
             this.Children = (children == null) ? new List<IOperator>() : children;
         }
         public override IValue Run(Stack Stack) {
-            List<Values.Variable> adding = new List<Values.Variable>();
+            Dictionary<string, Values.Variable> adding = new Dictionary<string, Values.Variable>();
             for(int i = 0; i < Children.Count; i++) {
-                adding.Add(new Values.Variable($"{i}", Children[i]._Run(Stack).Var));
+                adding.Add($"{i}", new Values.Variable(Children[i]._Run(Stack).Var));
             }
             return new Values.ObjectLiteral(adding, useArrayProto: true);
         }
