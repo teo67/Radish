@@ -1,0 +1,10 @@
+holler.write("Enter a username: ")
+dig user p holler.read()
+holler("'user' for sure? (y/n) ")
+dig conf p holler.read()
+if(conf = "y" || conf = "yes") {
+    holler("OK!")
+} else {
+    holler("SESSION ENDED")
+    holler.clear()
+}

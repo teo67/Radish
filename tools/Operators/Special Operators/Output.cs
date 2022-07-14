@@ -1,11 +1,12 @@
+using System.Windows.Forms;
 namespace Tools.Operators {
     class Output : Operator {
-        private IOperator Input { get; }
+        protected IOperator Input { get; }
         public Output(IOperator input) : base(-1, -1) {
             this.Input = input;
         }
 
-        private string CalcOutput(Tools.IValue input, int spaces = 2) {
+        protected string CalcOutput(Tools.IValue input, int spaces = 2) {
             if(input.Default == Tools.BasicTypes.OBJECT) {
                 if(Values.ObjectLiteral.ArrayProto != null && input.Base == Values.ObjectLiteral.ArrayProto.Var) {
                     if(spaces >= 8) {
@@ -50,6 +51,7 @@ namespace Tools.Operators {
             //Console.WriteLine("about to access var");
             Console.WriteLine(CalcOutput(result.Var));
             //Console.WriteLine("done");
+
             return result;
         }
         public override string Print() {

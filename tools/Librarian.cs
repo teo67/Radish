@@ -70,6 +70,9 @@ namespace Tools { // adds basic prototypes to call stack
                 StandardSpecials.Add("ASIN", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "asininput" }, new List<IOperator?>() { null }, false, new Operators.Arcsine(new Operators.Reference("asininput", -1, -1, this)), "Standard Library")));
                 StandardSpecials.Add("ACOS", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "acosinput" }, new List<IOperator?>() { null }, false, new Operators.Arccosine(new Operators.Reference("acosinput", -1, -1, this)), "Standard Library")));
                 StandardSpecials.Add("ATAN", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "ataninput" }, new List<IOperator?>() { null }, false, new Operators.Arctangent(new Operators.Reference("ataninput", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add("WRITE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "writein" }, new List<IOperator?>() { null }, false, new Operators.Write(new Operators.Reference("writein", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add("CLEAR", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>(), new List<IOperator?>(), false, new Operators.Clear(), "Standard Library")));
+                StandardSpecials.Add("READ", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>(), new List<IOperator?>(), false, new Operators.Read(), "Standard Library")));
                 Lookup("PROTOTYPES", -1, -1); // we lookup prototypes at the beginning to add properties to literal classes
                 //this will directly edit the first layer of the stack
             } else {
