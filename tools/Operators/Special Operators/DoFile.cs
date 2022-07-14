@@ -16,9 +16,9 @@ namespace Tools.Operators {
                 return File.Open(fileName, FileMode.Open);
             });
             StreamReader reader = new StreamReader(file);
-            List<Values.Variable> args = new List<Values.Variable>();
+            List<IValue> args = new List<IValue>();
             if(ShouldRead._Run(Stack).Boolean) {
-                args.Add(new Values.Variable("text", new Values.StringLiteral(reader.ReadToEnd())));
+                args.Add(new Values.Variable(new Values.StringLiteral(reader.ReadToEnd())));
             }
             IValue edits = Edits._Run(Stack).Var;
             IValue edited = edits.Function(args, null).Var;

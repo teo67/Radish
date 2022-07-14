@@ -22,15 +22,14 @@ namespace Tools.Operators {
                 }
             }
 
-
-            foreach(Values.Variable variable in Stack.Head.Val) {
-                if(variable.Name == VarName && variable.IsStatic == isStatic) {
-                    throw new RadishException($"{VarName} already exists in the current scope!");
-                }
+            Values.Variable? o  = null;
+            bool gotten = Stack.Head.Val.TryGetValue(VarName, out o);
+            if(gotten && o != null && o.IsStatic == isStatic) {
+                throw new RadishException($"{VarName} already exists in the current scope!");
             }
             
-            Values.Variable adding = new Values.Variable(VarName, null, lvl, isStatic);
-            Stack.Head.Val.Add(adding);
+            Values.Variable adding = new Values.Variable(null, lvl, isStatic);
+            Stack.Head.Val.Add(VarName, adding);
             return adding;
         }
         public override string Print() {

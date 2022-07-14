@@ -7,20 +7,27 @@ namespace Tools.Operators {
             this.Args = args;
         }
         public override IValue Run(Stack Stack) {
-            List<Values.Variable> args = Args._Run(Stack).Object;
+            List<IValue> args = new List<IValue>();
+            foreach(IOperator arg in Args) {
+                args.Add(arg._Run(Stack).Var);
+            }
             IValue _class = ClassName._Run(Stack).Var;
             IValue? inheriting = null;
             IValue? returned = Values.ObjectLiteral.DeepGet(_class, "prototype", _class);
             if(returned != null) {
                 inheriting = returned.Var;
             }
-            IValue returning = new Values.ObjectLiteral(new List<Values.Variable>(), inheriting, useProto: inheriting == null);
+            IValue returning = new Values.ObjectLiteral(new Dictionary<string, Values.Variable>(), inheriting, useProto: inheriting == null);
             _class.Function(args, returning);
             return returning;
         }
-
         public override string Print() {
-            return $"(new {ClassName.Print()} ({Args.Print()}))";
+            string returning = $"(new {ClassName.Print()}";
+            foreach(IOperator op in Args) {
+                returning += $"\n{op.Print()}";
+            }
+            returning += ")";
+            return returning;
         }
     }
 }

@@ -2,7 +2,7 @@ namespace Tools.Operators {
     class DirectoryRead : FileOperator {
         public DirectoryRead(IOperator input) : base(input, -1, -1) {
         }
-        private void Iterate(List<Values.Variable> arr, string[] adding) {
+        private void Iterate(Dictionary<string, Values.Variable> arr, string[] adding) {
             int i = arr.Count;
             foreach(string dir in adding) {
                 string edited = dir.Replace('\\', '/');
@@ -10,7 +10,7 @@ namespace Tools.Operators {
                 if(j != -1 && j < edited.Length - 1) {
                     edited = edited.Substring(j + 1);
                 }
-                arr.Add(new Values.Variable($"{i}", new Values.StringLiteral(edited)));
+                arr.Add($"{i}", new Values.Variable(new Values.StringLiteral(edited)));
                 i++;
             }
         }
@@ -19,7 +19,7 @@ namespace Tools.Operators {
             if(!Directory.Exists(input)) {
                 throw new RadishException($"Directory {input} could not be read because it does not exist on the file system!", Row, Col);
             }
-            List<Values.Variable> arr = new List<Values.Variable>();
+            Dictionary<string, Values.Variable> arr = new Dictionary<string, Values.Variable>();
             (string[], string[]) all = Safe<(string[], string[])>(() => {
                 string[] allFiles = Directory.GetFiles(input);
                 string[] allDirectories = Directory.GetDirectories(input);

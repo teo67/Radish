@@ -1,8 +1,0 @@
-d A p class {
-    d b p 0
-}
-d B p class : A {
-
-}
-d c p new B()
-holler(B.prototype.b)

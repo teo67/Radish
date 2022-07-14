@@ -12,12 +12,11 @@ namespace Tools.Operators {
                         return "{Array}";
                     }
                     string returning = "[";
-                    for(int i = 0; i < input.Object.Count; i++) {
-                        returning += CalcOutput(input.Object[i].Var, spaces + 2);
-                        if(i != input.Object.Count - 1) {
-                            returning += ", ";
-                        }
+                    foreach(KeyValuePair<string, Values.Variable> val in input.Object) {
+                        returning += CalcOutput(val.Value.Var, spaces + 2);
+                        returning += ", ";
                     }
+                    returning = returning.Substring(0, returning.Length - 2);
                     returning += "]";
                     return returning;
                 } else {
@@ -26,10 +25,10 @@ namespace Tools.Operators {
                     }
                     //Console.WriteLine("passed array check");
                     string returning = "{\n";
-                    foreach(Tools.Values.Variable item in input.Object) {
+                    foreach(KeyValuePair<string, Values.Variable> item in input.Object) {
                         returning += new System.String(' ', spaces);
-                        returning += item.Name;
-                        Tools.IValue? saved = item.Host;
+                        returning += item.Key;
+                        Tools.IValue? saved = item.Value.Host;
                         if(saved != null) {
                             returning += ": ";
                             returning += CalcOutput(saved, spaces + 2);

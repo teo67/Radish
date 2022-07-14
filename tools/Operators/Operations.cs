@@ -282,6 +282,14 @@ namespace Tools {
             });
         }
 
+        private List<IOperator> ParseCallArgs() {
+            return ParseLi<List<IOperator>>(() => {
+                return new List<IOperator>();
+            }, (List<IOperator> returning) => {
+                returning.Add(ParseExpression());
+            });
+        }
+
         private List<string> ParseEnum() {
             return ParseLi<List<string>>(() => {
                 return new List<string>();
@@ -533,7 +541,7 @@ namespace Tools {
                     while(!doneDone) {
                         if(next.Type == TokenTypes.SYMBOL) {
                             if(next.Val == "(" && allowParens) {
-                                IOperator args = ParseList();
+                                List<IOperator> args = ParseCallArgs();
                                 RequireSymbol(")");
                                 current = new Operators.FunctionCall(current, args, Row, Col);
                                 next = Read();
@@ -676,7 +684,7 @@ namespace Tools {
                     IOperator next = ParseCalls(false);
                     Print("parsing opening paren.");
                     RequireSymbol("(");
-                    IOperator args = ParseList();
+                    List<IOperator> args = ParseCallArgs();
                     Print("parsing closing paren.");
                     RequireSymbol(")");
                     return new Operators.New(next, args, Row, Col);

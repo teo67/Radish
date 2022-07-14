@@ -25,15 +25,13 @@ namespace Tools.Operators {
                     isStatic = true;
                 }
             }
-
-            foreach(Values.Variable variable in Stack.Head.Val) {
-                if(variable.Name == Name && variable.IsStatic == isStatic) {
-                    throw new RadishException($"Property {Name} already exists in the current scope!");
-                }
+            Values.Variable? o = null;
+            bool gotten = Stack.Head.Val.TryGetValue(Name, out o);
+            if(gotten && o != null && o.IsStatic == isStatic) {
+                throw new RadishException($"Property {Name} already exists in the current scope!");
             }
-            
-            Values.Variable adding = new Values.Property(Name, (Get == null) ? null : Get._Run(Stack), (Give == null) ? null : Give._Run(Stack), lvl, isStatic);
-            Stack.Head.Val.Add(adding);
+            Values.Variable adding = new Values.Property((Get == null) ? null : Get._Run(Stack), (Give == null) ? null : Give._Run(Stack), lvl, isStatic);
+            Stack.Head.Val.Add(Name, adding);
             return adding;
         }
         public override string Print() {

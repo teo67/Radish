@@ -53,7 +53,7 @@ namespace Tools { // adds basic prototypes to call stack
                 StandardSpecials.Add("ARRLEN", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "arrinput" }, new List<IOperator?>() { null }, false, new Operators.ArrayLength(new Operators.Reference("arrinput", -1, -1, this)), "Standard Library")));
                 StandardSpecials.Add("STRLEN", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "strinput" }, new List<IOperator?>() { null }, false, new Operators.StringLength(new Operators.Reference("strinput", -1, -1, this)), "Standard Library")));
                 StandardSpecials.Add("DELETE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "delobj", "delinput" }, new List<IOperator?>() { null, null }, false, new Operators.ObjectUproot(new Operators.Reference("delobj", -1, -1, this), new Operators.Reference("delinput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("CALL", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "caller", "callinput", "callthis" }, new List<IOperator?>() { null, null, null }, false, new Operators.FunctionCall(new Operators.Reference("caller", -1, -1, this), new Operators.Reference("callinput", -1, -1, this), -1, -1, new Operators.Reference("callthis", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add("CALL", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "caller", "callinput", "callthis" }, new List<IOperator?>() { null, null, null }, false, new Operators.SpecialCall(new Operators.Reference("caller", -1, -1, this), new Operators.Reference("callinput", -1, -1, this), -1, -1, new Operators.Reference("callthis", -1, -1, this)), "Standard Library")));
                 StandardSpecials.Add("FILEREAD", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "readfile" }, new List<IOperator?>() { null }, false, new Operators.FileRead(new Operators.Reference("readfile", -1, -1, this)), "Standard Library")));
                 StandardSpecials.Add("FILEWRITE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "writefile", "writeinput" }, new List<IOperator?>() { null, null }, false, new Operators.FileWrite(new Operators.Reference("writefile", -1, -1, this), new Operators.Reference("writeinput", -1, -1, this)), "Standard Library")));
                 StandardSpecials.Add("FILEEXISTS", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "existsfile" }, new List<IOperator?>() { null }, false, new Operators.FileExists(new Operators.Reference("existsfile", -1, -1, this)), "Standard Library")));
@@ -120,7 +120,7 @@ namespace Tools { // adds basic prototypes to call stack
             IValue returned = operations.ParseScope().Run(operations.stack);
             RadishException.FileName = previous;
             if(returned.Default == BasicTypes.RETURN) { 
-                returned = returned.Function(new List<Values.Variable>(), null);
+                returned = returned.Function(new List<IValue>(), null);
             }
             if(varName != "PROTOTYPES") {
                 Imports.Add(path, returned);

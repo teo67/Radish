@@ -5,16 +5,12 @@ namespace Tools.Operators {
             this.VarName = varName;
         }
         public override IValue Run(Stack Stack) {
-            IValue? returning = null;
-            for(int i = 0; i < Stack.Head.Val.Count; i++) {
-                if(Stack.Head.Val[i].Name == VarName) {
-                    returning = Stack.Head.Val[i];
-                    Stack.Head.Val.RemoveAt(i);
-                }
-            }
-            if(returning == null) {
+            Values.Variable? returning = null;
+            bool gotten = Stack.Head.Val.TryGetValue(VarName, out returning);
+            if(!gotten || returning == null) {
                 throw new RadishException($"No variable {VarName} found to prune!", Row, Col);
             }
+            Stack.Head.Val.Remove(VarName);
             return returning;
         }
         public override string Print() {
