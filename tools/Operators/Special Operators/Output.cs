@@ -1,4 +1,3 @@
-using System.Windows.Forms;
 namespace Tools.Operators {
     class Output : Operator {
         protected IOperator Input { get; }

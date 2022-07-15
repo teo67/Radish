@@ -12,7 +12,6 @@ namespace Tools.Operators {
             }
             IValue left = Left._Run(Stack);
             IValue returned = left.Function(passing, ThisRef == null ? null : ThisRef._Run(Stack).Var);
-            RadishException.Pop();
             return returned;
         }
         public override string Print() {
