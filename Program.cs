@@ -14,7 +14,8 @@
         Tools.Radish? radish = null;
         try {
             string first = System.IO.Directory.GetCurrentDirectory();
-            first = first.Replace('\\', '/') + "/main.rdsh"; // we use forward slashes
+            string fileName = args.Length > 0 && args[args.Length - 1].EndsWith(".rdsh") ? args[args.Length - 1] : "main.rdsh";
+            first = first.Replace('\\', '/') + "/" + fileName; // we use forward slashes
             Tools.RadishException.FileName = first;
             radish = new Tools.Radish(first);
         } catch(Exception e) {
@@ -23,6 +24,7 @@
         if(radish != null) {
             bool lex = hasOption(new string[] { "l", "lex" }, args);
             bool parse = hasOption(new string[] { "p", "parse" }, args);
+            bool minify = hasOption("minify", args);
             if(lex) {
                 radish.Lex();
             } else if(parse) {

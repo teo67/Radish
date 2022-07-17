@@ -10,8 +10,11 @@ namespace Tools {
                 Librarian librarian = new Librarian(uselib);
                 Operations operations = new Operations(reader, verbose, false, librarian);
                 operations.ParseScope().Run(operations.stack);
-            } catch {
+            } catch(RadishException) {
                 RadishException.Print();
+            } catch(Exception e) {
+                Console.WriteLine("Uh oh, a C# error occurred within Radish. Here's the raw output:");
+                Console.WriteLine(e);
             }
         }   
 

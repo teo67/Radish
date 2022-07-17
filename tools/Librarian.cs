@@ -74,6 +74,8 @@ namespace Tools { // adds basic prototypes to call stack
                 StandardSpecials.Add("CLEAR", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>(), new List<IOperator?>(), false, new Operators.Clear(), "Standard Library")));
                 StandardSpecials.Add("READ", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>(), new List<IOperator?>(), false, new Operators.Read(), "Standard Library")));
                 StandardSpecials.Add("XOR128SHIFTPLUS", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "s0", "s1" }, new List<IOperator?>() { null, null }, false, new Operators.XOrShift128Plus(new Operators.Reference("s0", -1, -1, this), new Operators.Reference("s1", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add("TOJSON", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "jsonin" }, new List<IOperator?>() { null }, false, new Operators.ToJSON(new Operators.Reference("jsonin", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add("FROMJSON", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "jsonout" }, new List<IOperator?>() { null }, false, new Operators.FromJSON(new Operators.Reference("jsonout", -1, -1, this)), "Standard Library")));
                 Lookup("PROTOTYPES", -1, -1); // we lookup prototypes at the beginning to add properties to literal classes
                 //this will directly edit the first layer of the stack
             } else {

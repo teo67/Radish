@@ -20,7 +20,7 @@ namespace Tools.Operators {
             return returned;
         }
         public override string Print() {
-            string ret = $"{Left.Print}(";
+            string ret = $"{Left.Print()}(";
             foreach(IOperator op in Right) {
                 ret += op.Print();
                 ret += ", ";

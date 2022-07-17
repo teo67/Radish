@@ -44,7 +44,7 @@ namespace Tools {
                 "dig", "d", "tool", "t", "plant", "p", "uproot",
                 "harvest", "h", "cancel", "continue", "end", "fill",
                 "new", "null", "class",
-                "public", "private", "protected", "static",
+                "public", "private", "protected", "static", "type",
                 "try", "catch", "throw", "import", "all", "PATH", "enum", "each", "of", "switch", "case", "default"
             };
         }
@@ -650,6 +650,11 @@ namespace Tools {
                     Print("parsing throw statement");
                     IOperator throwing = ParseExpression();
                     return new Operators.Throw(throwing, Row, Col);
+                }
+                if(returned.Val == "type") {
+                    Print("parsing type statement");
+                    IOperator typing = ParseExpression();
+                    return new Operators.Type(typing, Row, Col);
                 }
                 if(returned.Val == "import") {
                     Print("parsing import");

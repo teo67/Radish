@@ -16,14 +16,16 @@ namespace Tools {
         private char hashChar;
         private char semi;
         private CountingReader reader { get; }
-        private Dictionary<char, char> backslashes;
-        public Lexer(CountingReader reader) {
-            this.reader = reader;
-            dict = new Dictionary<char, CharTypes>();
+        public static Dictionary<char, char> backslashes;
+        static Lexer() {
             backslashes = new Dictionary<char, char>() {
                 { 'n', '\n' },
                 { 't', '\t' }
             };
+        }
+        public Lexer(CountingReader reader) {
+            this.reader = reader;
+            dict = new Dictionary<char, CharTypes>();
             dotChar = '.';
             hashChar = '#';
             semi = ';';

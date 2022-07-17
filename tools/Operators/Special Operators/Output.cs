@@ -5,22 +5,30 @@ namespace Tools.Operators {
             this.Input = input;
         }
 
-        protected string CalcOutput(Tools.IValue input, int spaces = 2) {
+        protected string CalcOutput(Tools.IValue input, int spaces = 4) {
             if(input.Default == Tools.BasicTypes.OBJECT) {
                 if(Values.ObjectLiteral.ArrayProto != null && input.Base == Values.ObjectLiteral.ArrayProto.Var) {
-                    if(spaces >= 8) {
+                    if(spaces >= 16) {
                         return "{Array}";
                     }
                     string returning = "[";
                     foreach(KeyValuePair<string, Values.Variable> val in input.Object) {
-                        returning += CalcOutput(val.Value.Var, spaces + 2);
+                        try {
+                            IValue? previous = val.Value.ThisRef;
+                            val.Value.ThisRef = input;
+                            returning += CalcOutput(val.Value.Var, spaces);
+                            val.Value.ThisRef = previous;
+                            
+                        } catch {
+                            returning += "{unevaluated getter}";
+                        }
                         returning += ", ";
                     }
                     returning = returning.Substring(0, returning.Length - 2);
                     returning += "]";
                     return returning;
                 } else {
-                    if(spaces >= 8) {
+                    if(spaces >= 16) {
                         return "{Object}";
                     }
                     //Console.WriteLine("passed array check");
@@ -28,14 +36,21 @@ namespace Tools.Operators {
                     foreach(KeyValuePair<string, Values.Variable> item in input.Object) {
                         returning += new System.String(' ', spaces);
                         returning += item.Key;
-                        Tools.IValue? saved = item.Value.Host;
-                        if(saved != null) {
-                            returning += ": ";
-                            returning += CalcOutput(saved, spaces + 2);
+                        try {
+                            IValue? previous = item.Value.ThisRef;
+                            item.Value.ThisRef = input;
+                            Tools.IValue? saved = item.Value.Host;
+                            item.Value.ThisRef = previous;
+                            if(saved != null) {
+                                returning += ": ";
+                                returning += CalcOutput(saved, spaces + 4);
+                            }
+                        } catch {
+                            returning += " { }";
                         }
                         returning += "\n";
                     }
-                    returning += new System.String(' ', spaces - 2);
+                    returning += new System.String(' ', spaces - 4);
                     returning += "}";
                     return returning;
                 }
@@ -46,8 +61,10 @@ namespace Tools.Operators {
             }
         }
         public override Tools.IValue Run(Stack Stack) {
+            //Console.WriteLine("before");
             Tools.IValue result = Input._Run(Stack);
             //Console.WriteLine("about to access var");
+            //Console.WriteLine(result.Var.Default);
             Console.WriteLine(CalcOutput(result.Var));
             //Console.WriteLine("done");
 
