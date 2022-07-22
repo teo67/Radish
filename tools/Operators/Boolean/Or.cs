@@ -2,11 +2,17 @@ namespace Tools.Operators {
     class Or : SimpleOperator {
         public Or(IOperator left, IOperator right, int row, int col) : base(left, right, "||", row, col) { }
         public override IValue Run(Stack Stack) {
-            IValue first = Left._Run(Stack).Var;
-            if(first.Boolean) {
+            IValue first = Left._Run(Stack);
+            IValue firstvar = first.Var;
+            IValue returning = firstvar;
+            if(!firstvar.Boolean) {
+                returning = Right._Run(Stack).Var;
+            }
+            if(IsAssigning) {
+                first.Var = returning;
                 return first;
             }
-            return Right._Run(Stack).Var;
+            return returning;
         }
     }
 }
