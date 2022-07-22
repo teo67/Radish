@@ -8,8 +8,7 @@ namespace Tools {
         public Dictionary<string, Values.Variable> Object { get; } // get value as object
         public IValue? Base { get; }
         public bool Equals(IValue other); // check equality
-        public IOperator FunctionBody { get; } // get function in order to check for equality
-        public IValue Function(List<IValue> args, IValue? _this); // call value as function with list of values
+        public Func<List<IValue>, IValue?, IValue?, IValue> Function { get; } // call value as function with list of values
         public string Print();
         public IValue? IsSuper { get; set; }
     }

@@ -11,7 +11,8 @@ namespace Tools.Operators {
                 passing.Add(pair.Value.Var);
             }
             IValue left = Left._Run(Stack);
-            IValue returned = left.Function(passing, ThisRef == null ? null : ThisRef._Run(Stack).Var);
+            IValue? ran = ThisRef == null ? null : ThisRef._Run(Stack).Var;
+            IValue returned = left.Function(passing, ran, ran);
             return returned;
         }
         public override string Print() {

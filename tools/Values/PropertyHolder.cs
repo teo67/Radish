@@ -3,12 +3,14 @@ namespace Tools.Values {
         private Variable? Held { get; }
         private string Name { get; }
         private IValue Obj { get; }
+        private IValue? RealHolder { get; }
         private ProtectionLevels ProtectionLevel { get; }
-        public PropertyHolder(Variable? held, string name, IValue obj, ProtectionLevels protectionLevel) {
+        public PropertyHolder(Variable? held, string name, IValue obj, IValue? realHolder, ProtectionLevels protectionLevel) {
             //Console.WriteLine($"creating property holder with value {held}, name {name}");
             this.Held = held;
             this.Name = name;
             this.Obj = obj;
+            this.RealHolder = realHolder;
             this.ProtectionLevel = protectionLevel;
         }
 
@@ -25,8 +27,8 @@ namespace Tools.Values {
             if(Held == null) {
                 throw new RadishException($"No value stored in object property {Name}!");
             }
-            IValue? previous = Held.ThisRef;
-            Held.ThisRef = Obj;
+            (IValue?, IValue?) previous = Held.ThisRef;
+            Held.ThisRef = (Obj, RealHolder);
             IValue saved = Held.Var;
             Held.ThisRef = previous;
             return saved;
@@ -77,25 +79,20 @@ namespace Tools.Values {
                         setting = Held.Clone();
                         Obj.Object.Add(Name, setting);
                     }
-                    IValue? previous = setting.ThisRef;
-                    setting.ThisRef = Obj;
+                    (IValue?, IValue?) previous = setting.ThisRef;
+                    setting.ThisRef = (Obj, RealHolder);
                     setting.Var = value;
                     setting.ThisRef = previous;
                 }
             }
         }
-        public IOperator FunctionBody {
-            get {
-                return Resolve().FunctionBody;
-            }
-        }
         public bool Equals(IValue other) {
             return Resolve().Equals(other);
         }
-        public IValue Function(List<IValue> args, IValue? _this) {
-            //return Resolve().Function(args);
-            IValue returned = Resolve().Function(args, Obj);
-            return returned;
+        public Func<List<IValue>, IValue?, IValue?, IValue> Function {
+            get {
+                return (List<IValue> li, IValue? a, IValue? b) => Resolve().Function(li, Obj, RealHolder);
+            }
         }
         public string Print() {
             return $"propertyholder({(Held == null ? "null" : Held.Print())})";

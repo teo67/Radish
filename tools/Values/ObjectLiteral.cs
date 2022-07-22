@@ -27,17 +27,17 @@ namespace Tools.Values {
         public override bool Equals(IValue other) {
             return other.Default == BasicTypes.OBJECT && Object == other.Object;
         }
-
-        public static Variable? DeepGet(IValue target, string key, IValue originalTarget) {
+        // result, result holder
+        public static (Variable?, IValue?) DeepGet(IValue target, string key, IValue originalTarget) {
             Variable? property = null;
             bool gotten = target.Object.TryGetValue(key, out property);
             if(gotten && property != null) {
-                if(property.ProtectionLevel == ProtectionLevels.PUBLIC || (ObjectLiteral.CurrentPrivate != null && ((ObjectLiteral.CurrentPrivate == target) || (ObjectLiteral.CurrentPrivate.Base != null && ObjectLiteral.CurrentPrivate.Base == target) || (ObjectLiteral.CurrentPrivate == originalTarget && property.ProtectionLevel != ProtectionLevels.PRIVATE)))) {
-                    return property;
+                if(property.ProtectionLevel == ProtectionLevels.PUBLIC || (ObjectLiteral.CurrentPrivate != null && ((ObjectLiteral.CurrentPrivate == target) || (ObjectLiteral.CurrentPrivate == originalTarget && property.ProtectionLevel != ProtectionLevels.PRIVATE)))) {
+                    return (property, target);
                 }
             }
             if(target.Base == null) {
-                return null;
+                return (null, null);
             }
             return DeepGet(target.Base, key, originalTarget);
         }

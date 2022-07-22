@@ -15,8 +15,8 @@ namespace Tools.Operators {
                 return new Values.Character(result, index, "" + evald.String[index]);
             }
             string nameR = Name._Run(Stack).String;
-            Values.Variable? gotten = Values.ObjectLiteral.DeepGet(evald, nameR, evald);
-            return new Values.PropertyHolder(gotten, nameR, evald, gotten == null ? ProtectionLevels.PUBLIC : gotten.ProtectionLevel);
+            (Values.Variable?, IValue?) gotten = Values.ObjectLiteral.DeepGet(evald, nameR, evald);
+            return new Values.PropertyHolder(gotten.Item1, nameR, evald, gotten.Item2, gotten.Item1 == null ? ProtectionLevels.PUBLIC : gotten.Item1.ProtectionLevel);
         }
 
         public override string Print() {

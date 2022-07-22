@@ -3,14 +3,14 @@ namespace Tools.Values {
         public virtual IValue? Host { get; protected set; }
         public ProtectionLevels ProtectionLevel { get; }
         public bool IsStatic { get; }
-        public IValue? ThisRef { get; set; } // temporary
+        public (IValue?, IValue?) ThisRef { get; set; } // temporary
         public Variable(IValue? host = null, ProtectionLevels protectionLevel = ProtectionLevels.PUBLIC, bool isStatic = false, bool ignoreHost = false) {
             if(!ignoreHost) {
                 this.Host = host;
             }
             this.ProtectionLevel = protectionLevel;
             this.IsStatic = isStatic;
-            this.ThisRef = null;
+            this.ThisRef = (null, null);
         }
         private IValue Resolve() {
             IValue? returned = Host;
@@ -57,12 +57,9 @@ namespace Tools.Values {
                 Host = value;
             }
         }
-        public IValue Function(List<IValue> args, IValue? _this) {
-            return Resolve().Function(args, _this);
-        }
-        public IOperator FunctionBody { 
+        public Func<List<IValue>, IValue?, IValue?, IValue> Function {
             get {
-                return Resolve().FunctionBody;
+                return Resolve().Function;
             }
         }
         public bool Equals(IValue other) {

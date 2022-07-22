@@ -1,10 +1,8 @@
 namespace Tools.Operators {
     class FunctionCall : Operator {
-        private IOperator? ThisRef { get; }
         private IOperator Left { get; }
         private List<IOperator> Right { get; }
-        public FunctionCall(IOperator left, List<IOperator> right, int row, int col, IOperator? _this = null) : base(row, col) {
-            this.ThisRef = _this;
+        public FunctionCall(IOperator left, List<IOperator> right, int row, int col) : base(row, col) {
             this.Left = left;
             this.Right = right;
         }
@@ -15,7 +13,7 @@ namespace Tools.Operators {
             }
             RadishException.Append($"at {Left.Print()}()", Row, Col, "", false);
             IValue left = Left._Run(Stack);
-            IValue returned = left.Function(passing, ThisRef == null ? null : ThisRef._Run(Stack).Var);
+            IValue returned = left.Function(passing, null, null);
             RadishException.Pop();
             return returned;
         }

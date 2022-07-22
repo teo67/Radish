@@ -14,8 +14,8 @@ namespace Tools.Operators {
                     string returning = "[";
                     foreach(KeyValuePair<string, Values.Variable> val in input.Object) {
                         try {
-                            IValue? previous = val.Value.ThisRef;
-                            val.Value.ThisRef = input;
+                            (IValue?, IValue?) previous = val.Value.ThisRef;
+                            val.Value.ThisRef = (input, input);
                             returning += CalcOutput(val.Value.Var, spaces);
                             val.Value.ThisRef = previous;
                             
@@ -24,7 +24,9 @@ namespace Tools.Operators {
                         }
                         returning += ", ";
                     }
-                    returning = returning.Substring(0, returning.Length - 2);
+                    if(returning.Length >= 2) {
+                        returning = returning.Substring(0, returning.Length - 2);
+                    }
                     returning += "]";
                     return returning;
                 } else {
@@ -37,8 +39,8 @@ namespace Tools.Operators {
                         returning += new System.String(' ', spaces);
                         returning += item.Key;
                         try {
-                            IValue? previous = item.Value.ThisRef;
-                            item.Value.ThisRef = input;
+                            (IValue?, IValue?) previous = item.Value.ThisRef;
+                            item.Value.ThisRef = (input, input);
                             Tools.IValue? saved = item.Value.Host;
                             item.Value.ThisRef = previous;
                             if(saved != null) {

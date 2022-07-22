@@ -43,16 +43,13 @@ namespace Tools.Values {
                 throw new RadishException($"Unable to parse {Name} as a variable!");
             }
         }
-        public virtual IValue Function(List<IValue> args, IValue? _this) {
-            throw new RadishException($"Unable to parse {Name} as a function!");
-        }
-        public virtual bool Equals(IValue other) {
-            throw new RadishException($"Unable to check the equality of type {Name}!");
-        }
-        public virtual IOperator FunctionBody {
+        public virtual Func<List<IValue>, IValue?, IValue?, IValue> Function {
             get {
                 throw new RadishException($"Unable to parse {Name} as a function!");
             }
+        }
+        public virtual bool Equals(IValue other) {
+            throw new RadishException($"Unable to check the equality of type {Name}!");
         }
         public virtual string Print() {
             throw new RadishException($"Unable to print a {Name} value!");

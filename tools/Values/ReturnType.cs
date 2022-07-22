@@ -16,8 +16,10 @@ namespace Tools.Values {
                 return Type;
             }
         }
-        public override IValue Function(List<IValue> args, IValue? _this) {
-            return Carrying;
+        public override Func<List<IValue>, IValue?, IValue?, IValue> Function {
+            get {
+                return (List<IValue> li, IValue? a, IValue? b) => Carrying;
+            }
         }
         public override string Print() {
             return $"{Type}({Carrying.Print()})";

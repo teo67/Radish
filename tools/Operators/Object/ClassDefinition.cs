@@ -36,7 +36,7 @@ namespace Tools.Operators {
             } else {
                 IValue fromStack = Inheriting._Run(Stack).Var;
                 evaluatedConstr.IsSuper = fromStack;
-                IValue? _base = Values.ObjectLiteral.DeepGet(fromStack, "prototype", fromStack);
+                IValue? _base = Values.ObjectLiteral.DeepGet(fromStack, "prototype", fromStack).Item1;
                 if(_base == null) {
                     _base = fromStack;
                 }

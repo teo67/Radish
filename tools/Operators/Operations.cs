@@ -44,7 +44,7 @@ namespace Tools {
                 "dig", "d", "tool", "t", "plant", "p", "uproot",
                 "harvest", "h", "cancel", "continue", "end", "fill",
                 "new", "null", "class",
-                "public", "private", "protected", "static", "type",
+                "public", "private", "protected", "static", "type", "after", "and", "or", "not",
                 "try", "catch", "throw", "import", "all", "PATH", "enum", "each", "of", "switch", "case", "default"
             };
         }
@@ -71,6 +71,15 @@ namespace Tools {
             if(!(next.Type == TokenTypes.SYMBOL && next.Val == input)) {
                 throw Error($"Error: expected symbol: {input}");
             }
+        }
+
+        private bool OptionalSymbol(string input) {
+            LexEntry next = Read();
+            if(next.Type == TokenTypes.SYMBOL && next.Val == input) {
+                return true;
+            }
+            Stored = next;
+            return false;
         }
 
         private void Print(string input) {
@@ -128,38 +137,46 @@ namespace Tools {
                     Stored = read;
                     returning.AddValue(ParseIfs());
                 } else if(read.Type == TokenTypes.OPERATOR && read.Val == "while") {
-                    RequireSymbol("(");
+                    bool res = OptionalSymbol("(");
                     IOperator exp = ParseExpression();
-                    RequireSymbol(")");
+                    if(res) {
+                        RequireSymbol(")");
+                    }
                     RequireSymbol("{");
                     IOperator scope = ParseScope();
                     RequireSymbol("}");
                     returning.AddValue(new Operators.While(exp, scope, Row, Col));
                 } else if(read.Type == TokenTypes.OPERATOR && read.Val == "for") {
-                    RequireSymbol("(");
+                    bool res = OptionalSymbol("(");
                     Operators.ListSeparator list = ParseList();
-                    RequireSymbol(")");
+                    if(res) {
+                        RequireSymbol(")");
+                    }
                     RequireSymbol("{");
                     IOperator body = ParseScope();
                     RequireSymbol("}");
                     returning.AddValue(new Operators.Loop(list, body, Row, Col));
                 } else if(read.Type == TokenTypes.OPERATOR && read.Val == "each") {
-                    RequireSymbol("(");
+                    bool res = OptionalSymbol("(");
                     LexEntry newRead = Read();
                     LexEntry of = Read();
                     if(of.Type != TokenTypes.OPERATOR || of.Val != "of") {
                         throw Error($"Expecting 'of' instead of '{of.Val}'!");
                     }
                     IOperator li = ParseExpression();
-                    RequireSymbol(")");
+                    if(res) {
+                        RequireSymbol(")");
+                    }
                     RequireSymbol("{");
                     IOperator body = ParseScope();
                     RequireSymbol("}");
                     returning.AddValue(new Operators.Each(newRead.Val, li, body, Row, Col));
                 } else if(read.Type == TokenTypes.OPERATOR && read.Val == "switch") {
-                    RequireSymbol("(");
+                    bool res = OptionalSymbol("(");
                     IOperator eval = ParseExpression();
-                    RequireSymbol(")");
+                    if(res) {
+                        RequireSymbol(")");
+                    }
                     RequireSymbol("{");
                     List<IOperator> checks = new List<IOperator>();
                     List<IOperator> bodies = new List<IOperator>();
@@ -238,9 +255,11 @@ namespace Tools {
         }
 
         private Operators.If ParseIf() {
-            RequireSymbol("(");
+            bool res = OptionalSymbol("(");
             IOperator li = ParseExpression();
-            RequireSymbol(")");
+            if(res) {
+                RequireSymbol(")");
+            }
             RequireSymbol("{");
             IOperator scope = ParseScope();
             RequireSymbol("}");
@@ -389,8 +408,10 @@ namespace Tools {
         private Operators.SimpleOperator? IsCombiners(string val, IOperator current, Func<IOperator> previous) {
             switch(val) {
                 case "&&":
+                case "and":
                     return new Operators.And(current, previous(), Row, Col);
                 case "||":
+                case "or":
                     return new Operators.Or(current, previous(), Row, Col);
                 case "&":
                     return new Operators.BitwiseAnd(current, previous(), Row, Col);
@@ -491,13 +512,13 @@ namespace Tools {
             LexEntry returned = Read();
             if(returned.Type == TokenTypes.OPERATOR) {
                 if(returned.Val == "-") {
-                    return new Operators.Negative(ParsePosts(), Row, Col);
+                    return new Operators.Negative(ParseNegatives(), Row, Col);
                 }
-                if(returned.Val == "!") {
-                    return new Operators.Invert(ParsePosts(), Row, Col);
+                if(returned.Val == "!" || returned.Val == "not") {
+                    return new Operators.Invert(ParseNegatives(), Row, Col);
                 }
                 if(returned.Val == "~") {
-                    return new Operators.Flip(ParsePosts(), Row, Col);
+                    return new Operators.Flip(ParseNegatives(), Row, Col);
                 }
             }
             Stored = returned;
@@ -661,11 +682,18 @@ namespace Tools {
                     IOperator importing = ParseExpression();
                     return new Operators.Import(importing, Row, Col, reader.Filename, Librarian, IsStandard);
                 }
+                if(returned.Val == "after") {
+                    IOperator inh = ParseExpression();
+                    RequireSymbol("{");
+                    IOperator body = ParseScope();
+                    RequireSymbol("}");
+                    return new Operators.ObjectDefinition(body, inh, Row, Col);
+                }
                 if(returned.Val == "class") {
                     Print("parsing class definition");
                     IOperator? _base = null;
                     LexEntry next = Read();
-                    if(next.Type == TokenTypes.SYMBOL && next.Val == ":") {
+                    if(next.Type == TokenTypes.OPERATOR && next.Val == "after") {
                         _base = ParseExpression();
                     } else {
                         Stored = next;
@@ -746,7 +774,7 @@ namespace Tools {
                     Operators.ExpressionSeparator body = ParseScope();
                     Print("parsing closing braces");
                     RequireSymbol("}");
-                    return new Operators.ObjectDefinition(body, Row, Col);
+                    return new Operators.ObjectDefinition(body, null, Row, Col);
                 }
             }
             throw Error($"Could not parse value: {returned.Val} !");

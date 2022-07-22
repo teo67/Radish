@@ -21,12 +21,12 @@ namespace Tools.Operators {
                 args.Add(new Values.Variable(new Values.StringLiteral(reader.ReadToEnd())));
             }
             IValue edits = Edits._Run(Stack).Var;
-            IValue edited = edits.Function(args, null).Var;
+            IValue edited = edits.Function(args, null, null).Var;
             IValue? delete = null;
             if(edited.Default != BasicTypes.NONE) {
-                IValue? str = Values.ObjectLiteral.DeepGet(edited, "write", edited);
-                delete = Values.ObjectLiteral.DeepGet(edited, "deleteFile", edited);
-                IValue? append = Values.ObjectLiteral.DeepGet(edited, "append", edited);
+                IValue? str = Values.ObjectLiteral.DeepGet(edited, "write", edited).Item1;
+                delete = Values.ObjectLiteral.DeepGet(edited, "deleteFile", edited).Item1;
+                IValue? append = Values.ObjectLiteral.DeepGet(edited, "append", edited).Item1;
                 if(append != null && append.Var.Default != BasicTypes.NONE) {
                     file.Seek(0, SeekOrigin.End);
                     file.Write(Encoding.ASCII.GetBytes(append.String));

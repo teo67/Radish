@@ -14,13 +14,15 @@ namespace Tools.Operators {
                 if(Values.ObjectLiteral.ArrayProto != null && input.Base == Values.ObjectLiteral.ArrayProto.Var) {
                     returning = "[";
                     foreach(KeyValuePair<string, Values.Variable> val in input.Object) {
-                        IValue? previous = val.Value.ThisRef;
-                        val.Value.ThisRef = input;
+                        (IValue?, IValue?) previous = val.Value.ThisRef;
+                        val.Value.ThisRef = (input, input);
                         returning += CalcOutput(val.Value.Var, spaces, keepTrack);
                         val.Value.ThisRef = previous;
                         returning += ", ";
                     }
-                    returning = returning.Substring(0, returning.Length - 2);
+                    if(returning.Length >= 2) {
+                        returning = returning.Substring(0, returning.Length - 2);
+                    }
                     returning += "]";
                     return returning;
                 } else {
@@ -30,8 +32,8 @@ namespace Tools.Operators {
                     foreach(KeyValuePair<string, Values.Variable> item in input.Object) {
                         returning += new System.String(' ', spaces);
                         returning += $"\"{item.Key}\"";
-                        IValue? previous = item.Value.ThisRef;
-                        item.Value.ThisRef = input;
+                        (IValue?, IValue?) previous = item.Value.ThisRef;
+                        item.Value.ThisRef = (input, input);
                         Tools.IValue? saved = item.Value.Host;
                         item.Value.ThisRef = previous;
                         if(saved != null) {

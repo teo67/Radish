@@ -5,7 +5,7 @@ namespace Tools.Values {
         public override IValue? Host {
             get {
                 //Console.WriteLine($"TEST: accessing getter {Name}");
-                return (Get == null) ? null : Get.Function(new List<IValue>(), ThisRef);
+                return (Get == null) ? null : Get.Function(new List<IValue>(), ThisRef.Item1, ThisRef.Item2);
             }
             protected set {
                 //Console.WriteLine($"TEST: accessing setter {Name}");
@@ -15,7 +15,7 @@ namespace Tools.Values {
                 if(value == null) {
                     throw new RadishException("Unable to set a variable to no value (system error)!");
                 }
-                Set.Function(new List<IValue>() { value }, ThisRef);
+                Set.Function(new List<IValue>() { value }, ThisRef.Item1, ThisRef.Item2);
             }
         }
 

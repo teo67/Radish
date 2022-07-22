@@ -13,12 +13,12 @@ namespace Tools.Operators {
             }
             IValue _class = ClassName._Run(Stack).Var;
             IValue? inheriting = null;
-            IValue? returned = Values.ObjectLiteral.DeepGet(_class, "prototype", _class);
+            IValue? returned = Values.ObjectLiteral.DeepGet(_class, "prototype", _class).Item1;
             if(returned != null) {
                 inheriting = returned.Var;
             }
             IValue returning = new Values.ObjectLiteral(new Dictionary<string, Values.Variable>(), inheriting, useProto: inheriting == null);
-            _class.Function(args, returning);
+            _class.Function(args, returning, inheriting);
             return returning;
         }
         public override string Print() {

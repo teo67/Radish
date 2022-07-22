@@ -1,7 +1,10 @@
-d logtime p t() {
-    d ti p time.convert(time.now(), time.zones.PDST)
-    d hours p time.hours(ti)
-    d str p "The time is '"'hours % 12'".padLeft("0", 2)':'"'time.minutes(ti)'".padLeft("0", 2)':'"'time.seconds(ti)'".padLeft("0", 2)' 'hours < 12 ? "AM" , "PM"' on '"'time.months(ti) + 1'".padLeft("0", 2)'/'"'time.days(ti) + 1'".padLeft("0", 2)'/'time.years(ti)'"
-    system.writeFile(system.getDir(PATH) + "/logfile.json", JSON.to(str))
+dig a plant class after class {
+    constructor plant tool(b) {
+        
+    }
+    d f p 0
+} {
+    constructor plant tool(a) {
+        
+    }
 }
-logtime()

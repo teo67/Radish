@@ -73,7 +73,13 @@ namespace Tools { // adds basic prototypes to call stack
                 StandardSpecials.Add("WRITE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "writein" }, new List<IOperator?>() { null }, false, new Operators.Write(new Operators.Reference("writein", -1, -1, this)), "Standard Library")));
                 StandardSpecials.Add("CLEAR", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>(), new List<IOperator?>(), false, new Operators.Clear(), "Standard Library")));
                 StandardSpecials.Add("READ", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>(), new List<IOperator?>(), false, new Operators.Read(), "Standard Library")));
+                StandardSpecials.Add("NEXT", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>(), new List<IOperator?>(), false, new Operators.Next(), "Standard Library")));
                 StandardSpecials.Add("XOR128SHIFTPLUS", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "s0", "s1" }, new List<IOperator?>() { null, null }, false, new Operators.XOrShift128Plus(new Operators.Reference("s0", -1, -1, this), new Operators.Reference("s1", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add("OBJGET", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "getobj", "getprop" }, new List<IOperator?>() { null, null }, false, new Operators.Objget(new Operators.Reference("getobj", -1, -1, this), new Operators.Reference("getprop", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add("KEYS", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "keyinput" }, new List<IOperator?>() { null }, false, new Operators.Keys(new Operators.Reference("keyinput", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add("VALUES", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "valinput" }, new List<IOperator?>() { null }, false, new Operators._Values(new Operators.Reference("valinput", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add("FUNCOPY", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "funput" }, new List<IOperator?>() { null }, false, new Operators.CopyFunction(new Operators.Reference("funput", -1, -1, this)), "Standard Library")));
+
                 StandardSpecials.Add("TOJSON", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "jsonin" }, new List<IOperator?>() { null }, false, new Operators.ToJSON(new Operators.Reference("jsonin", -1, -1, this)), "Standard Library")));
                 StandardSpecials.Add("FROMJSON", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "jsonout" }, new List<IOperator?>() { null }, false, new Operators.FromJSON(new Operators.Reference("jsonout", -1, -1, this)), "Standard Library")));
                 
@@ -135,7 +141,7 @@ namespace Tools { // adds basic prototypes to call stack
             IValue returned = operations.ParseScope().Run(operations.stack);
             RadishException.FileName = previous;
             if(returned.Default == BasicTypes.RETURN) { 
-                returned = returned.Function(new List<IValue>(), null);
+                returned = returned.Function(new List<IValue>(), null, null);
             }
             if(varName != "PROTOTYPES") {
                 Imports.Add(path, returned);
