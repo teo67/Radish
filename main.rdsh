@@ -1,0 +1,80 @@
+dig res plant system.readFile(system.getDir(PATH) + "/main.turnip")
+dig index plant 0
+dig charTypes plant enum {
+    DIGIT, 
+    PLUS, 
+    NONE
+}
+dig tokenTypes plant enum {
+    NUMBER,
+    PLUS,
+    SAME, 
+    NONE
+}
+dig nums plant "0123456789."
+dig map plant {}
+for d i p 0, i < nums.length, i++ {
+    map[nums[i]] plant charTypes.DIGIT
+}
+map["+"] plant charTypes.PLUS
+map[" "] plant charTypes.NONE
+map["\n"] plant charTypes.NONE
+map["\t"] plant charTypes.NONE
+dig getChar plant tool(raw) {
+    dig res plant map.get(raw)
+    if res = null {
+        throw "Invalid token: 'raw'!"
+    }
+    harvest res
+}
+dig getTokenType plant tool(input, current) {
+    switch input {
+        case charTypes.NONE
+        harvest tokenTypes.NONE
+        case charTypes.DIGIT
+        harvest current = tokenTypes.NUMBER ? tokenTypes.SAME, tokenTypes.NUMBER
+        case charTypes.PLUS
+        harvest tokenTypes.PLUS
+    }
+}
+dig read plant tool() {
+    dig current plant tokenTypes.NONE
+    dig currentStr plant ""
+    while index < res.length {
+        dig next plant getTokenType(getChar(res[index]), current)
+        index++
+        if next = tokenTypes.SAME {
+            currentStr += res[index - 1]
+        } else {
+            if current != tokenTypes.NONE {
+                harvest new createEntry(current, currentStr)
+            }
+            current plant next
+            currentStr plant res[index - 1]
+        }
+    }
+    if current != tokenTypes.NONE {
+        harvest new createEntry(current, currentStr)
+    }
+    harvest null
+}
+dig createEntry plant tool(typ, value) {
+    this.typ plant typ
+    this.value plant value
+}
+dig total plant 0
+dig next plant read()
+while next != null {
+    if next.typ != tokenTypes.NUMBER {
+        throw "Number expected!"
+    }
+    total += next.value
+    next plant read()
+    if next != null {
+        if next.typ != tokenTypes.PLUS {
+            throw "Plus expected!"
+        }
+        next plant read()
+    }
+}
+holler(total)

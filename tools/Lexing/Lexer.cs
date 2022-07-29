@@ -15,7 +15,7 @@ namespace Tools {
         private char dotChar;
         private char hashChar;
         private char semi;
-        private CountingReader reader { get; }
+        private IReader reader { get; }
         public static Dictionary<char, char> backslashes;
         static Lexer() {
             backslashes = new Dictionary<char, char>() {
@@ -23,7 +23,7 @@ namespace Tools {
                 { 't', '\t' }
             };
         }
-        public Lexer(CountingReader reader) {
+        public Lexer(IReader reader) {
             this.reader = reader;
             dict = new Dictionary<char, CharTypes>();
             dotChar = '.';

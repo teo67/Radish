@@ -19,6 +19,15 @@ namespace Tools.Values {
                 return true;
             }
         }
+        public override double Number {
+            get {
+                try {
+                    return Double.Parse(String);
+                } catch {
+                    throw new RadishException("Unable to convert an invalid string into a number!");
+                }
+            }
+        }
         public override bool Equals(IValue other) {
             return other.Default == BasicTypes.STRING && String == other.String;
         }

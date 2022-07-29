@@ -31,7 +31,7 @@ namespace Tools {
         private int PrevRow { get; set; }
         private int PrevCol { get; set; }
         private bool verbose { get; }
-        private CountingReader reader { get; }
+        private IReader reader { get; }
         private Lexer lexer { get; }
         public Stack stack { get; }
         private bool IsStandard { get; }
@@ -48,7 +48,7 @@ namespace Tools {
                 "try", "catch", "throw", "import", "all", "PATH", "enum", "each", "of", "switch", "case", "default"
             };
         }
-        public Operations(CountingReader reader, bool verbose, bool isStandard, Librarian librarian) {
+        public Operations(IReader reader, bool verbose, bool isStandard, Librarian librarian) {
             this.reader = reader;
             this.verbose = verbose;
             this.lexer = new Lexer(reader);

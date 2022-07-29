@@ -1,8 +1,8 @@
 namespace Tools {
-    class CountingReader {
+    class CountingReader : IReader {
         private StreamReader Container { get; }
-        public int row;
-        public int col;
+        public int row { get; private set; }
+        public int col { get; private set; }
         public string Filename { get; }
         public CountingReader(string filename) {
             Container = new StreamReader(filename);

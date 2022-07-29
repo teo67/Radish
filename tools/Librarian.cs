@@ -79,7 +79,7 @@ namespace Tools { // adds basic prototypes to call stack
                 StandardSpecials.Add("KEYS", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "keyinput" }, new List<IOperator?>() { null }, false, new Operators.Keys(new Operators.Reference("keyinput", -1, -1, this)), "Standard Library")));
                 StandardSpecials.Add("VALUES", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "valinput" }, new List<IOperator?>() { null }, false, new Operators._Values(new Operators.Reference("valinput", -1, -1, this)), "Standard Library")));
                 StandardSpecials.Add("FUNCOPY", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "funput" }, new List<IOperator?>() { null }, false, new Operators.CopyFunction(new Operators.Reference("funput", -1, -1, this)), "Standard Library")));
-
+                StandardSpecials.Add("EXECUTE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "execstring" }, new List<IOperator?>() { null }, false, new Operators.Execute(new Operators.Reference("execstring", -1, -1, this), this), "Standard Library")));
                 StandardSpecials.Add("TOJSON", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "jsonin" }, new List<IOperator?>() { null }, false, new Operators.ToJSON(new Operators.Reference("jsonin", -1, -1, this)), "Standard Library")));
                 StandardSpecials.Add("FROMJSON", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "jsonout" }, new List<IOperator?>() { null }, false, new Operators.FromJSON(new Operators.Reference("jsonout", -1, -1, this)), "Standard Library")));
                 
