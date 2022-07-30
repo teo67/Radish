@@ -24,9 +24,9 @@ namespace Tools.Operators {
             IValue edited = edits.Function(args, null, null).Var;
             IValue? delete = null;
             if(edited.Default != BasicTypes.NONE) {
-                IValue? str = Values.ObjectLiteral.DeepGet(edited, "write", edited).Item1;
-                delete = Values.ObjectLiteral.DeepGet(edited, "deleteFile", edited).Item1;
-                IValue? append = Values.ObjectLiteral.DeepGet(edited, "append", edited).Item1;
+                IValue? str = Values.ObjectLiteral.DeepGet(edited, "write", new List<IValue>()).Item1;
+                delete = Values.ObjectLiteral.DeepGet(edited, "deleteFile", new List<IValue>()).Item1;
+                IValue? append = Values.ObjectLiteral.DeepGet(edited, "append", new List<IValue>()).Item1;
                 if(append != null && append.Var.Default != BasicTypes.NONE) {
                     file.Seek(0, SeekOrigin.End);
                     file.Write(Encoding.ASCII.GetBytes(append.String));

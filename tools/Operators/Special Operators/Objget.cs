@@ -8,7 +8,7 @@ namespace Tools.Operators {
         }
         public override IValue Run(Stack Stack) {
             IValue result = Left._Run(Stack).Var;
-            Values.Variable? gotten = Values.ObjectLiteral.DeepGet(result, Name._Run(Stack).String, result).Item1;
+            Values.Variable? gotten = Values.ObjectLiteral.DeepGet(result, Name._Run(Stack).String, new List<IValue>()).Item1;
             return gotten == null ? new Values.NoneLiteral() : gotten.Var;
         }
 

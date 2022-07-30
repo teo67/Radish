@@ -28,18 +28,19 @@ namespace Tools.Values {
             return other.Default == BasicTypes.OBJECT && Object == other.Object;
         }
         // result, result holder
-        public static (Variable?, IValue?) DeepGet(IValue target, string key, IValue originalTarget) {
+        public static (Variable?, IValue?) DeepGet(IValue target, string key, List<IValue> targetPath) {
             Variable? property = null;
             bool gotten = target.Object.TryGetValue(key, out property);
             if(gotten && property != null) {
-                if(property.ProtectionLevel == ProtectionLevels.PUBLIC || (ObjectLiteral.CurrentPrivate != null && ((ObjectLiteral.CurrentPrivate == target) || (ObjectLiteral.CurrentPrivate == originalTarget && property.ProtectionLevel != ProtectionLevels.PRIVATE)))) {
+                if(property.ProtectionLevel == ProtectionLevels.PUBLIC || (ObjectLiteral.CurrentPrivate != null && ((ObjectLiteral.CurrentPrivate.Var == target) || (targetPath.Contains(ObjectLiteral.CurrentPrivate.Var) && property.ProtectionLevel != ProtectionLevels.PRIVATE)))) {
                     return (property, target);
                 }
             }
             if(target.Base == null) {
                 return (null, null);
             }
-            return DeepGet(target.Base, key, originalTarget);
+            targetPath.Add(target);
+            return DeepGet(target.Base.Var, key, targetPath);
         }
 
         public static IValue? CurrentPrivate { get; set; } // stores the object that is currently able to access private / protected properties

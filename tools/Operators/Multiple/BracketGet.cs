@@ -12,10 +12,13 @@ namespace Tools.Operators {
             IValue evald = result.Var;
             if(evald.Default == BasicTypes.STRING) {
                 int index = (int)Name._Run(Stack).Number;
+                if(index >= evald.String.Length) {
+                    throw new RadishException($"Index {index} is too large for string of length {evald.String.Length}!", Row, Col);
+                }
                 return new Values.Character(result, index, "" + evald.String[index]);
             }
             string nameR = Name._Run(Stack).String;
-            (Values.Variable?, IValue?) gotten = Values.ObjectLiteral.DeepGet(evald, nameR, evald);
+            (Values.Variable?, IValue?) gotten = Values.ObjectLiteral.DeepGet(evald, nameR, new List<IValue>());
             return new Values.PropertyHolder(gotten.Item1, nameR, evald, gotten.Item2, gotten.Item1 == null ? ProtectionLevels.PUBLIC : gotten.Item1.ProtectionLevel);
         }
 

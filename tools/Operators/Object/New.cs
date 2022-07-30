@@ -13,7 +13,7 @@ namespace Tools.Operators {
             }
             IValue _class = ClassName._Run(Stack).Var;
             IValue? inheriting = null;
-            IValue? returned = Values.ObjectLiteral.DeepGet(_class, "prototype", _class).Item1;
+            IValue? returned = Values.ObjectLiteral.DeepGet(_class, "prototype", new List<IValue>()).Item1;
             if(returned != null) {
                 inheriting = returned.Var;
             }

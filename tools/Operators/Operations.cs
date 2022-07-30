@@ -40,7 +40,7 @@ namespace Tools {
             OpKeywords = new List<string>() {
                 // keywords that should be parsed as operators
                 "if", "elseif", "else", 
-                "while", "for", 
+                "while", "for", "repeat",
                 "dig", "d", "tool", "t", "plant", "p", "uproot",
                 "harvest", "h", "cancel", "continue", "end", "fill",
                 "new", "null", "class",
@@ -156,6 +156,16 @@ namespace Tools {
                     IOperator body = ParseScope();
                     RequireSymbol("}");
                     returning.AddValue(new Operators.Loop(list, body, Row, Col));
+                } else if(read.Type == TokenTypes.OPERATOR && read.Val == "repeat") {
+                    bool res = OptionalSymbol("(");
+                    IOperator next = ParseExpression();
+                    if(res) {
+                        RequireSymbol(")");
+                    }
+                    RequireSymbol("{");
+                    IOperator body = ParseScope();
+                    RequireSymbol("}");
+                    returning.AddValue(new Operators.Repeat(next, body, Row, Col));
                 } else if(read.Type == TokenTypes.OPERATOR && read.Val == "each") {
                     bool res = OptionalSymbol("(");
                     LexEntry newRead = Read();
