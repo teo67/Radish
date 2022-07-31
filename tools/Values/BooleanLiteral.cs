@@ -2,7 +2,7 @@ namespace Tools.Values {
     class BooleanLiteral : EmptyLiteral {
         public static IValue? Proto { private get; set; }
         public override bool Boolean { get; }
-        public override IValue? Base { get; }
+        public override IValue? Base { get; set; }
         public override Dictionary<string, Variable> Object { get; }
         public BooleanLiteral(bool input) : base("boolean") {
             this.Boolean = input;

@@ -35,12 +35,12 @@ namespace Tools.Operators {
                 proto = new Values.ObjectLiteral(nonstatics, useProto: true);
             } else {
                 IValue fromStack = Inheriting._Run(Stack).Var;
-                evaluatedConstr.IsSuper = fromStack;
                 IValue? _base = Values.ObjectLiteral.DeepGet(fromStack, "prototype", new List<IValue>()).Item1;
                 if(_base == null) {
                     _base = fromStack;
                 }
                 proto = new Values.ObjectLiteral(nonstatics, _base);
+                evaluatedConstr.Base = fromStack;
             }
             foreach(KeyValuePair<string, Values.Variable> _static in statics) {
                 evaluatedConstr.Object.Add(_static.Key, _static.Value);

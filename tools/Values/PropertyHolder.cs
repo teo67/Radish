@@ -14,15 +14,6 @@ namespace Tools.Values {
             this.ProtectionLevel = protectionLevel;
         }
 
-        public IValue? IsSuper {
-            get {
-                return Resolve().IsSuper;
-            }
-            set {
-                Resolve().IsSuper = value;
-            }
-        }
-
         private IValue Resolve() {
             if(Held == null) {
                 throw new RadishException($"No value stored in object property {Name}!");
@@ -63,6 +54,9 @@ namespace Tools.Values {
         public IValue? Base {
             get {
                 return Resolve().Base;
+            }
+            set {
+                Resolve().Base = value;
             }
         }
         public IValue Var {

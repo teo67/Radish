@@ -36,6 +36,7 @@ namespace Tools {
             while(viewing != null) {
                 Values.Variable? variable = null;
                 bool gotten = viewing.Val.TryGetValue(key, out variable);
+                
                 if(gotten && variable != null) {
                     return variable;
                 }

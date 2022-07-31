@@ -2,7 +2,7 @@ namespace Tools.Values {
     class NumberLiteral : EmptyLiteral {
         public static IValue? Proto { private get; set; }
         public override double Number { get; }
-        public override IValue? Base { get; }
+        public override IValue? Base { get; set; }
         public override Dictionary<string, Variable> Object { get; }
         public NumberLiteral(double input) : base("number") {
             Number = input;

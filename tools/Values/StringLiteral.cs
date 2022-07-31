@@ -2,7 +2,7 @@ namespace Tools.Values {
     class StringLiteral : EmptyLiteral {
         public static IValue? Proto { private get; set; }
         public override string String { get; }
-        public override IValue? Base { get; }
+        public override IValue? Base { get; set; }
         public override Dictionary<string, Variable> Object { get; }
         public StringLiteral(string input) : base("string") {
             this.String = input;

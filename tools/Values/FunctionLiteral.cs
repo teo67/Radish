@@ -1,20 +1,17 @@
 namespace Tools.Values {
     class FunctionLiteral : EmptyLiteral {
         public static IValue? Proto { private get; set; }
-        public override IValue? Base { get; }
+        public override IValue? Base { get; set; }
         public override Dictionary<string, Variable> Object { get; } // setter is only used when defining a class
-        public override IValue? IsSuper { get; set; }
         public override Func<List<IValue>, IValue?, IValue?, IValue> Function { get; }
         public FunctionLiteral(Stack stack, List<string> argNames, List<IOperator?> defaults, bool fill, IOperator body, string fileName) : base("tool") {
-            this.Base = Proto == null ? null : Proto.Var;
             this.Object = new Dictionary<string, Variable>();
-            this.IsSuper = null;
             this.Function = (List<IValue> args, IValue? _this, IValue? OG) => {
                 stack.Push();
-                if(IsSuper != null) {
-                    stack.Head.Val.Add("super", new Variable(IsSuper)); 
-                }
                 IValue? saved = ObjectLiteral.CurrentPrivate;
+                if(this.Base != null) {
+                    stack.Head.Val.Add("super", new Variable(new FunctionLiteral((List<IValue> _li, IValue? __this, IValue? _OG) => this.Base.Function(_li, _this, _OG), this.Base.Base, this.Base.Object)));
+                }
                 if(_this != null) {
                     stack.Head.Val.Add("this", new Variable(_this));
                 }
@@ -60,11 +57,12 @@ namespace Tools.Values {
                 }
                 return result.Function(new List<IValue>(), null, null);
             };
-        }
-        public FunctionLiteral(Func<List<IValue>, IValue?, IValue?, IValue> function, IValue? isSuper) : base("tool") {
             this.Base = Proto == null ? null : Proto.Var;
-            this.Object = new Dictionary<string, Variable>();
-            this.IsSuper = isSuper;
+        }
+        public FunctionLiteral(Func<List<IValue>, IValue?, IValue?, IValue> function, IValue? _base = null, Dictionary<string, Variable>? obj = null) : base("tool") {
+            this.Base = _base == null ? (Proto == null ? null : Proto.Var) : _base;
+            this.Object = obj == null ? new Dictionary<string, Variable>() : obj;
+            //this.Function = function;
             this.Function = function;
         }
         public override BasicTypes Default {

@@ -3,7 +3,7 @@ namespace Tools.Values {
         public static IValue? Proto { private get; set; }
         public static IValue? ArrayProto { get; set; }
         public override Dictionary<string, Variable> Object { get; }
-        public override IValue? Base { get; }
+        public override IValue? Base { get; set; }
         public ObjectLiteral(Dictionary<string, Variable> properties, IValue? _base = null, bool useProto = false, bool useArrayProto = false) : base("object") {
             this.Object = properties;
             if(useProto) {

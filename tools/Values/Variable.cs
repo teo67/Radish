@@ -47,6 +47,8 @@ namespace Tools.Values {
         public IValue? Base {
             get {
                 return Resolve().Base;
+            } set {
+                Resolve().Base = value;
             }
         }
         public IValue Var {
@@ -67,14 +69,6 @@ namespace Tools.Values {
         }
         public string Print() {
             return $"variable({(Host == null ? "null" : Host.Print())})";
-        }
-        public IValue? IsSuper {
-            get {
-                return Resolve().IsSuper;
-            }
-            set {
-                Resolve().IsSuper = value;
-            }
         }
         public virtual Variable Clone() {
             return new Variable(Host, ProtectionLevel, IsStatic);

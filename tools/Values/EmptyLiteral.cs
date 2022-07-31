@@ -33,7 +33,8 @@ namespace Tools.Values {
         public virtual IValue? Base { 
             get {
                 return null;
-            }
+            } 
+            set {}
         }
         public virtual IValue Var {
             get {
@@ -53,14 +54,6 @@ namespace Tools.Values {
         }
         public virtual string Print() {
             throw new RadishException($"Unable to print a {Name} value!");
-        }
-        public virtual IValue? IsSuper {
-            get {
-                return null;
-            }
-            set {
-                throw new RadishException($"Error: Attempted to use non-constructor variable as a constructor!");
-            }
         }
     }
 }
