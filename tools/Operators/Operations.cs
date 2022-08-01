@@ -394,7 +394,9 @@ namespace Tools {
                         returning.IsAssigning = true; // mark as assignment
                     }
                     return returning;
-                    }
+                } else if(val == "after") {
+                    return new Operators.After(current, previous(), Row, Col);
+                }
                 return null;
             }, ParseTernaries);
         }
@@ -691,13 +693,6 @@ namespace Tools {
                     Print("parsing import");
                     IOperator importing = ParseExpression();
                     return new Operators.Import(importing, Row, Col, reader.Filename, Librarian, IsStandard);
-                }
-                if(returned.Val == "after") {
-                    IOperator inh = ParseExpression();
-                    RequireSymbol("{");
-                    IOperator body = ParseScope();
-                    RequireSymbol("}");
-                    return new Operators.ObjectDefinition(body, inh, Row, Col);
                 }
                 if(returned.Val == "class") {
                     Print("parsing class definition");

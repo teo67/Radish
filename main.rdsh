@@ -1,42 +1,4 @@
-# comment syntax #
-holler("hello, world!") # print statement #
-dig myPlot plant 3.14 # variable declaration and assignment #
+dig a plant {
 
-# data types: String (example: "abc"), Number (example: 0.12), Boolean (yes or no), Function (see below), and Object (see below) (note that Arrays are structured as integer-indexed objects) #
-
-# function syntax #
-dig square plant tool(num) { # name: square, parameter(s): num #
-    harvest num ** 2 # use 'harvest' or 'h' to return a value #
-}
-
-# object syntax #
-dig abc plant {
-    dig a plant 0 # object property #
-    dig b plant 1
-    d c p t() { # method. note 'd' instead of 'dig,' 'p' instead of 'plant,' and 't' instead of 'tool.' These are all semantic differences and don't affect the interpretation #
-        holler(this.a + this.b) # use 'this' to refer to the containing object #
-    }
-}
-
-# ... and classes/inheritance #
-dig Vehicle plant class {
-    constructor plant tool(numWheels, paintColor) { # the constructor function is automatically generated, so we don't need 'dig' here #
-        this.numWheels plant numWheels
-        this.paintColor plant paintColor
-    }
-    dig drive { # getter/setter syntax #
-        plant { # setter function #
-            throw "Why are you trying to set this"
-        }
-        harvest { # getter function #
-            harvest "'this.numWheels'-wheel drive!"
-        }
-    }
-}
-dig Car plant class after Vehicle { # the Car class inherits from Vehicle #
-    constructor plant tool(paintColor) {
-        super(4, paintColor) # 'super' refers to Vehicle's constructor #
-    }
-}
-dig myCar plant new Car("red") # using 'new' creates a new reference point for 'this' and calls Car's constructor #
-holler(myCar.drive)
+} after Boolean
+holler(a.opposite)
