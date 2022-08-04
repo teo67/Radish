@@ -666,12 +666,17 @@ namespace Tools {
                 }
                 if(returned.Val == "tool" || returned.Val == "t") {
                     Print("parsing function definition");
-                    RequireSymbol("(");
-                    (List<string>, List<IOperator?>, bool) args = ParseArgs();
-                    RequireSymbol(")");
-                    RequireSymbol("{");
-                    Operators.ExpressionSeparator body = ParseScope();
-                    RequireSymbol("}");
+                    bool next = OptionalSymbol("(");
+                    (List<string>, List<IOperator?>, bool) args = (new List<string>(), new List<IOperator?>(), false);
+                    if(next) {
+                        args = ParseArgs();
+                        RequireSymbol(")");
+                    }
+                    bool next1 = OptionalSymbol("{");
+                    IOperator body = next1 ? ParseScope() : new Operators.ReturnType("harvest", Row, Col, ParseExpression());
+                    if(next1) { 
+                        RequireSymbol("}");
+                    }
                     Operators.FunctionDefinition def = new Operators.FunctionDefinition(args.Item1, args.Item2, args.Item3, body, Row, Col, reader.Filename);
                     return def;
                 }

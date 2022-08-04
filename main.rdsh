@@ -1,10 +1,4 @@
-holler.clear()
-d makeTruthTable p t(name, rule) {
-    holler("'name': (0,0: 'rule(no, no)'), (0,1: 'rule(no, yes)'), (1,0: 'rule(yes, no)'), (1,1: 'rule(yes, yes)')\n")
+d a p tool {
+    harvest 1 + 1
 }
-makeTruthTable("and", t(a, b) { h a and b })
-makeTruthTable("or", t(a, b) { h a or b })
-makeTruthTable("xor", t(a, b) { h a xor b })
-makeTruthTable("nand", t(a, b) { h a nand b })
-makeTruthTable("nor", t(a, b) { h a nor b })
-makeTruthTable("xnor", t(a, b) { h a xnor b })
+holler(a())
