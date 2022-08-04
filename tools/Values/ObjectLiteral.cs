@@ -29,6 +29,9 @@ namespace Tools.Values {
         }
         // result, result holder
         public static (Variable?, IValue?) DeepGet(IValue target, string key, List<IValue> targetPath) {
+            if(targetPath.Contains(target)) {
+                return (null, null);
+            }
             Variable? property = null;
             bool gotten = target.Object.TryGetValue(key, out property);
             if(gotten && property != null) {

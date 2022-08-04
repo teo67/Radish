@@ -1,4 +1,42 @@
-dig a plant {
-
-} after Boolean
-holler(a.opposite)
+d xt p 0
+d yt p 0
+d zt p 0
+dig vec plant tool() {
+    dig phi plant math.random() * math.constants.pi * 2
+    dig costheta plant math.random() * 2 - 1
+    dig theta plant math.trig.a.cos(costheta)
+    d x p math.trig.sin(theta) * math.trig.cos(phi)
+    d y p math.trig.sin(theta) * math.trig.sin(phi)
+    d z p math.trig.cos(theta)
+    xt += x yt += y zt += z
+    harvest [x, y, z]
+}
+dig randWalk plant tool(start, target, rule, radius) {
+    d pos p start.clone()
+    d numsteps p 0
+    while math.root((pos[0] - target[0]) ** 2 + (pos[1] - target[1]) ** 2 + (pos[2] - target[2]) ** 2) > radius {
+        dig res plant vec()
+        while !rule(pos[0] + res[0], pos[1] + res[1], pos[2] + res[2]) {
+            res plant vec()
+        }
+        numsteps++
+        pos[0] += res[0]
+        pos[1] += res[1]
+        pos[2] += res[2]
+        holler(math.root(pos[0] ** 2 + pos[1] ** 2 + pos[2] ** 2))
+    }
+    holler("steps: 'numsteps'")
+    harvest numsteps
+}
+# d total p 0
+d numwalks p 5
+for d i p 0, i < numwalks, i++ {
+    total += randWalk([-10, 0, 0], [0, 0, 0], t(x, y, z) {
+        harvest math.root(x ** 2 + y ** 2 + z ** 2) <= 10
+    }, 1)
+} #
+repeat 100000 {
+    vec()
+}
+#holler("The average is 'total / numwalks'")#
+holler("'xt', 'yt', 'zt'")

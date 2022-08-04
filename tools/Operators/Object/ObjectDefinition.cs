@@ -20,7 +20,7 @@ namespace Tools.Operators {
         }
 
         public override string Print() {
-            return $"(object({Body.Print()}))";
+            return $"(object {Body.Print()})";
         }
     }
 }

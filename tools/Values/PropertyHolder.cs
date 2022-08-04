@@ -1,6 +1,6 @@
 namespace Tools.Values {
     class PropertyHolder : IValue {
-        private Variable? Held { get; }
+        private Variable? Held { get; set; }
         private string Name { get; }
         private IValue Obj { get; }
         private IValue? RealHolder { get; }
@@ -65,12 +65,15 @@ namespace Tools.Values {
             }
             set {
                 if(Held == null) {
-                    Obj.Object.Add(Name, new Variable(value, ProtectionLevel));
+                    Values.Variable newv = new Variable(value, ProtectionLevel);
+                    Held = newv;
+                    Obj.Object.Add(Name, newv);
                 } else {
                     Variable? setting = null;
                     bool gotten = Obj.Object.TryGetValue(Name, out setting);
                     if(!gotten || setting == null) {
                         setting = Held.Clone();
+                        Held = setting;
                         Obj.Object.Add(Name, setting);
                     }
                     (IValue?, IValue?) previous = setting.ThisRef;
