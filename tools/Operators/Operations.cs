@@ -44,7 +44,7 @@ namespace Tools {
                 "dig", "d", "tool", "t", "plant", "p", "uproot",
                 "harvest", "h", "cancel", "continue", "end", "fill",
                 "new", "null", "class",
-                "public", "private", "protected", "static", "type", "after", "and", "or", "not",
+                "public", "private", "protected", "static", "type", "after", "and", "or", "not", "nor", "xor", "nand", "xnor",
                 "try", "catch", "throw", "import", "all", "PATH", "enum", "each", "of", "switch", "case", "default"
             };
         }
@@ -425,12 +425,20 @@ namespace Tools {
                 case "||":
                 case "or":
                     return new Operators.Or(current, previous(), Row, Col);
+                case "xor":
+                    return new Operators.XOr(current, previous(), Row, Col);
+                case "nor":
+                    return new Operators.Nor(current, previous(), Row, Col);
+                case "nand":
+                    return new Operators.Nand(current, previous(), Row, Col);
+                case "xnor":
+                    return new Operators.XNor(current, previous(), Row, Col);
                 case "&":
                     return new Operators.BitwiseAnd(current, previous(), Row, Col);
                 case "|":
                     return new Operators.BitwiseOr(current, previous(), Row, Col);
                 case "^":
-                    return new Operators.XOr(current, previous(), Row, Col);
+                    return new Operators.BitwiseXOr(current, previous(), Row, Col);
                 default:
                     return null;
             }
