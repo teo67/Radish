@@ -14,7 +14,7 @@ dig Plot plant class after class after class {
     }
     dig classProp plant 123
 }
-all["myPlot"] plant after new all:Plot() {
+all["myPlot"] plant {} after new all:Plot() {
     dig otherProp plant 456
 }
 dig f plant 0   dig g plant 1
@@ -29,7 +29,7 @@ for yes, type yes, not no {
     cancel
 }
 # some more poetry #
-no? uproot plant, yes? after all{}, throw tool() { out the window }
+no? uproot plant, yes ? a after all, throw tool() { out the window }
 
 
 # and the confusing version: #

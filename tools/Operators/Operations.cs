@@ -137,11 +137,7 @@ namespace Tools {
                     Stored = read;
                     returning.AddValue(ParseIfs());
                 } else if(read.Type == TokenTypes.OPERATOR && read.Val == "while") {
-                    bool res = OptionalSymbol("(");
                     IOperator exp = ParseExpression();
-                    if(res) {
-                        RequireSymbol(")");
-                    }
                     RequireSymbol("{");
                     IOperator scope = ParseScope();
                     RequireSymbol("}");
@@ -157,24 +153,20 @@ namespace Tools {
                     RequireSymbol("}");
                     returning.AddValue(new Operators.Loop(list, body, Row, Col));
                 } else if(read.Type == TokenTypes.OPERATOR && read.Val == "repeat") {
-                    bool res = OptionalSymbol("(");
                     IOperator next = ParseExpression();
-                    if(res) {
-                        RequireSymbol(")");
-                    }
                     RequireSymbol("{");
                     IOperator body = ParseScope();
                     RequireSymbol("}");
                     returning.AddValue(new Operators.Repeat(next, body, Row, Col));
                 } else if(read.Type == TokenTypes.OPERATOR && read.Val == "each") {
-                    bool res = OptionalSymbol("(");
+                    bool next = OptionalSymbol("(");
                     LexEntry newRead = Read();
                     LexEntry of = Read();
                     if(of.Type != TokenTypes.OPERATOR || of.Val != "of") {
                         throw Error($"Expecting 'of' instead of '{of.Val}'!");
                     }
                     IOperator li = ParseExpression();
-                    if(res) {
+                    if(next) {
                         RequireSymbol(")");
                     }
                     RequireSymbol("{");
@@ -182,11 +174,7 @@ namespace Tools {
                     RequireSymbol("}");
                     returning.AddValue(new Operators.Each(newRead.Val, li, body, Row, Col));
                 } else if(read.Type == TokenTypes.OPERATOR && read.Val == "switch") {
-                    bool res = OptionalSymbol("(");
                     IOperator eval = ParseExpression();
-                    if(res) {
-                        RequireSymbol(")");
-                    }
                     RequireSymbol("{");
                     List<IOperator> checks = new List<IOperator>();
                     List<IOperator> bodies = new List<IOperator>();
@@ -265,11 +253,7 @@ namespace Tools {
         }
 
         private Operators.If ParseIf() {
-            bool res = OptionalSymbol("(");
             IOperator li = ParseExpression();
-            if(res) {
-                RequireSymbol(")");
-            }
             RequireSymbol("{");
             IOperator scope = ParseScope();
             RequireSymbol("}");
