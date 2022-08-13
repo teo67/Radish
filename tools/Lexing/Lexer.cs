@@ -39,11 +39,11 @@ namespace Tools {
             for(int i = 0; i < numbers.Length; i++) {
                 dict.Add(numbers[i], CharTypes.digit);
             }
-            string ops = "+-/*<>|&!=%\\^~?";
+            string ops = "+-/*<>|&!=%^~";
             for(int i = 0; i < ops.Length; i++) {
                 dict.Add(ops[i], CharTypes.operators);
             }
-            string symbols = "(){}[],:";
+            string symbols = "(){}[],:?\\";
             for(int i = 0; i < symbols.Length; i++) {
                 dict.Add(symbols[i], CharTypes.symbols);
             }

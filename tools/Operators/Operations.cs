@@ -380,6 +380,12 @@ namespace Tools {
                     return returning;
                 } else if(val == "after") {
                     return new Operators.After(current, previous(), Row, Col);
+                } else if(val == "=>") {
+                    LexEntry next = Read();
+                    if(next.Type != TokenTypes.KEYWORD) {
+                        throw Error($"Expecting a variable name instead of {next.Val}!");
+                    }
+                    return new Operators.DeclareAssign(current, next.Val, Row, Col);
                 }
                 return null;
             }, ParseTernaries);

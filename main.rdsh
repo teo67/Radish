@@ -1,0 +1,5 @@
+d a p 0
+if yes {
+    1 => a
+}
+holler(a)
