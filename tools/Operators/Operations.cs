@@ -394,7 +394,7 @@ namespace Tools {
         private IOperator ParseTernaries() {
             IOperator cond = ParseCombiners();
             LexEntry next = Read();
-            if(next.Type == TokenTypes.OPERATOR && next.Val == "?") {
+            if(next.Type == TokenTypes.SYMBOL && next.Val == "?") {
                 IOperator first = ParseTernaries();
                 LexEntry mid = Read();
                 if(!(mid.Type == TokenTypes.SYMBOL && mid.Val == ",")) {
