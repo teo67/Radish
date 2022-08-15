@@ -1,2 +1,8 @@
-1 + 1 => a
-holler(a)
+# QR.generate(system.readFile("./4K.exe"), "out") #
+# ""=>total
+for 0=>i, i < 36, i++ {
+    (i = 0 ? "out.png" , "out ('i').png") => str
+    total += system.readFile(str)
+}
+system.writeFile("./4K2.exe", total) #
+holler(system.readFile("./4K2.exe"))
