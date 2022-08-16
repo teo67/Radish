@@ -7,9 +7,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="QRCoder" Version="1.4.3" />
-    <PackageReference Include="ZXing.Net" Version="0.16.8" />
-  </ItemGroup>
-
 </Project>
