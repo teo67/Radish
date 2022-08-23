@@ -1,1 +1,1 @@
-drawing.generateQR("https://radishpl.com", "outfile", 20)
+drawing.generateQR("https://discits.xyz", "outfile2", 20)

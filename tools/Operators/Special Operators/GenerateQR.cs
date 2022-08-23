@@ -353,7 +353,7 @@ namespace Tools.Operators {
                     }
                 }
             }
-            for(int i = 0; i < rowLength; i++) {
+            for(int i = 0; i < Math.Ceiling((moduleSize + (double)((size * moduleSize) / 8.0))); i++) {
                 for(int y = 0; y < 4 * moduleSize; y++) {
                     writing[y * rowLength + 62 + i] = 255;
                     writing[(((size + 8) * moduleSize) - y - 1) * rowLength + 62 + i] = 255;
