@@ -74,8 +74,13 @@ namespace Tools.Operators {
             writing[26] = 1;
             // 27 stays at 0
             // bpp
-            writing[28] = 1;
-            // 29 stays at 0
+            byte[] tBPP = BitConverter.GetBytes(bpp);
+            if(!BitConverter.IsLittleEndian) {
+                Array.Reverse(tBPP);
+            }
+            for(int i = 0; i < 2; i++) {
+                writing[i + 28] = tBPP[i];
+            }
             // 30, 31, 32, 33 stay at 0 for compression
             // 34, 35, 36, 37 stay at 0 for default image size
             // 38, 39, 40, 41, 42, 43, 44, 45 stay at 0 for xpermeter and ypermeter
