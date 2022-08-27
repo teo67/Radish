@@ -1,11 +1,14 @@
 namespace Tools.Operators {
     class FileOperator : Operator {
-        public IOperator FileName { get; }
-        public FileOperator(IOperator fileName, int row, int col) : base(row, col) {
-            this.FileName = fileName;
+        protected Librarian Librarian { get; }
+        public FileOperator(Librarian librarian, int row, int col) : base(row, row) {
+            Librarian = librarian;
         }
-        protected string Convert(string path, Stack Stack) {
-            string name = FileName._Run(Stack).String;
+        protected IOperator GetArgument(int argNum) {
+            return new Operators.Reference($"{argNum}", -1, -1, Librarian);
+        }
+        protected string Convert(IOperator converting, string path, Stack Stack) {
+            string name = converting._Run(Stack).String;
             string modPath = GetDirectory(path);
             while(name.StartsWith("../")) {
                 modPath = GetDirectory(modPath);

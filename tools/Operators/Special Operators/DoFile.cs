@@ -1,14 +1,9 @@
 using System.Text;
 namespace Tools.Operators {
-    class DoFile : FileOperator {
-        private IOperator Edits { get; }
-        private IOperator ShouldRead { get; }
-        public DoFile(IOperator fileName, IOperator shouldRead, IOperator edits) : base(fileName, -1, -1) {
-            this.Edits = edits;
-            this.ShouldRead = shouldRead;
-        }
+    class DoFile  : FileOperator {
+        public DoFile(Librarian librarian) : base(librarian, -1, -1) {}
         public override IValue Run(Stack Stack) {
-            string fileName = FileName._Run(Stack).String;
+            string fileName = GetArgument(0)._Run(Stack).String;
             if(!File.Exists(fileName)) {
                 throw new RadishException($"File {fileName} does not exist on the file system!", Row, Col);
             }
@@ -17,10 +12,10 @@ namespace Tools.Operators {
             });
             StreamReader reader = new StreamReader(file);
             List<IValue> args = new List<IValue>();
-            if(ShouldRead._Run(Stack).Boolean) {
+            if(GetArgument(1)._Run(Stack).Boolean) { // should read
                 args.Add(new Values.Variable(new Values.StringLiteral(reader.ReadToEnd())));
             }
-            IValue edits = Edits._Run(Stack).Var;
+            IValue edits = GetArgument(2)._Run(Stack).Var; // edits
             IValue edited = edits.Function(args, null, null).Var;
             IValue? delete = null;
             if(edited.Default != BasicTypes.NONE) {
@@ -47,7 +42,7 @@ namespace Tools.Operators {
             return new Values.NoneLiteral();
         }
         public override string Print() {
-            return $"(edit file {FileName})";
+            return $"(edit file {GetArgument(0)})";
         }
     }
 }

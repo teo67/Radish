@@ -10,7 +10,7 @@ namespace Tools { // adds basic prototypes to call stack
         public List<string> Standard { get; }
         private string? PathToLibrary { get; }
         private Stack ImportStack { get; }
-        private Dictionary<string, Values.Variable> StandardSpecials { get; }
+        private Dictionary<string, IOperator> StandardSpecials { get; }
         public Stack<string> CurrentlyImporting { get; }
         public Librarian(bool uselib = true) {
             CurrentlyImporting = new Stack<string>();
@@ -26,7 +26,7 @@ namespace Tools { // adds basic prototypes to call stack
             Standard = new List<string>();
             ImportStack = new Stack(FirstLayer);
             PathToLibrary = null;
-            StandardSpecials = new Dictionary<string, Values.Variable>();
+            StandardSpecials = new Dictionary<string, IOperator>();
             if(uselib) {
                 DirectoryInfo? returned = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
                 if(returned == null) {
@@ -48,56 +48,58 @@ namespace Tools { // adds basic prototypes to call stack
                         Standard.Add(dirName);
                     }
                 }
-                StandardSpecials.Add("OUTPUT", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, false, new Operators.Output(new Operators.Reference("input", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("LOG", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "loginput", "logbase" }, new List<IOperator?>() { null, null }, false, new Operators.Log(new Operators.Reference("loginput", -1, -1, this), new Operators.Reference("logbase", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("ARRLEN", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "arrinput" }, new List<IOperator?>() { null }, false, new Operators.ArrayLength(new Operators.Reference("arrinput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("STRLEN", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "strinput" }, new List<IOperator?>() { null }, false, new Operators.StringLength(new Operators.Reference("strinput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("DELETE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "delobj", "delinput" }, new List<IOperator?>() { null, null }, false, new Operators.ObjectUproot(new Operators.Reference("delobj", -1, -1, this), new Operators.Reference("delinput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("CALL", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "caller", "callinput", "callthis" }, new List<IOperator?>() { null, null, null }, false, new Operators.SpecialCall(new Operators.Reference("caller", -1, -1, this), new Operators.Reference("callinput", -1, -1, this), -1, -1, new Operators.Reference("callthis", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("FILEREAD", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "readfile" }, new List<IOperator?>() { null }, false, new Operators.FileRead(new Operators.Reference("readfile", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("FILEWRITE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "writefile", "writeinput" }, new List<IOperator?>() { null, null }, false, new Operators.FileWrite(new Operators.Reference("writefile", -1, -1, this), new Operators.Reference("writeinput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("FILEEXISTS", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "existsfile" }, new List<IOperator?>() { null }, false, new Operators.FileExists(new Operators.Reference("existsfile", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("FILECREATE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "createfile" }, new List<IOperator?>() { null }, false, new Operators.FileCreate(new Operators.Reference("createfile", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("FILEDELETE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "deletefile" }, new List<IOperator?>() { null }, false, new Operators.FileDelete(new Operators.Reference("deletefile", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("DIRECTORYEXISTS", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "existsdirectory" }, new List<IOperator?>() { null }, false, new Operators.DirectoryExists(new Operators.Reference("existsdirectory", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("DIRECTORYCREATE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "createdirectory" }, new List<IOperator?>() { null }, false, new Operators.DirectoryCreate(new Operators.Reference("createdirectory", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("DIRECTORYDELETE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "deletedirectory" }, new List<IOperator?>() { null }, false, new Operators.DirectoryDelete(new Operators.Reference("deletedirectory", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("DIRECTORYREAD", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "readdir" }, new List<IOperator?>() { null }, false, new Operators.DirectoryRead(new Operators.Reference("readdir", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("DOFILE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "dofile", "doread", "fileedit" }, new List<IOperator?>() { null, null, null }, false, new Operators.DoFile(new Operators.Reference("dofile", -1, -1, this), new Operators.Reference("doread", -1, -1, this), new Operators.Reference("fileedit", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("SIN", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "sininput" }, new List<IOperator?>() { null }, false, new Operators.Sine(new Operators.Reference("sininput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("COS", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "cosinput" }, new List<IOperator?>() { null }, false, new Operators.Cosine(new Operators.Reference("cosinput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("TAN", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "taninput" }, new List<IOperator?>() { null }, false, new Operators.Tangent(new Operators.Reference("taninput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("ASIN", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "asininput" }, new List<IOperator?>() { null }, false, new Operators.Arcsine(new Operators.Reference("asininput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("ACOS", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "acosinput" }, new List<IOperator?>() { null }, false, new Operators.Arccosine(new Operators.Reference("acosinput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("ATAN", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "ataninput" }, new List<IOperator?>() { null }, false, new Operators.Arctangent(new Operators.Reference("ataninput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("WRITE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "writein" }, new List<IOperator?>() { null }, false, new Operators.Write(new Operators.Reference("writein", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("CLEAR", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>(), new List<IOperator?>(), false, new Operators.Clear(), "Standard Library")));
-                StandardSpecials.Add("READ", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>(), new List<IOperator?>(), false, new Operators.Read(), "Standard Library")));
-                StandardSpecials.Add("NEXT", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>(), new List<IOperator?>(), false, new Operators.Next(), "Standard Library")));
-                StandardSpecials.Add("XOR128SHIFTPLUS", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "s0", "s1" }, new List<IOperator?>() { null, null }, false, new Operators.XOrShift128Plus(new Operators.Reference("s0", -1, -1, this), new Operators.Reference("s1", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("OBJGET", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "getobj", "getprop" }, new List<IOperator?>() { null, null }, false, new Operators.Objget(new Operators.Reference("getobj", -1, -1, this), new Operators.Reference("getprop", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("KEYS", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "keyinput" }, new List<IOperator?>() { null }, false, new Operators.Keys(new Operators.Reference("keyinput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("VALUES", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "valinput" }, new List<IOperator?>() { null }, false, new Operators._Values(new Operators.Reference("valinput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("FUNCOPY", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "funput" }, new List<IOperator?>() { null }, false, new Operators.CopyFunction(new Operators.Reference("funput", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("EXECUTE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "execstring" }, new List<IOperator?>() { null }, false, new Operators.Execute(new Operators.Reference("execstring", -1, -1, this), this), "Standard Library")));
-                StandardSpecials.Add("TOJSON", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "jsonin" }, new List<IOperator?>() { null }, false, new Operators.ToJSON(new Operators.Reference("jsonin", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("FROMJSON", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "jsonout" }, new List<IOperator?>() { null }, false, new Operators.FromJSON(new Operators.Reference("jsonout", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("GENERATEQR", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "genqrsrc", "genqrtarget", "genqrsize" }, new List<IOperator?>() { null, null, null }, false, new Operators.GenerateQR(new Operators.Reference("genqrsrc", -1, -1, this), new Operators.Reference("genqrtarget", -1, -1, this), new Operators.Reference("genqrsize", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("YEAR", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "yearin" }, new List<IOperator?>() { null }, false, new Operators.Current(Operators.DateType.YEAR, new Operators.Reference("yearin", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("MONTH", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "monthin" }, new List<IOperator?>() { null }, false, new Operators.Current(Operators.DateType.MONTH, new Operators.Reference("monthin", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("DAY", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "dayin" }, new List<IOperator?>() { null }, false, new Operators.Current(Operators.DateType.DAY, new Operators.Reference("dayin", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("HOUR", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "hourin" }, new List<IOperator?>() { null }, false, new Operators.Current(Operators.DateType.HOUR, new Operators.Reference("hourin", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("MINUTE", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "minutein" }, new List<IOperator?>() { null }, false, new Operators.Current(Operators.DateType.MINUTE, new Operators.Reference("minutein", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("SECOND", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "secondin" }, new List<IOperator?>() { null }, false, new Operators.Current(Operators.DateType.SECOND, new Operators.Reference("secondin", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("MILLISECOND", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "millisecondin" }, new List<IOperator?>() { null }, false, new Operators.Current(Operators.DateType.MILLISECOND, new Operators.Reference("millisecondin", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("NOW", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>(), new List<IOperator?>(), false, new Operators.Now(), "Standard Library")));
+                StandardSpecials.Add("OUTPUT", new Operators.Output(this));
+                StandardSpecials.Add("LOG", new Operators.Log(this));
+                StandardSpecials.Add("ARRLEN", new Operators.ArrayLength(this));
+                StandardSpecials.Add("STRLEN", new Operators.StringLength(this));
+                StandardSpecials.Add("DELETE", new Operators.ObjectUproot(this));
+                StandardSpecials.Add("CALL", new Operators.SpecialCall(this));
+                StandardSpecials.Add("FILEREAD", new Operators.FileRead(this));
+                StandardSpecials.Add("FILEWRITE", new Operators.FileWrite(this));
+                StandardSpecials.Add("FILEEXISTS", new Operators.FileExists(this));
+                StandardSpecials.Add("FILECREATE", new Operators.FileCreate(this));
+                StandardSpecials.Add("FILEDELETE", new Operators.FileDelete(this));
+                StandardSpecials.Add("DIRECTORYEXISTS", new Operators.DirectoryExists(this));
+                StandardSpecials.Add("DIRECTORYCREATE", new Operators.DirectoryCreate(this));
+                StandardSpecials.Add("DIRECTORYDELETE", new Operators.DirectoryDelete(this));
+                StandardSpecials.Add("DIRECTORYREAD", new Operators.DirectoryRead(this));
+                StandardSpecials.Add("DOFILE", new Operators.DoFile(this));
+                StandardSpecials.Add("SIN", new Operators.Sine(this));
+                StandardSpecials.Add("COS", new Operators.Cosine(this));
+                StandardSpecials.Add("TAN", new Operators.Tangent(this));
+                StandardSpecials.Add("ASIN", new Operators.Arcsine(this));
+                StandardSpecials.Add("ACOS", new Operators.Arccosine(this));
+                StandardSpecials.Add("ATAN", new Operators.Arctangent(this));
+                StandardSpecials.Add("WRITE", new Operators.Write(this));
+                StandardSpecials.Add("CLEAR", new Operators.Clear());
+                StandardSpecials.Add("READ", new Operators.Read());
+                StandardSpecials.Add("NEXT", new Operators.Next());
+                StandardSpecials.Add("XOR128SHIFTPLUS", new Operators.XOrShift128Plus(this));
+                StandardSpecials.Add("OBJGET", new Operators.Objget(this));
+                StandardSpecials.Add("KEYS", new Operators.Keys(this));
+                StandardSpecials.Add("VALUES", new Operators._Values(this));
+                StandardSpecials.Add("FUNCOPY", new Operators.CopyFunction(this));
+                StandardSpecials.Add("EXECUTE", new Operators.Execute(this));
+                StandardSpecials.Add("TOJSON", new Operators.ToJSON(this));
+                StandardSpecials.Add("FROMJSON", new Operators.FromJSON(this));
+                StandardSpecials.Add("GENERATEQR", new Operators.GenerateQR(this));
+                StandardSpecials.Add("YEAR", new Operators.Current(Operators.DateType.YEAR, this));
+                StandardSpecials.Add("MONTH", new Operators.Current(Operators.DateType.MONTH, this));
+                StandardSpecials.Add("DAY", new Operators.Current(Operators.DateType.DAY, this));
+                StandardSpecials.Add("HOUR", new Operators.Current(Operators.DateType.HOUR, this));
+                StandardSpecials.Add("MINUTE", new Operators.Current(Operators.DateType.MINUTE, this));
+                StandardSpecials.Add("SECOND", new Operators.Current(Operators.DateType.SECOND, this));
+                StandardSpecials.Add("MILLISECOND", new Operators.Current(Operators.DateType.MILLISECOND, this));
+                StandardSpecials.Add("NOW", new Operators.Now());
                 
-                StandardSpecials.Add("GENERATEBMP", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "bmpwidth", "bmpheight", "bmpbpp", "bmppallette" }, new List<IOperator?>() { null, null, null, null }, false, new Operators.GenerateBMP(new Operators.Reference("bmpwidth", -1, -1, this), new Operators.Reference("bmpheight", -1, -1, this), new Operators.Reference("bmpbpp", -1, -1, this), new Operators.Reference("bmppallette", -1, -1, this)), "Standard Library")));
-                StandardSpecials.Add("RENDERBMP", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "rendersource", "renderout" }, new List<IOperator?>() { null, null }, false, new Operators.RenderBMP(new Operators.Reference("rendersource", -1, -1, this), new Operators.Reference("renderout", -1, -1, this)), "Standard Library")));
+                StandardSpecials.Add("GENERATEBMP", new Operators.GenerateBMP(this));
+                StandardSpecials.Add("RENDERBMP", new Operators.RenderBMP(this));
+                StandardSpecials.Add("ITERATEBMP", new Operators.IterateBMP(this));
+                StandardSpecials.Add("EDITPALLETTE", new Operators.EditPallette(this));
                 Lookup("PROTOTYPES", -1, -1); // we lookup prototypes at the beginning to add properties to literal classes
                 //this will directly edit the first layer of the stack
             } else {
-                layer.Add("holler", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "input" }, new List<IOperator?>() { null }, false, new Operators.Output(new Operators.Reference("input", -1, -1, this)), "Standard Library")));
+                layer.Add("holler", new Operators.Output(new Operators.Reference("input", -1, -1, this)));
                 // add a basic holler function j ust so radish is still usable
             }
         }

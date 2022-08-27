@@ -2,16 +2,14 @@ namespace Tools.Operators {
     enum DateType {
         YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, MILLISECOND
     }
-    class Current : Operator {
+    class Current  : SpecialOperator {
         private DateType Type { get; }
-        private IOperator Time { get; }
-        public Current(DateType type, IOperator time) : base(-1, -1) {
+        public Current(DateType type, Librarian librarian) : base(librarian) {
             this.Type = type;
-            this.Time = time;
         }
         public override IValue Run(Stack Stack) {
             double res = 0;
-            DateTime now = new DateTime(1970, 1, 1).AddMilliseconds(Time._Run(Stack).Number);
+            DateTime now = new DateTime(1970, 1, 1).AddMilliseconds(GetArgument(0)._Run(Stack).Number);
             switch(Type) {
                 case DateType.YEAR:
                     res = now.Year;

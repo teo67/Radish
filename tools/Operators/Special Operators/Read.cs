@@ -1,5 +1,5 @@
 namespace Tools.Operators {
-    class Read : Operator {
+    class Read  : Operator {
         public Read() : base(-1, -1) {}
         public override IValue Run(Stack Stack) {
             string? read = Console.ReadLine();

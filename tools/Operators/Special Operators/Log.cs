@@ -1,14 +1,10 @@
 namespace Tools.Operators {
-    class Log : Operator {
-        private IOperator Input { get; }
-        private IOperator Base { get; }
-        public Log(IOperator input, IOperator _base) : base(-1, -1) {
-            this.Input = input;
-            this.Base = _base;
+    class Log  : SpecialOperator {
+        public Log(Librarian librarian) : base(librarian) {
         }
         public override Tools.IValue Run(Stack Stack) {
-            double input = Input._Run(Stack).Number;
-            double _base = Base._Run(Stack).Number;
+            double input = GetArgument(0)._Run(Stack).Number;
+            double _base = GetArgument(1)._Run(Stack).Number;
             if(input <= 0) {
                 throw new RadishException($"Cannot take the logarithm of {input}, because it is a nonpositive number!", Row, Col);
             }
@@ -21,7 +17,7 @@ namespace Tools.Operators {
             return new Values.NumberLiteral(Math.Log(input, _base));
         }
         public override string Print() {
-            return $"(log {Input.Print()} <- {Base.Print()})";
+            return $"(log {GetArgument(0).Print()} <- {GetArgument(1).Print()})";
         }
     }
 }

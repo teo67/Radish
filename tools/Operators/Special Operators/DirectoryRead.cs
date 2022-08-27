@@ -1,6 +1,6 @@
 namespace Tools.Operators {
-    class DirectoryRead : FileOperator {
-        public DirectoryRead(IOperator input) : base(input, -1, -1) {
+    class DirectoryRead  : FileOperator {
+        public DirectoryRead(Librarian librarian) : base(librarian, -1, -1) {
         }
         private void Iterate(Dictionary<string, Values.Variable> arr, string[] adding) {
             int i = arr.Count;
@@ -15,7 +15,7 @@ namespace Tools.Operators {
             }
         }
         public override IValue Run(Stack Stack) {
-            string input = FileName._Run(Stack).String;
+            string input = GetArgument(0)._Run(Stack).String;
             if(!Directory.Exists(input)) {
                 throw new RadishException($"Directory {input} could not be read because it does not exist on the file system!", Row, Col);
             }
@@ -30,7 +30,7 @@ namespace Tools.Operators {
             return new Values.ObjectLiteral(arr, useArrayProto: true);
         }
         public override string Print() {
-            return $"(read directory {FileName.Print()})";
+            return $"(read directory {GetArgument(0).Print()})";
         }
     }
 }

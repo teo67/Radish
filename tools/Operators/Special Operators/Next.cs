@@ -1,5 +1,5 @@
 namespace Tools.Operators {
-    class Next : Operator {
+    class Next  : Operator {
         public Next() : base(-1, -1) {}
         public override IValue Run(Stack Stack) {
             string read = "" + Console.ReadKey(true).KeyChar;

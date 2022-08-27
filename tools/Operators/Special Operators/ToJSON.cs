@@ -1,8 +1,6 @@
 namespace Tools.Operators {
-    class ToJSON : Operator {
-        private IOperator Target { get; }
-        public ToJSON(IOperator target) : base(-1, -1) {
-            Target = target;
+    class ToJSON  : SpecialOperator {
+        public ToJSON(Librarian librarian) : base(librarian) {
         }
         protected string CalcOutput(Tools.IValue input, int spaces, List<IValue> keepTrack) {
             if(keepTrack.Contains(input)) {
@@ -67,10 +65,10 @@ namespace Tools.Operators {
             return returning;
         }
         public override IValue Run(Stack Stack) {
-            return new Values.StringLiteral(CalcOutput(Target._Run(Stack).Var, 4, new List<IValue>()));
+            return new Values.StringLiteral(CalcOutput(GetArgument(0)._Run(Stack).Var, 4, new List<IValue>()));
         }
         public override string Print() {
-            return $"({Target.Print()} to json)";
+            return $"({GetArgument(0).Print()} to json)";
         }
     }
 }

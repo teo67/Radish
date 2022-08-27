@@ -1,8 +1,6 @@
 namespace Tools.Operators {
-    class Output : Operator {
-        protected IOperator Input { get; }
-        public Output(IOperator input) : base(-1, -1) {
-            this.Input = input;
+    class Output  : SpecialOperator {
+        public Output(Librarian librarian) : base(librarian) {
         }
 
         protected string CalcOutput(Tools.IValue input, int spaces = 4) {
@@ -64,7 +62,7 @@ namespace Tools.Operators {
         }
         public override Tools.IValue Run(Stack Stack) {
             //Console.WriteLine("before");
-            Tools.IValue result = Input._Run(Stack);
+            Tools.IValue result = GetArgument(0)._Run(Stack);
             //Console.WriteLine("about to access var");
             //Console.WriteLine(result.Var.Default);
             Console.WriteLine(CalcOutput(result.Var));
@@ -73,7 +71,7 @@ namespace Tools.Operators {
             return result;
         }
         public override string Print() {
-            return $"(output {Input.Print()})";
+            return $"(output {GetArgument(0).Print()})";
         }
     }
 }

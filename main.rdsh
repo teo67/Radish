@@ -1,2 +1,9 @@
-drawing.generateBMP(100, 100, 40) => bitmap
-drawing.renderBMP(bitmap, system.getDir(PATH) + "/test.bmp")
+drawing.generateBMP(20, 20, 2, yes) => str
+drawing.editPallette(str, 0, 255, 0, 0) => str
+drawing.editPallette(str, 1, 0, 255, 0) => str
+drawing.editPallette(str, 2, 0, 0, 255) => str
+drawing.editPallette(str, 3, 255, 0, 255) => str
+drawing.iterateBMP(str, t(x, y, current) {
+    h x % 4
+}) => str
+drawing.renderBMP(str, "./outfil13e.bmp") # 2360 first, ? second #

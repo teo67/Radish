@@ -1,17 +1,11 @@
 namespace Tools.Operators {
-    class RenderBMP : FileOperator {
-        private IOperator Source { get; }
-        public RenderBMP(IOperator source, IOperator outFile) : base(outFile, -1, -1) {
-            Source = source;
+    class RenderBMP  : FileOperator {
+        public RenderBMP(Librarian librarian) : base(librarian, -1, -1) {
         }
         public override IValue Run(Stack Stack) {
-            string res = Source._Run(Stack).String;
+            string res = GetArgument(0)._Run(Stack).String;
             byte[] decoded = System.Text.Encoding.Unicode.GetBytes(res, 0, res.Length);
-            Console.WriteLine(decoded.Length);
-            foreach(byte by in decoded) {
-                Console.Write(by + " ");
-            }
-            string path = FileName._Run(Stack).String;
+            string path = GetArgument(1)._Run(Stack).String;
             string dir = GetDirectory(path);
             if(!Directory.Exists(dir)) {
                 throw new RadishException($"Directory {dir} does not exist! (while renderbmp can create a file, it cannot create a folder.)", Row, Col);
@@ -23,7 +17,7 @@ namespace Tools.Operators {
             return new Values.NoneLiteral();
         }
         public override string Print() {
-            return $"renderbmp(to {FileName.Print()})";
+            return $"renderbmp(to {GetArgument(1).Print()})";
         }
     }
 }

@@ -1,7 +1,7 @@
 using System.Text;
 
 namespace Tools.Operators {
-    class GenerateQR : Operator {
+    class GenerateQR  : SpecialOperator {
         private static List<List<byte>> GeneratorPolynomials = new List<List<byte>>() { new List<byte>() { 0, 0 } };
         private static List<byte> powers = new List<byte>() { 1 };
         private static string[] formatStrings = new string[8];
@@ -69,13 +69,7 @@ namespace Tools.Operators {
                 versionStrings[versionNumber - 7] = converted;
             }
         }
-        private IOperator Input { get; }
-        private IOperator OutFile { get; }
-        private IOperator ModuleSize { get; }
-        public GenerateQR(IOperator input, IOperator outFile, IOperator moduleSize) : base(-1, -1) {
-            Input = input;
-            OutFile = outFile;
-            ModuleSize = moduleSize;
+        public GenerateQR(Librarian librarian) : base(librarian) {
         }
         private byte GetExponent(byte input) {
             int index = powers.IndexOf(input);
@@ -527,12 +521,12 @@ namespace Tools.Operators {
         }
 
         public override IValue Run(Stack Stack) {
-            GetQR(Encoding.Latin1.GetBytes(Input._Run(Stack).String), OutFile._Run(Stack).String, (int)Math.Round(ModuleSize._Run(Stack).Number));
+            GetQR(Encoding.Latin1.GetBytes(GetArgument(0)._Run(Stack).String), GetArgument(1)._Run(Stack).String, (int)Math.Round(GetArgument(2)._Run(Stack).Number));
             return new Values.NoneLiteral();
         }
 
         public override string Print() {
-            return $"generateQR({Input.Print()}, {OutFile.Print()})";
+            return $"generateQR({GetArgument(0).Print()}, {GetArgument(1).Print()})";
         }
     }
 }

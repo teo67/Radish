@@ -1,13 +1,9 @@
 namespace Tools.Operators {
-    class Execute : Operator {
-        private Librarian Librarian { get; }
-        private IOperator Text { get; }
-        public Execute(IOperator text, Librarian librarian) : base(-1, -1) {
-            this.Librarian = librarian;
-            this.Text = text;
+    class Execute  : SpecialOperator {
+        public Execute(Librarian librarian) : base(librarian) {
         }
         public override IValue Run(Stack Stack) {
-            Operations operations = new Operations(new StringReader(Text._Run(Stack).String), false, false, Librarian);
+            Operations operations = new Operations(new StringReader(GetArgument(0)._Run(Stack).String), false, false, Librarian);
             string saved = RadishException.FileName;
             RadishException.FileName = "anonymous file";
             IValue returned = operations.ParseScope().Run(operations.stack);
@@ -18,7 +14,7 @@ namespace Tools.Operators {
             return returned;
         }
         public override string Print() {
-            return $"execute ({Text.Print()}))";
+            return $"execute ({GetArgument(0).Print()}))";
         }
     }
 }

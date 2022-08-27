@@ -1,24 +1,18 @@
 namespace Tools.Operators {
-    class GenerateBMP : Operator {
-        private IOperator Width { get; }
-        private IOperator Height { get; }
-        private IOperator BPP { get; }
-        private IOperator Pallette { get; }
-        public GenerateBMP(IOperator width, IOperator height, IOperator bpp, IOperator pallette) : base(-1, -1) {
-            Width = width;
-            Height = height;
-            BPP = bpp;
-            Pallette = pallette;
+    class GenerateBMP  : SpecialOperator {
+        public GenerateBMP(Librarian librarian) : base(librarian) {
         }
         public override IValue Run(Stack Stack) {
-            int width = (int)Width._Run(Stack).Number;
-            int height = (int)Height._Run(Stack).Number;
-            int bpp = (int)BPP._Run(Stack).Number;
-            bool pallette = Pallette._Run(Stack).Boolean;
+            int width = (int)GetArgument(0)._Run(Stack).Number;
+            int height = (int)GetArgument(1)._Run(Stack).Number;
+            int bpp = (int)GetArgument(2)._Run(Stack).Number;
+            bool pallette = GetArgument(3)._Run(Stack).Boolean;
             int rowLength = (int)Math.Ceiling(Math.Ceiling((bpp * width) / 8.0) / 4.0) * 4;
             int offset = 14 + 40;
             if(pallette) {
                 offset += 4 * (1 << bpp);
+            } else if(bpp <= 8) {
+                throw new RadishException("bitmaps with 8 or fewer bits per pixel must have a color pallette!");
             }
             int totalSize = rowLength * height + offset;
             byte[] writing = new byte[totalSize];
@@ -90,15 +84,11 @@ namespace Tools.Operators {
             // pallette
             // reverse 54 through {offset - 1}
             // everything else stays default
-            foreach(byte by in writing) {
-                Console.Write(by + " ");
-            }
-            Console.Write("\n" + writing.Length);
             string converted = System.Text.Encoding.Unicode.GetString(writing, 0, writing.Length);
             return new Values.StringLiteral(converted);
         }
         public override string Print() {
-            return $"createBMP(width = {Width.Print()}, height = {Height.Print()})";
+            return $"createBMP(width = {GetArgument(0).Print()}, height = {GetArgument(1).Print()})";
         }
     }
 }
