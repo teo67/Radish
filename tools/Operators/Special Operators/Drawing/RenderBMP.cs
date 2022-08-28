@@ -4,7 +4,7 @@ namespace Tools.Operators {
         }
         public override IValue Run(Stack Stack) {
             string res = GetArgument(0)._Run(Stack).String;
-            byte[] decoded = System.Text.Encoding.Unicode.GetBytes(res, 0, res.Length);
+            byte[] decoded = System.Convert.FromBase64String(res);
             string path = GetArgument(1)._Run(Stack).String;
             string dir = GetDirectory(path);
             if(!Directory.Exists(dir)) {

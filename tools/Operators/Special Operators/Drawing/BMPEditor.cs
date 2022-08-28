@@ -25,20 +25,27 @@ namespace Tools.Operators {
             }
             return current;
         }
-        protected void GetEquation(int x1, int x2, int y1, int y2, List<(int, int)> poses, Func<int, int>? xToY, Func<int, int>? yToX) {
+        protected void GetEquation(double x1, double x2, double y1, double y2, List<(int, int)> poses, Func<int, double>? xToY, Func<int, double>? yToX) {
             if(xToY != null) {
-                for(int i = x1; i <= x2; i++) {
-                    poses.Add((i, xToY(i)));
+                for(int i = (int)Math.Round(x1); i <= (int)Math.Round(x2); i++) {
+                    (int, int) res = (i, (int)Math.Round(xToY(i)));
+                    if(!poses.Contains(res) && res.Item2 != -1) {
+                        poses.Add(res);
+                    }
                 }
             }
             if(yToX != null) {
-                for(int i = y1; i <= y2; i++) {
-                    poses.Add((yToX(i), i));
+                for(int i = (int)Math.Round(y1); i <= (int)Math.Round(y2); i++) {
+                    (int, int) res = ((int)Math.Round(yToX(i)), i);
+                    if(!poses.Contains(res) && res.Item1 != -1) {
+                        poses.Add(res);
+                    } else {
+                    }
                 }
             }
         }
         protected void EditPixel(byte[] map, int rowStartIndex, int x, int width, int bpp, List<int> newValues, List<int>? numEach = null) {
-            if(rowStartIndex >= map.Length || x >= width) {
+            if(rowStartIndex >= map.Length || x >= width || rowStartIndex < 0 || x < 0) {
                 throw new RadishException("Attempting to draw pixel out of range!");
             }
             int currentIndex = rowStartIndex + (int)Math.Floor((double)((x * bpp) / 8));
@@ -71,7 +78,7 @@ namespace Tools.Operators {
         }
         public override IValue Run(Stack Stack) {
             string str = GetArgument(0)._Run(Stack).String;
-            byte[] decoded = System.Text.Encoding.Unicode.GetBytes(str, 0, str.Length);
+            byte[] decoded = Convert.FromBase64String(str);
             int width = 0;
             int height = 0;
             int offset = 0;
@@ -87,7 +94,7 @@ namespace Tools.Operators {
             }
             int rowLength = (int)Math.Ceiling(Math.Ceiling((bpp * width) / 8.0) / 4.0) * 4;
             RunBMP(decoded, offset, width, height, bpp, rowLength, Stack);
-            string encoded = System.Text.Encoding.Unicode.GetString(decoded, 0, decoded.Length);
+            string encoded = Convert.ToBase64String(decoded);//t.GetString(decoded, 0, decoded.Length);//System.Text.Encoding.Unicode.GetString(decoded, 0, decoded.Length);
             return new Values.StringLiteral(encoded);
         }
         public override string Print() {

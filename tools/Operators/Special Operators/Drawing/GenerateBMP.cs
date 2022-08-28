@@ -84,7 +84,7 @@ namespace Tools.Operators {
             // pallette
             // reverse 54 through {offset - 1}
             // everything else stays default
-            string converted = System.Text.Encoding.Unicode.GetString(writing, 0, writing.Length);
+            string converted = Convert.ToBase64String(writing);
             return new Values.StringLiteral(converted);
         }
         public override string Print() {

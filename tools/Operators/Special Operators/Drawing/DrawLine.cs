@@ -29,10 +29,10 @@ namespace Tools.Operators {
                 }
                 GetEquation(x1, x2, y1, y2, poses, 
                 ((x1 != x2) ? ((int x) => {
-                    return (int)Math.Round(m1 * (x - x1)) + y1;
+                    return Math.Round(m1 * (x - x1)) + y1;
                 }) : null),
                 (y1 != y2) ? ((int y) => {
-                    return (int)Math.Round(m2 * (y - y1)) + x1;
+                    return Math.Round(m2 * (y - y1)) + x1;
                 }) : null);
 
             foreach((int, int) pos in poses) {

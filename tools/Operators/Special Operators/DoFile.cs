@@ -24,10 +24,10 @@ namespace Tools.Operators {
                 IValue? append = Values.ObjectLiteral.DeepGet(edited, "append", new List<IValue>()).Item1;
                 if(append != null && append.Var.Default != BasicTypes.NONE) {
                     file.Seek(0, SeekOrigin.End);
-                    file.Write(Encoding.ASCII.GetBytes(append.String));
+                    file.Write(Encoding.Unicode.GetBytes(append.String));
                 } else if(str != null && str.Var.Default != BasicTypes.NONE) {
                     file.SetLength(0);
-                    file.Write(Encoding.ASCII.GetBytes(str.String));
+                    file.Write(Encoding.Unicode.GetBytes(str.String));
                 }
             }
             reader.Dispose();

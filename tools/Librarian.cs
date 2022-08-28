@@ -98,6 +98,7 @@ namespace Tools { // adds basic prototypes to call stack
                 StandardSpecials.Add("EDITPALLETTE", new Operators.EditPallette(this));
                 StandardSpecials.Add("DRAWRECTANGLE", new Operators.DrawRectangle(this));
                 StandardSpecials.Add("DRAWLINE", new Operators.DrawLine(this));
+                StandardSpecials.Add("DRAWELLIPSE", new Operators.DrawEllipse(this));
                 Lookup("PROTOTYPES", -1, -1); // we lookup prototypes at the beginning to add properties to literal classes
                 //this will directly edit the first layer of the stack
             } else {

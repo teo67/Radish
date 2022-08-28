@@ -1,6 +1,6 @@
-drawing.generateBMP(2000, 2000, 1, yes) => str
+drawing.generateBMP(20, 20, 1, yes) => str
 drawing.editPallette(str, 0, 0, 0, 0) => str
 drawing.editPallette(str, 1, 255, 255, 0) => str
 
-drawing.drawLine(str, 0, 0, 800, 1800, 1) => str
-drawing.renderBMP(str, "./outfile.bmp")
+drawing.drawEllipse(str, 10, 10, 7, 7, 1, yes) => str
+drawing.renderBMP(str, "./outfile2.bmp")

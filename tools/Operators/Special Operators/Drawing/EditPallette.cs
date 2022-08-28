@@ -4,7 +4,7 @@ namespace Tools.Operators {
         }
         public override IValue Run(Stack Stack) {
             string input = GetArgument(0)._Run(Stack).String;
-            byte[] decoded = System.Text.Encoding.Unicode.GetBytes(input, 0, input.Length);
+            byte[] decoded = Convert.FromBase64String(input);
             int palletteNumber = (int)GetArgument(1)._Run(Stack).Number;
             byte r = (byte)GetArgument(2)._Run(Stack).Number;
             byte g = (byte)GetArgument(3)._Run(Stack).Number;
@@ -13,7 +13,7 @@ namespace Tools.Operators {
             decoded[palletteNumber * 4 + 55] = g;
             decoded[palletteNumber * 4 + 54] = b;
             decoded[palletteNumber * 4 + 57] = 0;
-            string encoded = System.Text.Encoding.Unicode.GetString(decoded, 0, decoded.Length);
+            string encoded = Convert.ToBase64String(decoded);
             return new Values.StringLiteral(encoded);
         }
         public override string Print() {
