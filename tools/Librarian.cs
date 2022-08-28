@@ -96,10 +96,12 @@ namespace Tools { // adds basic prototypes to call stack
                 StandardSpecials.Add("RENDERBMP", new Operators.RenderBMP(this));
                 StandardSpecials.Add("ITERATEBMP", new Operators.IterateBMP(this));
                 StandardSpecials.Add("EDITPALLETTE", new Operators.EditPallette(this));
+                StandardSpecials.Add("DRAWRECTANGLE", new Operators.DrawRectangle(this));
+                StandardSpecials.Add("DRAWLINE", new Operators.DrawLine(this));
                 Lookup("PROTOTYPES", -1, -1); // we lookup prototypes at the beginning to add properties to literal classes
                 //this will directly edit the first layer of the stack
             } else {
-                layer.Add("holler", new Operators.Output(new Operators.Reference("input", -1, -1, this)));
+                layer.Add("holler", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "0" }, new List<IOperator?>() { null }, false, new Operators.Output(this), "Standard Library")));
                 // add a basic holler function j ust so radish is still usable
             }
         }
@@ -113,8 +115,8 @@ namespace Tools { // adds basic prototypes to call stack
             return null;
         }
 
-        public IValue SpecialImport(string varName) {
-            Values.Variable? vari = null;
+        public IOperator SpecialImport(string varName) {
+            IOperator? vari = null;
             bool gotten = StandardSpecials.TryGetValue(varName, out vari);
             if(gotten && vari != null) {
                 return vari;

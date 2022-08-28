@@ -268,9 +268,9 @@ namespace Tools {
                 Stored = read;
                 return returning;
             }
+            Stored = read;
             while(true) { 
                 Print("parsing list element");
-                Stored = read;
                 onEach(returning);
                 
                 LexEntry next = Read();
@@ -281,8 +281,6 @@ namespace Tools {
                 } else {
                     Print("found comma");
                 }
-
-                read = Read();
             }
             return returning;
         }
@@ -758,7 +756,15 @@ namespace Tools {
             } else if(returned.Type == TokenTypes.KEYWORD) {
                 Print("parsing variable");
                 if(IsStandard) {
-                    return new Operators.StandardRef(returned.Val, Row, Col, Librarian);
+                    LexEntry next = Read();
+                    List<IOperator>? args = null;
+                    if(next.Type == TokenTypes.SYMBOL && next.Val == "(") {
+                        args = ParseCallArgs();
+                        RequireSymbol(")");
+                    } else {
+                        Stored = next;
+                    }
+                    return new Operators.StandardRef(returned.Val, Row, Col, args == null ? null : Librarian, args);
                 }
                 return new Operators.Reference(returned.Val, Row, Col, Librarian);
             } else if(returned.Type == TokenTypes.SYMBOL) {

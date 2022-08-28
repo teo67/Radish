@@ -1,6 +1,10 @@
 namespace Tools.Operators {
     class BMPEditor  : SpecialOperator {
-        public BMPEditor(Librarian librarian) : base(librarian) {
+        private string Name { get; }
+        private int NumArgs { get; }
+        public BMPEditor(string name, int numArgs, Librarian librarian) : base(librarian) {
+            this.Name = name;
+            this.NumArgs = numArgs;
         }
         protected virtual void RunBMP(byte[] map, int startIndex, int width, int height, int bpp, int rowLength, Stack Stack) {}
         protected int GetPixel(byte[] map, int rowStartIndex, int x, int bpp) {
@@ -21,26 +25,45 @@ namespace Tools.Operators {
             }
             return current;
         }
-        protected void EditPixel(byte[] map, int rowStartIndex, int x, int bpp, int newValue) {
+        protected void GetEquation(int x1, int x2, int y1, int y2, List<(int, int)> poses, Func<int, int>? xToY, Func<int, int>? yToX) {
+            if(xToY != null) {
+                for(int i = x1; i <= x2; i++) {
+                    poses.Add((i, xToY(i)));
+                }
+            }
+            if(yToX != null) {
+                for(int i = y1; i <= y2; i++) {
+                    poses.Add((yToX(i), i));
+                }
+            }
+        }
+        protected void EditPixel(byte[] map, int rowStartIndex, int x, int width, int bpp, List<int> newValues, List<int>? numEach = null) {
+            if(rowStartIndex >= map.Length || x >= width) {
+                throw new RadishException("Attempting to draw pixel out of range!");
+            }
             int currentIndex = rowStartIndex + (int)Math.Floor((double)((x * bpp) / 8));
             int currentBit = 7 - ((x * bpp) % 8);
             byte current = map[currentIndex];
-            for(int i = 0; i < bpp; i++) {
-                if(currentBit < 0) {
-                    currentBit = 7;
-                    map[currentIndex] = current;
-                    currentIndex++;
-                    current = map[currentIndex];
+            for(int n = 0; n < newValues.Count; n++) {
+                for(int m = 0; m < (numEach == null ? 1 : numEach[n]); m++) {
+                    for(int i = 0; i < bpp; i++) {
+                        if(currentBit < 0) {
+                            currentBit = 7;
+                            map[currentIndex] = current;
+                            currentIndex++;
+                            current = map[currentIndex];
+                        }
+                        byte exponent = (byte)(1 << currentBit);
+                        bool setting = (newValues[n] & (1 << i)) != 0;
+                        bool has = (current & exponent) != 0;
+                        if(setting && !has) {
+                            current += exponent;
+                        } else if(has && !setting) {
+                            current -= exponent;
+                        }
+                        currentBit--;
+                    }
                 }
-                byte exponent = (byte)(1 << currentBit);
-                bool setting = (newValue & (1 << i)) != 0;
-                bool has = (current & exponent) != 0;
-                if(setting && !has) {
-                    current += exponent;
-                } else if(has && !setting) {
-                    current -= exponent;
-                }
-                currentBit--;
             }
             if(currentBit < 7) {
                 map[currentIndex] = current;
@@ -68,7 +91,14 @@ namespace Tools.Operators {
             return new Values.StringLiteral(encoded);
         }
         public override string Print() {
-            return "(edit bmp)";
+            string returning = $"{Name}(";
+            for(int i = 0; i < NumArgs; i++) {
+                returning += GetArgument(i + 1).Print();
+                if(i < NumArgs - 1) {
+                    returning += ", ";
+                }
+            }
+            return returning + ")";
         }
     }
 }

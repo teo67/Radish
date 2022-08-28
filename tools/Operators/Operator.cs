@@ -3,8 +3,10 @@ namespace Tools.Operators {
         public IValue _Run(Stack Stack) {
             int r = RadishException.Row;
             int c = RadishException.Col;
-            RadishException.Row = this.Row;
-            RadishException.Col = this.Col;
+            if(Row != -1 || Col != -1) {
+                RadishException.Row = this.Row;
+                RadishException.Col = this.Col;
+            }
             IValue saved = Run(Stack);
             RadishException.Row = r;
             RadishException.Col = c;
