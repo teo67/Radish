@@ -1,6 +1,33 @@
-drawing.generateBMP(20, 20, 1, yes) => str
-drawing.editPallette(str, 0, 0, 0, 0) => str
-drawing.editPallette(str, 1, 255, 255, 0) => str
+drawing.generateBMP(1001, 1001, 24, no) => str
+0 => theta
+500 => mid
+500 => r
+0 => color
+2 ** 8 => max
+1 => dir
+while yes {
+    r * math.trig.cos(theta) => cos
+    r * math.trig.sin(theta) => sin
+    color + (256 * (255 - color)) + (256 * 256 * color) => ec
+    drawing.drawLine(str, cos + mid, sin + mid, -sin + mid, cos + mid, ec) => str
+    drawing.drawLine(str, -sin + mid, cos + mid, -cos + mid, -sin + mid, ec) => str
+    drawing.drawLine(str, -cos + mid, -sin + mid, sin + mid, -cos + mid, ec) => str
+    drawing.drawLine(str, sin + mid, -cos + mid, cos + mid, sin + mid, ec) => str
+    drawing.renderBMP(str, "./outfile.bmp")
+    # drawing.drawLine(str, cos + mid, sin + mid, -sin + mid, cos + mid, 0) => str
+    drawing.drawLine(str, -sin + mid, cos + mid, -cos + mid, -sin + mid, 0) => str
+    drawing.drawLine(str, -cos + mid, -sin + mid, sin + mid, -cos + mid, 0) => str
+    drawing.drawLine(str, sin + mid, -cos + mid, cos + mid, sin + mid, 0) => str #
+    theta += math.constants.pi / 50
+    if(theta >= 2 * math.constants.pi) {
+        theta p 0
+    }
+    color += dir
+    if(color >= max || color < 0) {
+        color -= dir
+        dir *= -1
+    }
+    holler.next()
+}
 
-drawing.drawEllipse(str, 10, 10, 7, 7, 1, yes) => str
-drawing.renderBMP(str, "./outfile2.bmp")
+drawing.renderBMP(str, "./outfile.bmp")

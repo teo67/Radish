@@ -26,20 +26,37 @@ namespace Tools.Operators {
             return current;
         }
         protected void GetEquation(double x1, double x2, double y1, double y2, List<(int, int)> poses, Func<int, double>? xToY, Func<int, double>? yToX) {
+            int rx1 = (int)Math.Round(x1);
+            int rx2 = (int)Math.Round(x2);
+            int ry1 = (int)Math.Round(y1);
+            int ry2 = (int)Math.Round(y2);
             if(xToY != null) {
-                for(int i = (int)Math.Round(x1); i <= (int)Math.Round(x2); i++) {
+                for(int i = rx1; i <= rx2; i++) {
                     (int, int) res = (i, (int)Math.Round(xToY(i)));
-                    if(!poses.Contains(res) && res.Item2 != -1) {
-                        poses.Add(res);
+                    if(res.Item2 != -1) {
+                        if(res.Item2 < ry1) {
+                            res.Item2 = ry1;
+                        } else if(res.Item2 > ry2) {
+                            res.Item2 = ry2;
+                        }
+                        if(!poses.Contains(res)) {
+                            poses.Add(res);
+                        }
                     }
                 }
             }
             if(yToX != null) {
                 for(int i = (int)Math.Round(y1); i <= (int)Math.Round(y2); i++) {
                     (int, int) res = ((int)Math.Round(yToX(i)), i);
-                    if(!poses.Contains(res) && res.Item1 != -1) {
-                        poses.Add(res);
-                    } else {
+                    if(res.Item1 != -1) {
+                        if(res.Item1 < rx1) {
+                            res.Item1 = rx1;
+                        } else if(res.Item1 > rx2) {
+                            res.Item1 = rx2;
+                        }
+                        if(!poses.Contains(res)) {
+                            poses.Add(res);
+                        }
                     }
                 }
             }
@@ -53,7 +70,7 @@ namespace Tools.Operators {
             byte current = map[currentIndex];
             for(int n = 0; n < newValues.Count; n++) {
                 for(int m = 0; m < (numEach == null ? 1 : numEach[n]); m++) {
-                    for(int i = 0; i < bpp; i++) {
+                    for(int i = bpp - 1; i >= 0; i--) {
                         if(currentBit < 0) {
                             currentBit = 7;
                             map[currentIndex] = current;

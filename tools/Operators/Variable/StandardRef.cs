@@ -11,7 +11,17 @@ namespace Tools.Operators {
         public override IValue Run(Stack Stack) {
             IValue? returned = Stack.SafeGet(VarName);
             if(returned != null) {
-                return returned;
+                if(Args == null) {
+                    return returned;
+                }
+                List<IValue> passing = new List<IValue>();
+                foreach(IOperator op in Args) {
+                    passing.Add(op._Run(Stack));
+                }
+                RadishException.Append($"at {VarName}()", Row, Col, "", false);
+                IValue final = returned.Function(passing, null, null);
+                RadishException.Pop();
+                return final;
             }
             if(Librarian != null && Args != null) {
                 IOperator res = Librarian.SpecialImport(VarName);
