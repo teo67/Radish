@@ -6,7 +6,7 @@ namespace Tools.Operators {
             double y = GetArgument(2)._Run(Stack).Number;
             double w = GetArgument(3)._Run(Stack).Number;
             double h = GetArgument(4)._Run(Stack).Number;
-            int color = (int)GetArgument(5)._Run(Stack).Number;
+            IValue color = GetArgument(5)._Run(Stack).Var;
             bool fill = GetArgument(6)._Run(Stack).Boolean;
             List<(int, int)> poses = new List<(int, int)>();
             GetEquation(x - w/2, x + w/2, y - h/2, y + h/2, poses, (int cx) => {
@@ -27,11 +27,11 @@ namespace Tools.Operators {
                 foreach((int, int) pose in poses) {
                     int left = pose.Item1 <= x ? pose.Item1 : (int)Math.Round(x);
                     int wi = (int)Math.Abs(Math.Round(pose.Item1 - x)) + 1;
-                    EditPixel(map, startIndex + (height - pose.Item2 - 1) * rowLength, left, width, bpp, new List<int>() { color }, new List<int>() { wi } );
+                    EditPixel(map, startIndex + (height - pose.Item2 - 1) * rowLength, left, pose.Item2, width, bpp, color, wi);
                 }
             } else {
                 foreach((int, int) pos in poses) {
-                    EditPixel(map, startIndex + (height - pos.Item2 - 1) * rowLength, pos.Item1, width, bpp, new List<int>() { color });
+                    EditPixel(map, startIndex + (height - pos.Item2 - 1) * rowLength, pos.Item1, pos.Item2, width, bpp, color);
                 }
             }
         }

@@ -25,7 +25,7 @@ namespace Tools.Operators {
             }
             return current;
         }
-        protected void GetEquation(double x1, double x2, double y1, double y2, List<(int, int)> poses, Func<int, double>? xToY, Func<int, double>? yToX) {
+        protected void GetEquation(double x1, double x2, double y1, double y2, List<(int, int)> poses, Func<int, double>? xToY, Func<int, double>? yToX, bool ignoreDupes = false) {
             int rx1 = (int)Math.Round(x1);
             int rx2 = (int)Math.Round(x2);
             int ry1 = (int)Math.Round(y1);
@@ -33,13 +33,13 @@ namespace Tools.Operators {
             if(xToY != null) {
                 for(int i = rx1; i <= rx2; i++) {
                     (int, int) res = (i, (int)Math.Round(xToY(i)));
-                    if(res.Item2 != -1) {
+                    if(res.Item2 != -1 || ignoreDupes) {
                         if(res.Item2 < ry1) {
                             res.Item2 = ry1;
                         } else if(res.Item2 > ry2) {
                             res.Item2 = ry2;
                         }
-                        if(!poses.Contains(res)) {
+                        if(!poses.Contains(res) || ignoreDupes) {
                             poses.Add(res);
                         }
                     }
@@ -48,28 +48,29 @@ namespace Tools.Operators {
             if(yToX != null) {
                 for(int i = (int)Math.Round(y1); i <= (int)Math.Round(y2); i++) {
                     (int, int) res = ((int)Math.Round(yToX(i)), i);
-                    if(res.Item1 != -1) {
+                    if(res.Item1 != -1 || ignoreDupes) {
                         if(res.Item1 < rx1) {
                             res.Item1 = rx1;
                         } else if(res.Item1 > rx2) {
                             res.Item1 = rx2;
                         }
-                        if(!poses.Contains(res)) {
+                        if(!poses.Contains(res) || ignoreDupes) {
                             poses.Add(res);
                         }
                     }
                 }
             }
         }
-        protected void EditPixel(byte[] map, int rowStartIndex, int x, int width, int bpp, List<int> newValues, List<int>? numEach = null) {
+        protected void EditPixel(byte[] map, int rowStartIndex, int x, int y, int width, int bpp, IValue newValue, int numEach = 1) {
             if(rowStartIndex >= map.Length || x >= width || rowStartIndex < 0 || x < 0) {
                 throw new RadishException("Attempting to draw pixel out of range!");
             }
             int currentIndex = rowStartIndex + (int)Math.Floor((double)((x * bpp) / 8));
             int currentBit = 7 - ((x * bpp) % 8);
+            int solidColor = newValue.Default == BasicTypes.NUMBER ? (int)newValue.Number : -1;
             byte current = map[currentIndex];
-            for(int n = 0; n < newValues.Count; n++) {
-                for(int m = 0; m < (numEach == null ? 1 : numEach[n]); m++) {
+                for(int m = 0; m < numEach; m++) {
+                    int color = solidColor >= 0 ? solidColor : (int)newValue.Function(new List<IValue>() { new Values.NumberLiteral(m + x), new Values.NumberLiteral(y) }, null, null).Number;
                     for(int i = bpp - 1; i >= 0; i--) {
                         if(currentBit < 0) {
                             currentBit = 7;
@@ -78,7 +79,7 @@ namespace Tools.Operators {
                             current = map[currentIndex];
                         }
                         byte exponent = (byte)(1 << currentBit);
-                        bool setting = (newValues[n] & (1 << i)) != 0;
+                        bool setting = (color & (1 << i)) != 0;
                         bool has = (current & exponent) != 0;
                         if(setting && !has) {
                             current += exponent;
@@ -88,7 +89,6 @@ namespace Tools.Operators {
                         currentBit--;
                     }
                 }
-            }
             if(currentBit < 7) {
                 map[currentIndex] = current;
             }

@@ -1,33 +1,14 @@
-drawing.generateBMP(1001, 1001, 24, no) => str
-0 => theta
-500 => mid
-500 => r
-0 => color
-2 ** 8 => max
-1 => dir
+drawing.generateBMP(20, 20, 24, no) => str
+
+0 => x
 while yes {
-    r * math.trig.cos(theta) => cos
-    r * math.trig.sin(theta) => sin
-    color + (256 * (255 - color)) + (256 * 256 * color) => ec
-    drawing.drawLine(str, cos + mid, sin + mid, -sin + mid, cos + mid, ec) => str
-    drawing.drawLine(str, -sin + mid, cos + mid, -cos + mid, -sin + mid, ec) => str
-    drawing.drawLine(str, -cos + mid, -sin + mid, sin + mid, -cos + mid, ec) => str
-    drawing.drawLine(str, sin + mid, -cos + mid, cos + mid, sin + mid, ec) => str
-    drawing.renderBMP(str, "./outfile.bmp")
-    # drawing.drawLine(str, cos + mid, sin + mid, -sin + mid, cos + mid, 0) => str
-    drawing.drawLine(str, -sin + mid, cos + mid, -cos + mid, -sin + mid, 0) => str
-    drawing.drawLine(str, -cos + mid, -sin + mid, sin + mid, -cos + mid, 0) => str
-    drawing.drawLine(str, sin + mid, -cos + mid, cos + mid, sin + mid, 0) => str #
-    theta += math.constants.pi / 50
-    if(theta >= 2 * math.constants.pi) {
-        theta p 0
-    }
-    color += dir
-    if(color >= max || color < 0) {
-        color -= dir
-        dir *= -1
-    }
+    drawing.fillTriangle(str, [8 + x, 17, 3, 1 + x], [3, 13, 17, 6], t(x, y) {
+        h y * 15 * 256 + x * 15
+    }, yes) => str
+    drawing.renderBMP(str, "./outfile2.bmp")
+    drawing.fillTriangle(str, [8 + x, 17, 3, 1 + x], [3, 13, 17, 6], 0, yes) => str
     holler.next()
+    x += 0.1
 }
 
-drawing.renderBMP(str, "./outfile.bmp")
+

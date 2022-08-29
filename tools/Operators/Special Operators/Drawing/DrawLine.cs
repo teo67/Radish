@@ -6,7 +6,7 @@ namespace Tools.Operators {
             double y1 = GetArgument(2)._Run(Stack).Number;
             double x2 = GetArgument(3)._Run(Stack).Number;
             double y2 = GetArgument(4)._Run(Stack).Number;
-            int color = (int)GetArgument(5)._Run(Stack).Number;
+            IValue color = GetArgument(5)._Run(Stack).Var;
             double xmin = Math.Min(x1, x2); // sort x1, x2, y1, y2
             double ymin = Math.Min(y1, y2);
             
@@ -28,7 +28,7 @@ namespace Tools.Operators {
                 }) : null);
 
             foreach((int, int) pos in poses) {
-                EditPixel(map, startIndex + (height - pos.Item2 - 1) * rowLength, pos.Item1, width, bpp, new List<int>() { color });
+                EditPixel(map, startIndex + (height - pos.Item2 - 1) * rowLength, pos.Item1, pos.Item2, width, bpp, color);
             }
         }
         

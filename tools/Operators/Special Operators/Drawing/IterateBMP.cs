@@ -8,15 +8,15 @@ namespace Tools.Operators {
                 int index = startIndex + (i * rowLength);
                 for(int j = 0; j < width; j++) {
                     double received = (double)GetPixel(bitmap, index, j, bpp);
-                    double result = res(new List<IValue>() { 
+                    IValue result = res(new List<IValue>() { 
                         new Values.NumberLiteral(j),
                         new Values.NumberLiteral(height - 1 - i),
                         new Values.NumberLiteral((double)received)
-                    }, null, null).Number;
-                    if(result == received) {
+                    }, null, null).Var;
+                    if(result.Number == received) {
                         continue;
                     }
-                    EditPixel(bitmap, index, j, width, bpp, new List<int>() { (int)result });
+                    EditPixel(bitmap, index, j, -1, width, bpp, result);
                 }
             }
         }
