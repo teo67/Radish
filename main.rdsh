@@ -1,14 +1,6 @@
-drawing.generateBMP(20, 20, 24, no) => str
+dig drawing plant Drawing.generateQR("https://radishpl.com", 100)
 
-0 => x
-while yes {
-    drawing.fillTriangle(str, [8 + x, 17, 3, 1 + x], [3, 13, 17, 6], t(x, y) {
-        h y * 15 * 256 + x * 15
-    }, yes) => str
-    drawing.renderBMP(str, "./outfile2.bmp")
-    drawing.fillTriangle(str, [8 + x, 17, 3, 1 + x], [3, 13, 17, 6], 0, yes) => str
-    holler.next()
-    x += 0.1
-}
-
-
+drawing.ellipse(1650, 1650, 500, 500, t(x, y) {
+    h math.floor(y / 10) % 2
+}, yes)
+drawing.render("./outfile.bmp")

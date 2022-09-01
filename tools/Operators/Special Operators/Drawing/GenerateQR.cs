@@ -95,19 +95,7 @@ namespace Tools.Operators {
             next.Add(0);
             GeneratorPolynomials.Add(next);
         }
-        private void GetQR(byte[] full, string fileName, int moduleSize, int start = 0, int numQR = 0) {
-            int index = -1;
-            for(int i = 1; i < 41; i++) {
-                if(VersionInfo.GetVersion(i).Capacity >= full.Length - start) {
-                    index = i;
-                    break;
-                }
-            }
-            if(index == -1) {
-                index = 40;
-                GetQR(full, fileName, start + VersionInfo.GetVersion(40).Capacity, numQR + 1);
-            }
-            VersionInfo info = VersionInfo.GetVersion(index);
+        private bool[,] GetQR(byte[] full, int index, VersionInfo info, int moduleSize, int size, int start = 0) {
             string content = "0100";
             int charcount = Encoding.UTF8.GetDecoder().GetCharCount(full, start, Math.Min(full.Length - start, info.Capacity));
             content += Convert.ToString(charcount, 2).PadLeft(index < 10 ? 8 : 16, '0'); // character indicator bit value
@@ -131,8 +119,7 @@ namespace Tools.Operators {
                 }
                 content += "00010001";
             }
-            string withoutEnd = fileName.EndsWith(".bmp") ? fileName.Substring(0, fileName.Length - 4) : fileName;
-            HandleInput(content, index, info, numQR == 0 ? $"{withoutEnd}.bmp" : $"{withoutEnd} ({numQR}).bmp", moduleSize);
+            return HandleInput(content, index, info, moduleSize, size);
         }
         private List<int> DeterminePatterns(int version) {
             if(version == 1) {
@@ -150,9 +137,8 @@ namespace Tools.Operators {
             }
             return returning;
         }
-        private void HandleInput(string input, int version, VersionInfo info, string fileName, int moduleSize) {
+        private bool[,] HandleInput(string input, int version, VersionInfo info, int moduleSize, int size) {
             List<int> alignPatterns = DeterminePatterns(version);
-            int size = (version - 1) * 4 + 21;
 
             string final = "";
             int group2per = info.Group1Per + 1;
@@ -255,12 +241,9 @@ namespace Tools.Operators {
                     best = creating;
                 }
             }
-            //RenderMap(best, size);
-            createBMP(best, size, fileName, moduleSize);
+            return best;
         }
-        private void createBMP(bool[,] bitmap, int size, string fileName, int moduleSize) {
-            int rowLength = (int)(Math.Ceiling(Math.Ceiling((moduleSize + (double)((size * moduleSize) / 8.0))) / 4.0) * 4);
-            int totalSize = 14 + 40 + 8 + (rowLength * (size + 8) * moduleSize);
+        private byte[] createBMP(int width, int height, int numqrs, int moduleSize, int totalSize) {
             byte[] writing = new byte[totalSize];
             // file header (14), info header (40), pallette (8), data (variable)
             // file header
@@ -289,16 +272,18 @@ namespace Tools.Operators {
             writing[14] = 40;
             // 15, 16, and 17 stay at 0
             // width and height of image
-            byte[] translatedSize = BitConverter.GetBytes(moduleSize * (size + 8));
+            byte[] twidth = BitConverter.GetBytes(moduleSize * width);
+            byte[] theight = BitConverter.GetBytes(moduleSize * height);
             if(!BitConverter.IsLittleEndian) {
-                Array.Reverse(translatedSize);
+                Array.Reverse(twidth);
+                Array.Reverse(theight);
             }
-            if(translatedSize.Length > 4) {
+            if(twidth.Length > 4) {
                 throw new Exception("The image size is too large!");
             }
             for(int i = 0; i < 4; i++) {
-                writing[i + 18] = translatedSize[i];
-                writing[i + 22] = translatedSize[i];
+                writing[i + 18] = twidth[i];
+                writing[i + 22] = theight[i];
             } // this reserves 18, 19, 20, 21, 22, 23, 24, 25
             // color planes
             writing[26] = 1;
@@ -320,7 +305,10 @@ namespace Tools.Operators {
             // 61 stays at 0 for the end of the white byte
             // END PALLETTE
             // pixel data
-            
+            return writing;
+        }
+
+        private void spliceBitmap(byte[] writing, bool[,] bitmap, int size, int moduleSize, int rowLength, int startY) {
             for(int y = 0; y < size; y++) {
                 byte currentByte = 0;
                 int count = 7;
@@ -334,7 +322,7 @@ namespace Tools.Operators {
                         if(count == -1) {
                             count = 7;
                             for(int writeY = 0; writeY < moduleSize; writeY++) {
-                                writing[((y + 4) * moduleSize + writeY) * rowLength + numBytes + 62] = currentByte;
+                                writing[((y + 4) * moduleSize + writeY) * rowLength + numBytes + startY] = currentByte;
                             }
                             currentByte = 0;
                             numBytes++;
@@ -343,18 +331,18 @@ namespace Tools.Operators {
                 }
                 if(currentByte > 0 && numBytes < rowLength) {
                     for(int writeY = 0; writeY < moduleSize; writeY++) {
-                        writing[((y + 4) * moduleSize + writeY) * rowLength + numBytes + 62] = currentByte;
+                        writing[((y + 4) * moduleSize + writeY) * rowLength + numBytes + startY] = currentByte;
                     }
                 }
             }
-            for(int i = 0; i < Math.Ceiling((moduleSize + (double)((size * moduleSize) / 8.0))); i++) {
+            int last = (int)Math.Floor((moduleSize + (double)((size * moduleSize) / 8.0))) + 1;
+            for(int i = 0; i < last; i++) {
                 for(int y = 0; y < 4 * moduleSize; y++) {
-                    writing[y * rowLength + 62 + i] = 255;
-                    writing[(((size + 8) * moduleSize) - y - 1) * rowLength + 62 + i] = 255;
+                    byte place = i < last - 1 ? (byte)255 : (byte)(256 - (1 << (8 - (size * moduleSize) % 8)));
+                    writing[y * rowLength + startY + i] = place;
+                    writing[(((size + 8) * moduleSize) - y - 1) * rowLength + startY + i] = place;
                 }
             }
-            // END PIXEL DATA
-            File.WriteAllBytes(fileName, writing);
         }
 
         private string getCodewords(int startPosition, int numBytes, int numdigits, string input) {
@@ -519,10 +507,47 @@ namespace Tools.Operators {
                 Console.Write("\n");
             }
         }
-
         public override IValue Run(Stack Stack) {
-            GetQR(Encoding.Latin1.GetBytes(GetArgument(0)._Run(Stack).String), GetArgument(1)._Run(Stack).String, (int)Math.Round(GetArgument(2)._Run(Stack).Number));
-            return new Values.NoneLiteral();
+            byte[] full = Encoding.Latin1.GetBytes(GetArgument(0)._Run(Stack).String);
+            int moduleSize = (int)Math.Round(GetArgument(1)._Run(Stack).Number);
+            int start = 0;
+            int maxCapacity = VersionInfo.GetVersion(40).Capacity;
+            List<bool[,]> qrs = new List<bool[,]>();
+
+            bool done = false;
+            int height = 0;
+            int lastWidth = 177;
+            while(!done) {
+                for(int i = 1; i < 41; i++) {
+                    VersionInfo info = VersionInfo.GetVersion(i);
+                    if(info.Capacity >= full.Length - start) {
+                        int infoSize = (i - 1) * 4 + 21;
+                        qrs.Add(GetQR(full, i, info, moduleSize, infoSize, start));
+                        done = true;
+                        height += infoSize + 8;
+                        lastWidth = infoSize;
+                        break;
+                    }
+                }
+                if(!done) {
+                    qrs.Add(GetQR(full, 40, VersionInfo.GetVersion(40), moduleSize, 177, start));
+                    start += maxCapacity;
+                    height += 185;
+                }
+            }
+
+            int width = qrs.Count == 1 ? lastWidth : 177;
+            int rowLength = (int)(Math.Ceiling(Math.Ceiling((moduleSize + (double)((width * moduleSize) / 8.0))) / 4.0) * 4);
+            int totalSize = 14 + 40 + 8 + (rowLength * height * moduleSize);
+            byte[] gen = createBMP(width + 8, height, qrs.Count, moduleSize, totalSize);
+            int startY = totalSize;
+            for(int i = 0; i < qrs.Count - 1; i++) {
+                startY -= 185 * rowLength * moduleSize;
+                spliceBitmap(gen, qrs[i], 177, moduleSize, rowLength, startY);
+            }
+            startY -= (lastWidth + 8) * rowLength * moduleSize;
+            spliceBitmap(gen, qrs[qrs.Count - 1], lastWidth, moduleSize, rowLength, startY);
+            return new Values.StringLiteral(Convert.ToBase64String(gen));
         }
 
         public override string Print() {

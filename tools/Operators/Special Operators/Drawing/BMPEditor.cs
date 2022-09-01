@@ -70,7 +70,7 @@ namespace Tools.Operators {
             int solidColor = newValue.Default == BasicTypes.NUMBER ? (int)newValue.Number : -1;
             byte current = map[currentIndex];
                 for(int m = 0; m < numEach; m++) {
-                    int color = solidColor >= 0 ? solidColor : (int)newValue.Function(new List<IValue>() { new Values.NumberLiteral(m + x), new Values.NumberLiteral(y) }, null, null).Number;
+                    int color = solidColor >= 0 ? solidColor : (int)Math.Round(newValue.Function(new List<IValue>() { new Values.NumberLiteral(m + x), new Values.NumberLiteral(y) }, null, null).Number);
                     for(int i = bpp - 1; i >= 0; i--) {
                         if(currentBit < 0) {
                             currentBit = 7;
