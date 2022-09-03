@@ -31,7 +31,6 @@ namespace Tools.Operators {
             IValue color = GetArgument(3)._Run(Stack).Var;
 
             List<int>[] values = new List<int>[maxy - miny + 1];
-            List<int>[] possibleHorizontalSkips = new List<int>[maxy - miny + 1];
             for(int i = 0; i < numPoints; i++) {
                 double x1 = xs[i];
                 double y1 = ys[i];
@@ -44,13 +43,22 @@ namespace Tools.Operators {
                 int rx2 = (int)Math.Round(x2);
                 int minr = Math.Min(ry1, ry2);
                 int minrx = Math.Min(rx1, rx2);
+                int previousY = (int)Math.Round(ys[(i == 0 ? numPoints : i) - 1]);
                 if(y1 == y2) {
-                    InsertAtRightPlace(possibleHorizontalSkips, ry1 - miny, minrx);
+                    int nextY = (int)Math.Round(ys[(i >= numPoints - 2 ? (i - numPoints) : i) + 2]);
+                    if((previousY < ry1 && nextY >= ry1) || (previousY > ry1 && nextY < ry1)) { // The >= is on purpose, it accounts for multiple straight lines in a row
+                        InsertAtRightPlace(values, ry1, minrx);
+                    }
                     EditPixel(map, startIndex + rowLength * (height - ry1 - 1), minrx, i + miny, width, bpp, color, Math.Abs(rx2 - rx1) + 1);
                     continue;
                 }
                 double m = (x2 - x1) / (y2 - y1);
                 for(int j = minr; j <= (ry1 == minr ? ry2 : ry1); j++) {
+                    if(j == ry1) {
+                        if((previousY < ry1 && ry2 > ry1) || (previousY > ry1 && ry2 < ry1)) {
+                            continue;
+                        }
+                    }
                     int res = (int)Math.Round(m * (j - y1) + x1);
                     if(res < minrx) {
                         res = rx1;
@@ -63,16 +71,8 @@ namespace Tools.Operators {
             
 
             for(int i = 0; i < values.Length; i++) {
-                int skipIndex = 0;
                 for(int j = 0; j < values[i].Count - 1; j += 2) {
                     EditPixel(map, startIndex + rowLength * (height - i - miny - 1), values[i][j], i + miny, width, bpp, color, values[i][j + 1] - values[i][j] + 1);
-                    if(values[i].Count % 2 == 1 && skipIndex < possibleHorizontalSkips[i].Count) {
-                        if(possibleHorizontalSkips[i][skipIndex] >= values[i][j] && possibleHorizontalSkips[i][skipIndex] <= values[i][j + 1]) {
-                            EditPixel(map, startIndex + rowLength * (height - i - miny - 1), possibleHorizontalSkips[i][skipIndex], i + miny, width, bpp, color, values[i][j + 2] - possibleHorizontalSkips[i][skipIndex] + 1);
-                            skipIndex++;
-                            j++;
-                        }
-                    }
                 }
             }
         }
