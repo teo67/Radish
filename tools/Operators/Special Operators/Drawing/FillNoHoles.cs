@@ -30,24 +30,26 @@ namespace Tools.Operators {
             }
             IValue color = GetArgument(3)._Run(Stack).Var;
 
-            int?[] mins = new int?[maxy - miny + 1];
-            int?[] maxs = new int?[maxy - miny + 1];
-
+            List<int>[] values = new List<int>[maxy - miny + 1];
+            List<int>[] possibleHorizontalSkips = new List<int>[maxy - miny + 1];
             for(int i = 0; i < numPoints; i++) {
                 double x1 = xs[i];
                 double y1 = ys[i];
                 double x2 = xs[i == numPoints - 1 ? 0 : (i + 1)];
                 double y2 = ys[i == numPoints - 1 ? 0 : (i + 1)];
-                if(y1 == y2) {
-                    continue;
-                }
-                double m = (x2 - x1) / (y2 - y1);
+                
                 int ry1 = (int)Math.Round(y1);
                 int ry2 = (int)Math.Round(y2);
                 int rx1 = (int)Math.Round(x1);
                 int rx2 = (int)Math.Round(x2);
                 int minr = Math.Min(ry1, ry2);
                 int minrx = Math.Min(rx1, rx2);
+                if(y1 == y2) {
+                    InsertAtRightPlace(possibleHorizontalSkips, ry1 - miny, minrx);
+                    EditPixel(map, startIndex + rowLength * (height - ry1 - 1), minrx, i + miny, width, bpp, color, Math.Abs(rx2 - rx1) + 1);
+                    continue;
+                }
+                double m = (x2 - x1) / (y2 - y1);
                 for(int j = minr; j <= (ry1 == minr ? ry2 : ry1); j++) {
                     int res = (int)Math.Round(m * (j - y1) + x1);
                     if(res < minrx) {
@@ -55,23 +57,39 @@ namespace Tools.Operators {
                     } else if(res > (minrx == rx1 ? rx2 : rx1)) {
                         res = rx2;
                     }
-                    if(mins[j - miny] == null || res < mins[j - miny]) {
-                        mins[j - miny] = res;
-                    }
-                    if(maxs[j - miny] == null || res > maxs[j - miny]) {
-                        maxs[j - miny] = res;
-                    }
+                    InsertAtRightPlace(values, j - miny, res);
                 }
             }
             
 
-            for(int i = 0; i < mins.Length; i++) {
-                int? min = mins[i];
-                int? max = maxs[i];
-                if(min != null && max != null) {
-                    EditPixel(map, startIndex + rowLength * (height - i - miny - 1), (int)min, i + miny, width, bpp, color, (int)max - (int)min + 1);
+            for(int i = 0; i < values.Length; i++) {
+                int skipIndex = 0;
+                for(int j = 0; j < values[i].Count - 1; j += 2) {
+                    EditPixel(map, startIndex + rowLength * (height - i - miny - 1), values[i][j], i + miny, width, bpp, color, values[i][j + 1] - values[i][j] + 1);
+                    if(values[i].Count % 2 == 1 && skipIndex < possibleHorizontalSkips[i].Count) {
+                        if(possibleHorizontalSkips[i][skipIndex] >= values[i][j] && possibleHorizontalSkips[i][skipIndex] <= values[i][j + 1]) {
+                            EditPixel(map, startIndex + rowLength * (height - i - miny - 1), possibleHorizontalSkips[i][skipIndex], i + miny, width, bpp, color, values[i][j + 2] - possibleHorizontalSkips[i][skipIndex] + 1);
+                            skipIndex++;
+                            j++;
+                        }
+                    }
                 }
             }
+        }
+
+        private void InsertAtRightPlace(List<int>[] arr, int i, int value) {
+            if(arr[i] == null) {
+                arr[i] = new List<int>();
+            }
+            int index = arr[i].Count;
+            for(int k = 0; k < arr[i].Count; k++) {
+                if(arr[i][k] >= value) {
+                    index = k;
+                            //Console.WriteLine($"I chose index {k} because {values[j - miny][k]} was more than {res} at y = {j - miny}");
+                    break;
+                }
+            }
+            arr[i].Insert(index, value);
         }
     }
 }
