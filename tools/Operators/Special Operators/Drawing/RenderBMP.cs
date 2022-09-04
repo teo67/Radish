@@ -6,6 +6,9 @@ namespace Tools.Operators {
             string res = GetArgument(0)._Run(Stack).String;
             byte[] decoded = System.Convert.FromBase64String(res);
             string path = GetArgument(1)._Run(Stack).String;
+            if(!path.EndsWith(".bmp")) {
+                path += ".bmp";
+            }
             string dir = GetDirectory(path);
             if(!Directory.Exists(dir)) {
                 throw new RadishException($"Directory {dir} does not exist! (while renderbmp can create a file, it cannot create a folder.)", Row, Col);
