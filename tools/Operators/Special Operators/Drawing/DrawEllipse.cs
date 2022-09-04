@@ -11,7 +11,8 @@ namespace Tools.Operators {
             IValue color = GetArgument(5)._Run(Stack).Var;
             bool fill = GetArgument(6)._Run(Stack).Boolean;
             List<(int, int)> poses = new List<(int, int)>();
-            (bool, bool) isRights = (startAngle < (Math.PI / 2) || startAngle > (3 * Math.PI / 2), (endAngle < (Math.PI / 2) || endAngle > (3 * Math.PI / 2)));         
+            (bool, bool) isRights = (startAngle < (Math.PI / 2) || startAngle > (3 * Math.PI / 2), (endAngle < (Math.PI / 2) || endAngle > (3 * Math.PI / 2))); 
+
             (double, double) bottomXs = (startAngle < Math.PI && endAngle < Math.PI && startAngle < endAngle) ? (0, -1) : 
             (x + (startAngle < Math.PI ? -1 : Math.Cos(startAngle)) * w/2, x + (endAngle < Math.PI ? 1 : Math.Cos(endAngle)) * w/2);
             (double, double) topXs = (startAngle > Math.PI && endAngle > Math.PI && startAngle < endAngle) ? (0, -1) : 
@@ -20,10 +21,47 @@ namespace Tools.Operators {
             (y - (!isRights.Item2 ? 1 : Math.Sin(endAngle)) * h/2, y - (!isRights.Item1 ? -1 : Math.Sin(startAngle)) * h/2);
             (double, double) leftYs = (isRights.Item1 && isRights.Item2 && (startAngle < Math.PI ? startAngle + 2 * Math.PI : startAngle) < (endAngle < Math.PI ? endAngle + 2 * Math.PI : endAngle)) ? (0, -1) : 
             (y - (isRights.Item1 ? 1 : Math.Sin(startAngle)) * h/2, y - (isRights.Item2 ? -1 : Math.Sin(endAngle)) * h/2);
+            Func<int, double, double> restrictY = (int cx, double y1) => {
+                if(cx < x) {
+                    if(leftYs.Item2 == -1) {
+                        return -1;
+                    }
+                    if(leftYs.Item1 < leftYs.Item2) {
+                        return y1 < leftYs.Item1 || y1 > leftYs.Item2 ? -1 : y1;
+                    }
+                    return y1 < leftYs.Item1 && y1 > leftYs.Item2 ? -1 : y1;
+                }
+                if(rightYs.Item2 == -1) {
+                    return -1;
+                }
+                if(rightYs.Item1 < rightYs.Item2) {
+                    return y1 < rightYs.Item1 || y1 > rightYs.Item2 ? -1 : y1;
+                }
+                return y1 < rightYs.Item1 && y1 > rightYs.Item2 ? -1 : y1;
+            };
 
+            Func<int, double, double> restrictX = (int cy, double x1) => {
+                if(cy < y) {
+                    if(topXs.Item2 == -1) {
+                        return -1;
+                    }
+                    if(topXs.Item1 < topXs.Item2) {
+                        return x1 < topXs.Item1 || x1 > topXs.Item2 ? -1 : x1;
+                    }
+                    return x1 < topXs.Item1 && x1 > topXs.Item2 ? -1 : x1;
+                }
+                if(bottomXs.Item2 == -1) {
+                    return -1;
+                }
+                if(bottomXs.Item1 < bottomXs.Item2) {
+                    return x1 < bottomXs.Item1 || x1 > bottomXs.Item2 ? -1 : x1;
+                }
+                return x1 < bottomXs.Item1 && x1 > bottomXs.Item2 ? -1 : x1;
+            };
+            
             Func<int, double> getbx = (int cx) => {
                 double sqrter = 1 - Math.Pow(cx - x, 2.0)/Math.Pow((w/2), 2.0);
-                return sqrter < 0 ? y : ((h/2) * Math.Sqrt(sqrter)) + y;
+                return restrictY(cx, Math.Round(((h/2) * Math.Sqrt(sqrter)) + y));
             };
 
             if(bottomXs.Item1 < bottomXs.Item2) {
@@ -35,7 +73,7 @@ namespace Tools.Operators {
             
             Func<int, double> getry = (int cy) => {
                 double sqrter = 1 - Math.Pow(cy - y, 2.0)/Math.Pow((h/2), 2.0);
-                return sqrter < 0 ? x : (((w/2) * Math.Sqrt(sqrter)) + x);
+                return restrictX(cy, Math.Round((w/2) * Math.Sqrt(sqrter) + x));
             };
 
             if(rightYs.Item1 < rightYs.Item2) {
@@ -47,7 +85,7 @@ namespace Tools.Operators {
             
             Func<int, double> gettx = (int cx) => {
                 double sqrter = 1 - Math.Pow(cx - x, 2.0)/Math.Pow((w/2), 2.0);
-                return sqrter < 0 ? y : ((h/2) * -Math.Sqrt(sqrter)) + y;
+                return restrictY(cx, Math.Round(((h/2) * -Math.Sqrt(sqrter)) + y));
             };
 
             if(topXs.Item1 < topXs.Item2) {
@@ -59,7 +97,7 @@ namespace Tools.Operators {
 
             Func<int, double> getly = (int cy) => {
                 double sqrter = 1 - Math.Pow(cy - y, 2.0)/Math.Pow((h/2), 2.0);
-                return sqrter < 0 ? x : ((w/2) * -Math.Sqrt(sqrter)) + x;
+                return restrictX(cy, Math.Round((w/2) * -Math.Sqrt(sqrter) + x));
             };
 
             if(leftYs.Item1 < leftYs.Item2) {
@@ -74,7 +112,6 @@ namespace Tools.Operators {
                 double y2 = -(h/2) * Math.Sin(endAngle) + y;
                 double x1 = (w/2) * Math.Cos(startAngle) + x;
                 double x2 = (w/2) * Math.Cos(endAngle) + x;
-
                 double m = y2 == y1 ? 0 : ((x2 - x1) / (y2 - y1));
                 foreach((int, int) pose in poses) {
                     int pointOnLine = y2 == y1 ? (int)Math.Round(x) : ((int)Math.Round((pose.Item2 - y1) * m + x1));

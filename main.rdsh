@@ -1,4 +1,3 @@
-dig drawing plant new Drawing(500, 500)
-math.constants.pi / 4 => theta
-drawing.ellipse(200, 200, 200, 200, 255, yes, 0, 2 * math.constants.pi)
+dig drawing plant new Drawing(20, 20)
+drawing.ellipse(10, 10, 10, 10, 255, yes, 0, 4 * math.constants.pi / 3)
 drawing.render("./outfile.bmp")
