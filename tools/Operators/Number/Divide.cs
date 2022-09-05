@@ -2,7 +2,7 @@ namespace Tools.Operators {
     class Divide : SimpleOperator {
         public Divide(IOperator left, IOperator right, int row, int col) : base(left, right, "/", row, col) {}
         public override IValue Combine(IValue leftResult, IValue rightResult) {
-            if(leftResult.Default == BasicTypes.NUMBER) {
+            if(leftResult.Default == BasicTypes.NUMBER || leftResult.Default == BasicTypes.POLY) {
                 if(rightResult.Number == 0) {
                     throw new RadishException("Unable to divide by 0!");
                 }

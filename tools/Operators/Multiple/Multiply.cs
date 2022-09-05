@@ -2,11 +2,11 @@ namespace Tools.Operators {
     class Multiply : SimpleOperator {
         public Multiply(IOperator left, IOperator right, int row, int col) : base(left, right, "*", row, col) {}
         public override IValue Combine(IValue leftResult, IValue rightResult) {
-            if(leftResult.Default == BasicTypes.NUMBER) {
+            if(leftResult.Default == BasicTypes.NUMBER || leftResult.Default == BasicTypes.POLY) {
                 return new Values.NumberLiteral(leftResult.Number * rightResult.Number);
             }
             if(leftResult.Default == BasicTypes.STRING) {
-                if(rightResult.Default == BasicTypes.NUMBER) {
+                if(rightResult.Default == BasicTypes.NUMBER || rightResult.Default == BasicTypes.POLY) {
                     string adding = "";
                     for(int i = 0; i < rightResult.Number; i++) {
                         adding += leftResult.String;

@@ -6,7 +6,7 @@ namespace Tools.Operators {
         }
         public override IValue Run(Stack Stack) {
             IValue result = Target._Run(Stack).Var;
-            if(result.Default != BasicTypes.NUMBER) {
+            if(result.Default != BasicTypes.NUMBER && result.Default != BasicTypes.POLY) {
                 throw new RadishException("Bitwise operations can only be performed on numbers!", Row, Col);
             }
             int asI = (int)result.Number;

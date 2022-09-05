@@ -559,7 +559,7 @@ namespace Tools {
 
         private IOperator ParseCalls(bool allowParens = true) {
             Print("begin calls");
-            IOperator current = ParseLowest();
+            IOperator current = ParseLowest(allowParens);
             LexEntry? next = null;
             bool done = false;
             while(!done) {
@@ -601,7 +601,7 @@ namespace Tools {
             return current;
         }
 
-        private IOperator ParseLowest() {
+        private IOperator ParseLowest(bool allowParens = true) {
             Print("begin lowest");
             LexEntry returned = Read();
             if(returned.Type == TokenTypes.OPERATOR) {
@@ -755,7 +755,7 @@ namespace Tools {
                 return new Operators.Boolean(returned.Val == "yes", Row, Col);
             } else if(returned.Type == TokenTypes.KEYWORD) {
                 Print("parsing variable");
-                if(IsStandard) {
+                if(IsStandard && allowParens) {
                     LexEntry next = Read();
                     List<IOperator>? args = null;
                     if(next.Type == TokenTypes.SYMBOL && next.Val == "(") {
@@ -773,8 +773,17 @@ namespace Tools {
                     Print("parsing expression");
                     IOperator returning = ParseExpression();
                     Print("parsing closing paren.");
+                    LexEntry next = Read();
+                    if(next.Type == TokenTypes.SYMBOL && next.Val == ")") {
+                        return returning;
+                    }
+                    if(next.Type != TokenTypes.SYMBOL || next.Val != ",") {
+                        throw Error("Expecting a poly-value declaration or a closing parentheses!");
+                    }
+                    List<IOperator> all = ParseCallArgs();
+                    all.Add(returning);
                     RequireSymbol(")");
-                    return returning;
+                    return new Operators.Poly(all, Row, Col);
                 } 
                 if(returned.Val == "[") {
                     Print("parsing opening square brackets");

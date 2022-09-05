@@ -1,3 +1,0 @@
-dig drawing plant new Drawing(20, 20)
-drawing.ellipse(10, 10, 10, 10, 255, yes, 0, 4 * math.constants.pi / 3)
-drawing.render("./outfile.bmp")

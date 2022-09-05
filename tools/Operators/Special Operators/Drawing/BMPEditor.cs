@@ -67,7 +67,7 @@ namespace Tools.Operators {
             }
             int currentIndex = rowStartIndex + (int)Math.Floor((double)((x * bpp) / 8));
             int currentBit = 7 - ((x * bpp) % 8);
-            int solidColor = newValue.Default == BasicTypes.NUMBER ? (int)newValue.Number : -1;
+            int solidColor = (newValue.Default == BasicTypes.NUMBER || newValue.Default == BasicTypes.POLY) ? (int)newValue.Number : -1;
             byte current = map[currentIndex];
                 for(int m = 0; m < numEach; m++) {
                     int color = solidColor >= 0 ? solidColor : (int)Math.Round(newValue.Function(new List<IValue>() { new Values.NumberLiteral(m + x), new Values.NumberLiteral(y) }, null, null).Number);

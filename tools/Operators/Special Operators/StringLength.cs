@@ -4,7 +4,7 @@ namespace Tools.Operators {
         }
         public override IValue Run(Stack Stack) {
             IValue result = GetArgument(0)._Run(Stack).Var;
-            if(result.Default != BasicTypes.STRING) {
+            if(result.Default != BasicTypes.STRING && result.Default != BasicTypes.POLY) {
                 throw new RadishException("Unable to take the length of a non-string value!", Row, Col);
             }
             return new Values.NumberLiteral(result.String.Length);

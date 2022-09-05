@@ -56,6 +56,8 @@ namespace Tools.Operators {
                 }
             } else if(input.Default == Tools.BasicTypes.FUNCTION) {
                 return "{Function}";
+            } else if(input.Default == Tools.BasicTypes.POLY) {
+                return $"({input.Number}, {(input.String == "" ? "\"\"" : input.String)}, {(input.Boolean ? "yes" : "no")})";
             } else {
                 return input.String;
             }

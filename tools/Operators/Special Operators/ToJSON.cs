@@ -60,6 +60,8 @@ namespace Tools.Operators {
                 returning = $"{input.Number}";
             } else if(input.Default == BasicTypes.NONE) {
                 returning = "null";
+            } else if(input.Default == BasicTypes.POLY) {
+                throw new RadishException("JSON does not support poly-values!");
             }
             keepTrack.RemoveAt(keepTrack.Count - 1);
             return returning;

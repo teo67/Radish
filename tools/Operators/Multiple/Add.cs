@@ -2,7 +2,7 @@ namespace Tools.Operators {
     class Add : SimpleOperator {
         public Add(IOperator left, IOperator right, int row, int col) : base(left, right, "+", row, col) {}
         public override IValue Combine(IValue leftResult, IValue rightResult) {
-            if(leftResult.Default == BasicTypes.NUMBER) {
+            if(leftResult.Default == BasicTypes.NUMBER || leftResult.Default == BasicTypes.POLY) {
                 return new Values.NumberLiteral(leftResult.Number + rightResult.Number);
             }
             if(leftResult.Default == BasicTypes.STRING) {

@@ -5,7 +5,7 @@ namespace Tools.Operators {
             throw new RadishException("Cannot get the result of an empty bitwise operator!", Row, Col);
         }
         public override IValue Combine(IValue leftResult, IValue rightResult) {
-            if(leftResult.Default != BasicTypes.NUMBER || rightResult.Default != BasicTypes.NUMBER) {
+            if((leftResult.Default != BasicTypes.NUMBER && leftResult.Default != BasicTypes.POLY) || (rightResult.Default != BasicTypes.NUMBER && rightResult.Default != BasicTypes.POLY)) {
                 throw new RadishException("Bitwise operations can only be performed on numbers!", Row, Col);
             }
             int leftI = (int)leftResult.Number;

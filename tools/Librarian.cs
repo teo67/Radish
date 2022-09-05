@@ -9,7 +9,6 @@ namespace Tools { // adds basic prototypes to call stack
         public StackNode FirstLayer { get; }
         public List<string> Standard { get; }
         private string? PathToLibrary { get; }
-        private Stack ImportStack { get; }
         private Dictionary<string, IOperator> StandardSpecials { get; }
         public Stack<string> CurrentlyImporting { get; }
         public Librarian(bool uselib = true) {
@@ -22,9 +21,9 @@ namespace Tools { // adds basic prototypes to call stack
             Values.ObjectLiteral.ArrayProto = AddProto("Array", layer);
             Values.BooleanLiteral.Proto = AddProto("Boolean", layer);
             Values.FunctionLiteral.Proto = AddProto("Function", layer);
+            Values.PolyLiteral.Proto = AddProto("Poly", layer);
             FirstLayer = new StackNode(layer);
             Standard = new List<string>();
-            ImportStack = new Stack(FirstLayer);
             PathToLibrary = null;
             StandardSpecials = new Dictionary<string, IOperator>();
             if(uselib) {
@@ -102,10 +101,13 @@ namespace Tools { // adds basic prototypes to call stack
                 StandardSpecials.Add("DRAWPOINT", new Operators.DrawPoint(this));
                 StandardSpecials.Add("FILLTRIANGLE", new Operators.FillNoHoles(this));
                 StandardSpecials.Add("PRINTBMP", new Operators.PrintBMP(this));
+
+                StandardSpecials.Add("POLYADDSTRING", new Operators.PolyAddString(this));
+                StandardSpecials.Add("POLYMULTIPLYSTRING", new Operators.PolyMultiplyString(this));
                 Lookup("PROTOTYPES", -1, -1); // we lookup prototypes at the beginning to add properties to literal classes
                 //this will directly edit the first layer of the stack
             } else {
-                layer.Add("holler", new Values.Variable(new Values.FunctionLiteral(ImportStack, new List<string>() { "0" }, new List<IOperator?>() { null }, false, new Operators.Output(this), "Standard Library")));
+                layer.Add("holler", new Values.Variable(new Values.FunctionLiteral(new Stack(new StackNode(new Dictionary<string, Values.Variable>())), new List<string>() { "0" }, new List<IOperator?>() { null }, false, new Operators.Output(this), "Standard Library")));
                 // add a basic holler function j ust so radish is still usable
             }
         }

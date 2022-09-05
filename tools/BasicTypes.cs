@@ -6,6 +6,7 @@ namespace Tools {
         OBJECT,
         FUNCTION,
         RETURN,
-        NONE
+        NONE,
+        POLY
     }
 }
