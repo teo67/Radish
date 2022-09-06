@@ -37,17 +37,17 @@ namespace Tools.Operators {
                 double x2 = xs[i == numPoints - 1 ? 0 : (i + 1)];
                 double y2 = ys[i == numPoints - 1 ? 0 : (i + 1)];
                 
-                int ry1 = (int)Math.Round(y1);
-                int ry2 = (int)Math.Round(y2);
-                int rx1 = (int)Math.Round(x1);
-                int rx2 = (int)Math.Round(x2);
+                int ry1 = (int)Math.Round(y1, 0, MidpointRounding.AwayFromZero);
+                int ry2 = (int)Math.Round(y2, 0, MidpointRounding.AwayFromZero);
+                int rx1 = (int)Math.Round(x1, 0, MidpointRounding.AwayFromZero);
+                int rx2 = (int)Math.Round(x2, 0, MidpointRounding.AwayFromZero);
                 int minr = Math.Min(ry1, ry2);
                 int minrx = Math.Min(rx1, rx2);
-                int previousY = (int)Math.Round(ys[(i == 0 ? numPoints : i) - 1]);
+                int previousY = (int)Math.Round(ys[(i == 0 ? numPoints : i) - 1], 0, MidpointRounding.AwayFromZero);
                 if(y1 == y2) {
-                    int nextY = (int)Math.Round(ys[(i >= numPoints - 2 ? (i - numPoints) : i) + 2]);
+                    int nextY = (int)Math.Round(ys[(i >= numPoints - 2 ? (i - numPoints) : i) + 2], 0, MidpointRounding.AwayFromZero);
                     if((previousY < ry1 && nextY >= ry1) || (previousY > ry1 && nextY < ry1)) { // The >= is on purpose, it accounts for multiple straight lines in a row
-                        InsertAtRightPlace(values, ry1, minrx);
+                        InsertAtRightPlace(values, ry1 - miny, minrx);
                     }
                     EditPixel(map, startIndex + rowLength * (height - ry1 - 1), minrx, i + miny, width, bpp, color, Math.Abs(rx2 - rx1) + 1);
                     continue;
@@ -59,11 +59,11 @@ namespace Tools.Operators {
                             continue;
                         }
                     }
-                    int res = (int)Math.Round(m * (j - y1) + x1);
+                    int res = (int)Math.Round(m * (j - y1) + x1, 0, MidpointRounding.AwayFromZero);
                     if(res < minrx) {
-                        res = rx1;
+                        res = minrx;
                     } else if(res > (minrx == rx1 ? rx2 : rx1)) {
-                        res = rx2;
+                        res = (minrx == rx1 ? rx2 : rx1);
                     }
                     InsertAtRightPlace(values, j - miny, res);
                 }
@@ -71,8 +71,10 @@ namespace Tools.Operators {
             
 
             for(int i = 0; i < values.Length; i++) {
-                for(int j = 0; j < values[i].Count - 1; j += 2) {
-                    EditPixel(map, startIndex + rowLength * (height - i - miny - 1), values[i][j], i + miny, width, bpp, color, values[i][j + 1] - values[i][j] + 1);
+                if(values[i] != null) {
+                    for(int j = 0; j < values[i].Count - 1; j += 2) {
+                        EditPixel(map, startIndex + rowLength * (height - i - miny - 1), values[i][j], i + miny, width, bpp, color, values[i][j + 1] - values[i][j] + 1);
+                    }
                 }
             }
         }

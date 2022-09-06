@@ -21,10 +21,10 @@ namespace Tools.Operators {
                 }
                 GetEquation(xmin, xmin == x1 ? x2 : x1, ymin, ymin == y1 ? y2 : y1, poses, 
                 ((x1 != x2) ? ((int x) => {
-                    return Math.Round(m1 * (x - x1)) + y1;
+                    return Math.Round(m1 * (x - x1), 0, MidpointRounding.AwayFromZero) + y1;
                 }) : null),
                 (y1 != y2) ? ((int y) => {
-                    return Math.Round(m2 * (y - y1)) + x1;
+                    return Math.Round(m2 * (y - y1), 0, MidpointRounding.AwayFromZero) + x1;
                 }) : null);
 
             foreach((int, int) pos in poses) {

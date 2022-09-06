@@ -509,7 +509,7 @@ namespace Tools.Operators {
         }
         public override IValue Run(Stack Stack) {
             byte[] full = Encoding.Latin1.GetBytes(GetArgument(0)._Run(Stack).String);
-            int moduleSize = (int)Math.Round(GetArgument(1)._Run(Stack).Number);
+            int moduleSize = (int)Math.Round(GetArgument(1)._Run(Stack).Number, 0, MidpointRounding.AwayFromZero);
             int start = 0;
             int maxCapacity = VersionInfo.GetVersion(40).Capacity;
             List<bool[,]> qrs = new List<bool[,]>();

@@ -1,0 +1,3 @@
+new Drawing(123, 13) => drawing
+drawing.string("hello, world!", 0, 9, 5, 255, 13)
+drawing.render("./out")

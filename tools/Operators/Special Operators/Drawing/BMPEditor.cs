@@ -17,22 +17,22 @@ namespace Tools.Operators {
                     currentIndex++;
                 }
                 byte exponent = (byte)(1 << currentBit);
-                bool has = (current & exponent) != 0;
+                bool has = (map[currentIndex] & exponent) != 0;
                 if(has) {
-                    current += (1 << i);
+                    current += (1 << (bpp - i - 1));
                 }
                 currentBit--;
             }
             return current;
         }
         protected void GetEquation(double x1, double x2, double y1, double y2, List<(int, int)> poses, Func<int, double>? xToY, Func<int, double>? yToX, bool ignoreDupes = false) {
-            int rx1 = (int)Math.Round(x1);
-            int rx2 = (int)Math.Round(x2);
-            int ry1 = (int)Math.Round(y1);
-            int ry2 = (int)Math.Round(y2);
+            int rx1 = (int)Math.Round(x1, 0, MidpointRounding.AwayFromZero);
+            int rx2 = (int)Math.Round(x2, 0, MidpointRounding.AwayFromZero);
+            int ry1 = (int)Math.Round(y1, 0, MidpointRounding.AwayFromZero);
+            int ry2 = (int)Math.Round(y2, 0, MidpointRounding.AwayFromZero);
             if(xToY != null) {
                 for(int i = rx1; i <= rx2; i++) {
-                    (int, int) res = (i, (int)Math.Round(xToY(i)));
+                    (int, int) res = (i, (int)Math.Round(xToY(i), 0, MidpointRounding.AwayFromZero));
                     if(res.Item2 != -1 || ignoreDupes) {
                         if(res.Item2 < ry1) {
                             res.Item2 = ry1;
@@ -46,8 +46,8 @@ namespace Tools.Operators {
                 }
             }
             if(yToX != null) {
-                for(int i = (int)Math.Round(y1); i <= (int)Math.Round(y2); i++) {
-                    (int, int) res = ((int)Math.Round(yToX(i)), i);
+                for(int i = (int)Math.Round(y1, 0, MidpointRounding.AwayFromZero); i <= (int)Math.Round(y2, 0, MidpointRounding.AwayFromZero); i++) {
+                    (int, int) res = ((int)Math.Round(yToX(i), 0, MidpointRounding.AwayFromZero), i);
                     if(res.Item1 != -1 || ignoreDupes) {
                         if(res.Item1 < rx1) {
                             res.Item1 = rx1;
@@ -70,7 +70,7 @@ namespace Tools.Operators {
             int solidColor = (newValue.Default == BasicTypes.NUMBER || newValue.Default == BasicTypes.POLY) ? (int)newValue.Number : -1;
             byte current = map[currentIndex];
                 for(int m = 0; m < numEach; m++) {
-                    int color = solidColor >= 0 ? solidColor : (int)Math.Round(newValue.Function(new List<IValue>() { new Values.NumberLiteral(m + x), new Values.NumberLiteral(y) }, null, null).Number);
+                    int color = solidColor >= 0 ? solidColor : (int)Math.Round(newValue.Function(new List<IValue>() { new Values.NumberLiteral(m + x), new Values.NumberLiteral(y) }, null, null).Number, 0, MidpointRounding.AwayFromZero);
                     for(int i = bpp - 1; i >= 0; i--) {
                         if(currentBit < 0) {
                             currentBit = 7;
