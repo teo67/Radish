@@ -46,7 +46,7 @@ namespace Tools.Operators {
                 }
             }
             if(yToX != null) {
-                for(int i = (int)Math.Round(y1, 0, MidpointRounding.AwayFromZero); i <= (int)Math.Round(y2, 0, MidpointRounding.AwayFromZero); i++) {
+                for(int i = ry1; i <= ry2; i++) {
                     (int, int) res = ((int)Math.Round(yToX(i), 0, MidpointRounding.AwayFromZero), i);
                     if(res.Item1 != -1 || ignoreDupes) {
                         if(res.Item1 < rx1) {

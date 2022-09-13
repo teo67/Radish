@@ -104,6 +104,7 @@ namespace Tools { // adds basic prototypes to call stack
 
                 StandardSpecials.Add("POLYADDSTRING", new Operators.PolyAddString(this));
                 StandardSpecials.Add("POLYMULTIPLYSTRING", new Operators.PolyMultiplyString(this));
+                StandardSpecials.Add("ROUND", new Operators.Round(this));
                 Lookup("PROTOTYPES", -1, -1); // we lookup prototypes at the beginning to add properties to literal classes
                 //this will directly edit the first layer of the stack
             } else {

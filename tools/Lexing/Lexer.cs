@@ -20,7 +20,8 @@ namespace Tools {
         static Lexer() {
             backslashes = new Dictionary<char, char>() {
                 { 'n', '\n' },
-                { 't', '\t' }
+                { 't', '\t' },
+                { 'r', '\r' },
             };
         }
         public Lexer(IReader reader) {

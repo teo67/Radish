@@ -31,7 +31,7 @@ namespace Tools.Operators {
                         return -1;
                     }
                     if(leftYs.Item1 < leftYs.Item2) {
-                        return y1 < leftYs.Item1 || y1 > leftYs.Item2 ? -1 : y1;
+                        return y1 < leftYs.Item1 ? leftYs.Item1 : y1 > leftYs.Item2 ? leftYs.Item2 : y1;
                     }
                     return y1 < leftYs.Item1 && y1 > leftYs.Item2 ? -1 : y1;
                 }
@@ -39,7 +39,7 @@ namespace Tools.Operators {
                     return -1;
                 }
                 if(rightYs.Item1 < rightYs.Item2) {
-                    return y1 < rightYs.Item1 || y1 > rightYs.Item2 ? -1 : y1;
+                    return y1 < rightYs.Item1 ? rightYs.Item1 : y1 > rightYs.Item2 ? rightYs.Item2 : y1;
                 }
                 return y1 < rightYs.Item1 && y1 > rightYs.Item2 ? -1 : y1;
             };
@@ -53,7 +53,7 @@ namespace Tools.Operators {
                         return -1;
                     }
                     if(topXs.Item1 < topXs.Item2) {
-                        return x1 < topXs.Item1 || x1 > topXs.Item2 ? -1 : x1;
+                        return x1 < topXs.Item1 ? topXs.Item1 :  x1 > topXs.Item2 ? topXs.Item2 : x1;
                     }
                     return x1 < topXs.Item1 && x1 > topXs.Item2 ? -1 : x1;
                 }
@@ -61,7 +61,7 @@ namespace Tools.Operators {
                     return -1;
                 }
                 if(bottomXs.Item1 < bottomXs.Item2) {
-                    return x1 < bottomXs.Item1 || x1 > bottomXs.Item2 ? -1 : x1;
+                    return x1 < bottomXs.Item1 ? bottomXs.Item1 : x1 > bottomXs.Item2 ? bottomXs.Item2 : x1;
                 }
                 return x1 < bottomXs.Item1 && x1 > bottomXs.Item2 ? -1 : x1;
             };
@@ -73,7 +73,7 @@ namespace Tools.Operators {
 
             if(bottomXs.Item1 < bottomXs.Item2) {
                 GetEquation(bottomXs.Item1, bottomXs.Item2, y - h/2, y + h/2, poses, getbx, null);
-            } else if(bottomXs.Item2 != -1) {
+            } else if(bottomXs.Item2 != -1 && (startAngle == endAngle || bottomXs.Item1 > bottomXs.Item2)) {
                 GetEquation(x - w/2, bottomXs.Item2, y - h/2, y + h/2, poses, getbx, null);
                 GetEquation(bottomXs.Item1, x + w/2, y - h/2, y + h/2, poses, getbx, null);
             }
@@ -82,10 +82,9 @@ namespace Tools.Operators {
                 double sqrter = 1 - Math.Pow(cy - y, 2.0)/Math.Pow((h/2), 2.0);
                 return restrictX(cy, Math.Round((w/2) * Math.Sqrt(sqrter) + x, 0, MidpointRounding.AwayFromZero));
             };
-
             if(rightYs.Item1 < rightYs.Item2) {
                 GetEquation(x - w/2, x + w/2, rightYs.Item1, rightYs.Item2, poses, null, getry);
-            } else if(rightYs.Item2 != -1) {
+            } else if(rightYs.Item2 != -1 && (startAngle == endAngle || rightYs.Item1 > rightYs.Item2)) {
                 GetEquation(x - w/2, x + w/2, y - h/2, rightYs.Item2, poses, null, getry);
                 GetEquation(x - w/2, x + w/2, rightYs.Item1, y + h/2, poses, null, getry);
             }
@@ -97,7 +96,7 @@ namespace Tools.Operators {
 
             if(topXs.Item1 < topXs.Item2) {
                 GetEquation(topXs.Item1, topXs.Item2, y - h/2, y + h/2, poses, gettx, null);
-            } else if(topXs.Item2 != -1) {
+            } else if(topXs.Item2 != -1 && (startAngle == endAngle || topXs.Item1 > topXs.Item2)) {
                 GetEquation(x - w/2, topXs.Item2, y - h/2, y + h/2, poses, gettx, null);
                 GetEquation(topXs.Item1, x + w/2, y - h/2, y + h/2, poses, gettx, null);
             }
@@ -109,7 +108,7 @@ namespace Tools.Operators {
 
             if(leftYs.Item1 < leftYs.Item2) {
                 GetEquation(x - w/2, x + w/2, leftYs.Item1, leftYs.Item2, poses, null, getly);
-            } else if(leftYs.Item2 != -1) {
+            } else if(leftYs.Item2 != -1 && (startAngle == endAngle || leftYs.Item1 > leftYs.Item2)) {
                 GetEquation(x - w/2, x + w/2, y - h/2, leftYs.Item2, poses, null, getly);
                 GetEquation(x - w/2, x + w/2, leftYs.Item1, y + h/2, poses, null, getly);
             }
@@ -123,6 +122,9 @@ namespace Tools.Operators {
                 foreach((int, int) pose in poses) {
                     int pointOnLine = y2 == y1 ? (int)Math.Round(x, 0, MidpointRounding.AwayFromZero) : ((int)Math.Round((pose.Item2 - y1) * m + x1, 0, MidpointRounding.AwayFromZero));
                     double maxMagnitude = (w/2) * Math.Sqrt(1 - Math.Pow(pose.Item2 - y, 2.0)/Math.Pow(h/2, 2.0));
+                    if(Double.IsNaN(maxMagnitude)) {
+                        pointOnLine = (int)Math.Round(x, 0, MidpointRounding.AwayFromZero);
+                    }
                     if(pointOnLine > x + maxMagnitude) {
                         pointOnLine = (int)Math.Round(x + maxMagnitude, 0, MidpointRounding.AwayFromZero);
                     }
