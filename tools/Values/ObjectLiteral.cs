@@ -35,7 +35,7 @@ namespace Tools.Values {
             Variable? property = null;
             bool gotten = target.Object.TryGetValue(key, out property);
             if(gotten && property != null) {
-                if(property.ProtectionLevel == ProtectionLevels.PUBLIC || (ObjectLiteral.CurrentPrivate != null && ((ObjectLiteral.CurrentPrivate.Var == target) || (targetPath.Contains(ObjectLiteral.CurrentPrivate.Var) && property.ProtectionLevel != ProtectionLevels.PRIVATE)))) {
+                if(property.ProtectionLevel == ProtectionLevels.PUBLIC || ObjectLiteral.CurrentThis == target || (property.ProtectionLevel == ProtectionLevels.PROTECTED && targetPath.Count > 0 && targetPath[0] == ObjectLiteral.CurrentThis)) {
                     return (property, target);
                 }
             }
@@ -45,8 +45,7 @@ namespace Tools.Values {
             targetPath.Add(target);
             return DeepGet(target.Base.Var, key, targetPath);
         }
-
-        public static IValue? CurrentPrivate { get; set; } // stores the object that is currently able to access private / protected properties
+        public static IValue? CurrentThis { get; set; }
         public override string Print() {
             string returning = "object(";
             foreach(KeyValuePair<string, Variable> var in Object) {

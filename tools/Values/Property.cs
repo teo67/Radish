@@ -5,7 +5,7 @@ namespace Tools.Values {
         public override IValue? Host {
             get {
                 //Console.WriteLine($"TEST: accessing getter {Name}");
-                return (Get == null) ? null : Get.Function(new List<IValue>(), ThisRef.Item1, ThisRef.Item2);
+                return (Get == null) ? null : Get.Function(new List<IValue>());
             }
             protected set {
                 //Console.WriteLine($"TEST: accessing setter {Name}");
@@ -15,7 +15,7 @@ namespace Tools.Values {
                 if(value == null) {
                     throw new RadishException("Unable to set a variable to no value (system error)!");
                 }
-                Set.Function(new List<IValue>() { value }, ThisRef.Item1, ThisRef.Item2);
+                Set.Function(new List<IValue>() { value });
             }
         }
 
@@ -23,8 +23,8 @@ namespace Tools.Values {
             this.Get = _get;
             this.Set = _set;
         }
-        public override Variable Clone() {
-            return new Property(Get, Set, ProtectionLevel, IsStatic);
+        public override Variable Clone(IValue obj, string key) {
+            return this;
         }
     }
 }

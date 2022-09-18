@@ -8,7 +8,7 @@ namespace Tools.Operators {
             RadishException.FileName = "anonymous file";
             IValue returned = operations.ParseScope().Run(operations.stack);
             if(returned.Default == BasicTypes.RETURN) { 
-                returned = returned.Function(new List<IValue>(), null, null);
+                returned = returned.Function(new List<IValue>());
             }
             RadishException.FileName = saved;
             return returned;

@@ -16,9 +16,9 @@ namespace Tools.Values {
                 return Type;
             }
         }
-        public override Func<List<IValue>, IValue?, IValue?, IValue> Function {
+        public override Func<List<IValue>, IValue> Function {
             get {
-                return (List<IValue> li, IValue? a, IValue? b) => Carrying;
+                return (List<IValue> li) => Carrying;
             }
         }
         public override string Print() {

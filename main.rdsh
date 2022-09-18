@@ -1,7 +1,4 @@
-new Drawing(1000, 1000) => drawing
-
-drawing.string("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_+=[]{}()?/|\\.,;:\"\'", 10, 40, 15, 255, 2, 10)
-# drawing.line(5, 5, 15, 15, 255, 3)
-drawing.point(5, 5, 256 * 255)
-drawing.point(15, 15, 256 * 255) #
-drawing.render("./outfile")
+d a p t(o p this.f) {
+    holler(o)
+}
+a(1)

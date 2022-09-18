@@ -8,7 +8,7 @@ namespace Tools {
         public Dictionary<string, Values.Variable> Object { get; } // get value as object
         public IValue? Base { get; set; }
         public bool Equals(IValue other); // check equality
-        public Func<List<IValue>, IValue?, IValue?, IValue> Function { get; } // call value as function with list of values
+        public Func<List<IValue>, IValue> Function { get; } // call value as function with list of values
         public string Print();
     }
 }

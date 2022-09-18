@@ -18,7 +18,10 @@ namespace Tools.Operators {
                 inheriting = returned.Var;
             }
             IValue returning = new Values.ObjectLiteral(new Dictionary<string, Values.Variable>(), inheriting, useProto: inheriting == null);
-            IValue newd = _class.Function(args, returning, inheriting).Var;
+            IValue? ct = Values.ObjectLiteral.CurrentThis;
+            Values.ObjectLiteral.CurrentThis = returning;
+            IValue newd = _class.Function(args).Var;
+            Values.ObjectLiteral.CurrentThis = ct;
             return newd.Default == BasicTypes.NONE ? returning : newd;
         }
         public override string Print() {

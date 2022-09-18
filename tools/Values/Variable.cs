@@ -3,14 +3,12 @@ namespace Tools.Values {
         public virtual IValue? Host { get; protected set; }
         public ProtectionLevels ProtectionLevel { get; }
         public bool IsStatic { get; }
-        public (IValue?, IValue?) ThisRef { get; set; } // temporary
         public Variable(IValue? host = null, ProtectionLevels protectionLevel = ProtectionLevels.PUBLIC, bool isStatic = false, bool ignoreHost = false) {
             if(!ignoreHost) {
                 this.Host = host;
             }
             this.ProtectionLevel = protectionLevel;
             this.IsStatic = isStatic;
-            this.ThisRef = (null, null);
         }
         private IValue Resolve() {
             IValue? returned = Host;
@@ -59,7 +57,7 @@ namespace Tools.Values {
                 Host = value;
             }
         }
-        public Func<List<IValue>, IValue?, IValue?, IValue> Function {
+        public Func<List<IValue>, IValue> Function {
             get {
                 return Resolve().Function;
             }
@@ -70,8 +68,10 @@ namespace Tools.Values {
         public string Print() {
             return $"variable({(Host == null ? "null" : Host.Print())})";
         }
-        public virtual Variable Clone() {
-            return new Variable(Host, ProtectionLevel, IsStatic);
+        public virtual Variable Clone(IValue obj, string key) {
+            Variable returning = new Variable(Host, ProtectionLevel, IsStatic);
+            obj.Object.Add(key, returning);
+            return returning;
         }
     }
 }

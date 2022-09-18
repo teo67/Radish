@@ -13,7 +13,7 @@ namespace Tools.Operators {
             }
             RadishException.Append($"at {Left.Print()}()", Row, Col, "", false);
             IValue left = Left._Run(Stack);
-            IValue returned = left.Function(passing, null, null);
+            IValue returned = left.Function(passing);
             RadishException.Pop();
             return returned;
         }

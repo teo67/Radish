@@ -10,7 +10,10 @@ namespace Tools.Operators {
             }
             IValue left = GetArgument(0)._Run(Stack);
             IValue ran = GetArgument(2)._Run(Stack).Var;
-            IValue returned = left.Function(passing, ran, ran);
+            IValue? ct = Values.ObjectLiteral.CurrentThis;
+            Values.ObjectLiteral.CurrentThis = ran;
+            IValue returned = left.Function(passing);
+            Values.ObjectLiteral.CurrentThis = ct;
             return returned;
         }
         public override string Print() {

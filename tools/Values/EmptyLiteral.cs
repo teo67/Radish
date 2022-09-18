@@ -44,7 +44,7 @@ namespace Tools.Values {
                 throw new RadishException($"Unable to parse {Name} as a variable!");
             }
         }
-        public virtual Func<List<IValue>, IValue?, IValue?, IValue> Function {
+        public virtual Func<List<IValue>, IValue> Function {
             get {
                 throw new RadishException($"Unable to parse {Name} as a function!");
             }

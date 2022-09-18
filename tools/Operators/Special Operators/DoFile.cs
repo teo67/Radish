@@ -16,7 +16,7 @@ namespace Tools.Operators {
                 args.Add(new Values.Variable(new Values.StringLiteral(reader.ReadToEnd())));
             }
             IValue edits = GetArgument(2)._Run(Stack).Var; // edits
-            IValue edited = edits.Function(args, null, null).Var;
+            IValue edited = edits.Function(args).Var;
             IValue? delete = null;
             if(edited.Default != BasicTypes.NONE) {
                 IValue? str = Values.ObjectLiteral.DeepGet(edited, "write", new List<IValue>()).Item1;

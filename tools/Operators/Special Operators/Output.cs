@@ -5,6 +5,8 @@ namespace Tools.Operators {
 
         protected string CalcOutput(Tools.IValue input, int spaces = 4) {
             if(input.Default == Tools.BasicTypes.OBJECT) {
+                IValue? ct = Values.ObjectLiteral.CurrentThis;
+                Values.ObjectLiteral.CurrentThis = ct;
                 if(Values.ObjectLiteral.ArrayProto != null && input.Base == Values.ObjectLiteral.ArrayProto.Var) {
                     if(spaces >= 16) {
                         return "{Array}";
@@ -12,11 +14,7 @@ namespace Tools.Operators {
                     string returning = "[";
                     foreach(KeyValuePair<string, Values.Variable> val in input.Object) {
                         try {
-                            (IValue?, IValue?) previous = val.Value.ThisRef;
-                            val.Value.ThisRef = (input, input);
                             returning += CalcOutput(val.Value.Var, spaces);
-                            val.Value.ThisRef = previous;
-                            
                         } catch {
                             returning += "{unevaluated getter}";
                         }
@@ -26,6 +24,7 @@ namespace Tools.Operators {
                         returning = returning.Substring(0, returning.Length - 2);
                     }
                     returning += "]";
+                    Values.ObjectLiteral.CurrentThis = ct;
                     return returning;
                 } else {
                     if(spaces >= 16) {
@@ -37,10 +36,7 @@ namespace Tools.Operators {
                         returning += new System.String(' ', spaces);
                         returning += item.Key;
                         try {
-                            (IValue?, IValue?) previous = item.Value.ThisRef;
-                            item.Value.ThisRef = (input, input);
                             Tools.IValue? saved = item.Value.Host;
-                            item.Value.ThisRef = previous;
                             if(saved != null) {
                                 returning += ": ";
                                 returning += CalcOutput(saved, spaces + 4);
@@ -52,6 +48,7 @@ namespace Tools.Operators {
                     }
                     returning += new System.String(' ', spaces - 4);
                     returning += "}";
+                    Values.ObjectLiteral.CurrentThis = ct;
                     return returning;
                 }
             } else if(input.Default == Tools.BasicTypes.FUNCTION) {

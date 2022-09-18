@@ -155,7 +155,7 @@ namespace Tools { // adds basic prototypes to call stack
             IValue returned = operations.ParseScope().Run(operations.stack);
             RadishException.FileName = previous;
             if(returned.Default == BasicTypes.RETURN) { 
-                returned = returned.Function(new List<IValue>(), null, null);
+                returned = returned.Function(new List<IValue>());
             }
             if(varName != "PROTOTYPES") {
                 Imports.Add(path, returned);

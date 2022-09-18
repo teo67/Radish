@@ -3,20 +3,17 @@ namespace Tools.Values {
         public static IValue? Proto { private get; set; }
         public override IValue? Base { get; set; }
         public override Dictionary<string, Variable> Object { get; } // setter is only used when defining a class
-        public override Func<List<IValue>, IValue?, IValue?, IValue> Function { get; }
+        public override Func<List<IValue>, IValue> Function { get; }
         public FunctionLiteral(Stack stack, List<string> argNames, List<IOperator?> defaults, bool fill, IOperator body, string fileName) : base("tool") {
             this.Object = new Dictionary<string, Variable>();
-            this.Function = (List<IValue> args, IValue? _this, IValue? OG) => {
+            this.Function = (List<IValue> args) => {
                 stack.Push();
-                IValue? saved = ObjectLiteral.CurrentPrivate;
                 if(this.Base != null) {
-                    stack.Head.Val.Add("super", new Variable(new FunctionLiteral((List<IValue> _li, IValue? __this, IValue? _OG) => this.Base.Function(_li, _this, _OG), this.Base.Base, this.Base.Object)));
+                    stack.Head.Val.Add("super", new Variable(new FunctionLiteral((List<IValue> _li) => this.Base.Function(_li), this.Base.Base, this.Base.Object)));
                 }
-                if(_this != null) {
-                    stack.Head.Val.Add("this", new Variable(_this));
-                }
-                if(OG != null) {
-                    ObjectLiteral.CurrentPrivate = OG;
+                IValue? ct = ObjectLiteral.CurrentThis;
+                if(ct != null) {
+                    stack.Head.Val.Add("this", new Variable(ct));
                 }
                 for(int i = 0; i < argNames.Count - (fill ? 1 : 0); i++) {
                     IValue? host = null;
@@ -51,15 +48,14 @@ namespace Tools.Values {
                 IValue result = body._Run(stack);
                 RadishException.FileName = previous;
                 stack.Pop();
-                ObjectLiteral.CurrentPrivate = saved;
                 if(result.Default != BasicTypes.RETURN) {
                     return result; // this will be null
                 }
-                return result.Function(new List<IValue>(), null, null);
+                return result.Function(new List<IValue>());
             };
             this.Base = Proto == null ? null : Proto.Var;
         }
-        public FunctionLiteral(Func<List<IValue>, IValue?, IValue?, IValue> function, IValue? _base = null, Dictionary<string, Variable>? obj = null) : base("tool") {
+        public FunctionLiteral(Func<List<IValue>, IValue> function, IValue? _base = null, Dictionary<string, Variable>? obj = null) : base("tool") {
             this.Base = _base == null ? (Proto == null ? null : Proto.Var) : _base;
             this.Object = obj == null ? new Dictionary<string, Variable>() : obj;
             //this.Function = function;

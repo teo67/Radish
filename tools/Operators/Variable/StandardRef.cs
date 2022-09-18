@@ -19,7 +19,7 @@ namespace Tools.Operators {
                     passing.Add(op._Run(Stack));
                 }
                 RadishException.Append($"at {VarName}()", Row, Col, "", false);
-                IValue final = returned.Function(passing, null, null);
+                IValue final = returned.Function(passing);
                 RadishException.Pop();
                 return final;
             }

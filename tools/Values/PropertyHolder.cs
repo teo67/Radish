@@ -18,10 +18,10 @@ namespace Tools.Values {
             if(Held == null) {
                 throw new RadishException($"No value stored in object property {Name}!");
             }
-            (IValue?, IValue?) previous = Held.ThisRef;
-            Held.ThisRef = (Obj, RealHolder);
+            IValue? ct = Values.ObjectLiteral.CurrentThis;
+            Values.ObjectLiteral.CurrentThis = Obj;
             IValue saved = Held.Var;
-            Held.ThisRef = previous;
+            Values.ObjectLiteral.CurrentThis = ct;
             return saved;
         }
 
@@ -72,23 +72,28 @@ namespace Tools.Values {
                     Variable? setting = null;
                     bool gotten = Obj.Object.TryGetValue(Name, out setting);
                     if(!gotten || setting == null) {
-                        setting = Held.Clone();
+                        setting = Held.Clone(Obj, Name);
                         Held = setting;
-                        Obj.Object.Add(Name, setting);
                     }
-                    (IValue?, IValue?) previous = setting.ThisRef;
-                    setting.ThisRef = (Obj, RealHolder);
+                    IValue? ct = ObjectLiteral.CurrentThis;
+                    ObjectLiteral.CurrentThis = Obj;
                     setting.Var = value;
-                    setting.ThisRef = previous;
+                    ObjectLiteral.CurrentThis = ct;
                 }
             }
         }
         public bool Equals(IValue other) {
             return Resolve().Equals(other);
         }
-        public Func<List<IValue>, IValue?, IValue?, IValue> Function {
+        public Func<List<IValue>, IValue> Function {
             get {
-                return (List<IValue> li, IValue? a, IValue? b) => Resolve().Function(li, Obj, RealHolder);
+                return (List<IValue> li) => {
+                    IValue? ct = ObjectLiteral.CurrentThis;
+                    ObjectLiteral.CurrentThis = Obj;
+                    IValue res = Resolve().Function(li);
+                    ObjectLiteral.CurrentThis = ct;
+                    return res;
+                };
             }
         }
         public string Print() {
