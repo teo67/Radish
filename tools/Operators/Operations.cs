@@ -88,7 +88,7 @@ namespace Tools {
             }
         }
 
-        private Exception Error(string input) {
+        private RadishException Error(string input) {
             if(Stored == null) {
                 return reader.Error(input);
             }
@@ -233,7 +233,7 @@ namespace Tools {
             Operators.IfChain returning = new Operators.IfChain(Row, Col);
             LexEntry IF = Read();
             if(!(IF.Type == TokenTypes.OPERATOR && IF.Val == "if")) {
-                throw new RadishException("Expecting if statement!");
+                throw Error("Expecting if statement!");
             }
             returning.AddValue(ParseIf());
             LexEntry read = Read();
@@ -315,7 +315,7 @@ namespace Tools {
                 return (new List<string>(), new List<IOperator?>());
             }, ((List<string>, List<IOperator?>) returning) => {
                 if(fill) {
-                    throw new RadishException("If a function contains a 'fill' argument, it must be after all other arguments.", Row, Col);
+                    throw Error("If a function contains a 'fill' argument, it must be after all other arguments.");
                 }
                 LexEntry key = Read();
                 if(key.Type == TokenTypes.OPERATOR && key.Val == "fill") {
@@ -381,7 +381,7 @@ namespace Tools {
                 } else if(val == "=>") {
                     LexEntry next = Read();
                     if(next.Type != TokenTypes.KEYWORD) {
-                        throw Error($"Expecting a variable name instead of {next.Val}!");
+                        throw Error($"Expecting a variable name instead of {next.Val}");
                     }
                     return new Operators.DeclareAssign(current, next.Val, Row, Col);
                 }
@@ -626,7 +626,7 @@ namespace Tools {
                                     break;
                                 }
                                 if(newType.Type != TokenTypes.OPERATOR) {
-                                    throw new RadishException($"Expecting plant or harvest function instead of {newType.Val}!");
+                                    throw Error($"Expecting plant or harvest function instead of {newType.Val}!");
                                 }
                                 RequireSymbol("{");
                                 if(newType.Val == "plant" || newType.Val == "p") {
@@ -635,7 +635,7 @@ namespace Tools {
                                 } else if(newType.Val == "harvest" || newType.Val == "h") {
                                     _get = new Operators.FunctionDefinition(new List<string>(), new List<IOperator?>(), false, ParseScope(), Row, Col, reader.Filename);
                                 } else {
-                                    throw new RadishException("Only plant and harvest functions are valid in this context!");
+                                    throw Error("Only plant and harvest functions are valid in this context!");
                                 }
                                 RequireSymbol("}");
                             }
@@ -645,7 +645,7 @@ namespace Tools {
                         Stored = afterNext;
                         return new Operators.Declaration(next.Val, modifiers, Row, Col);
                     }
-                    throw new RadishException($"Expecting a variable name instead of {next.Val}!");
+                    throw Error($"Expecting a variable name instead of {next.Val}");
                 }
                 if(returned.Val == "uproot") {
                     Print("parsing uproot call");
@@ -730,7 +730,7 @@ namespace Tools {
                 }
             } else if(returned.Type == TokenTypes.STRING) {
                 if(returned.Val[0] == '\'') {
-                    throw new RadishException("Strings may not be declared using single quotes!", Row, Col);
+                    throw Error("Strings may not be declared using single quotes!");
                 }
                 List<string> stringParts = new List<string>() { returned.Val.Substring(1, returned.Val.Length - 2) };
                 List<IOperator> interpolations = new List<IOperator>();
@@ -738,10 +738,10 @@ namespace Tools {
                     interpolations.Add(ParseExpression());
                     returned = Read();
                     if(returned.Type != TokenTypes.STRING) {
-                        throw new RadishException("Strings may not be ended using single quotes!", Row, Col);
+                        throw Error("Strings may not be ended using single quotes!");
                     }
                     if(returned.Val[0] != '\'') {
-                        throw new RadishException("String interpolations must begin and end with single quotes!", Row, Col);
+                        throw Error("String interpolations must begin and end with single quotes!");
                     }
                     stringParts.Add(returned.Val.Substring(1, returned.Val.Length - 2));
                 }
