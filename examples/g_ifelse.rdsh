@@ -1,0 +1,11 @@
+# simple if/else chain #
+dig test plant 300
+if test > 500 {
+    holler("More than 500!") # this is skipped #
+} elseif test > 250 {
+    holler("More than 250!") # <-- this gets run #
+} else {
+    holler("Low...") # this is skipped #
+}
+# note that parentheses around if statements
+ (if(a) {...} instead of if a {...}) are optional#

@@ -1,0 +1,24 @@
+# public, private, and protected modifiers #
+dig myObject plant {
+    dig public1 plant 123 # by default, variables are public and can be accessed by anyone #
+    dig public otherPublic plant 456 # the 'public' keyword can also be used explicitly #
+    dig private myPrivate plant 789 # declare a private variable #
+    dig protected myProtected plant 012 # declare a protected variable #
+    dig myMethod plant tool() {
+        holler("the value is 'this.myPrivate', but keep it a secret!") 
+        # objects may reference their own private properties, but everyone else is denied access #
+    }
+}
+
+holler(myObject.otherPublic) # anyone can access public properties #
+
+dig theChild plant { # inheriting object #
+    dig myChildMethod plant tool() {
+        holler("the value is 'this.myProtected', but keep it somewhat secret!")
+        # protected properties may be referenced by both the original object AND any inheriting objects (children) #
+    }
+} after myObject
+
+myObject.myMethod() # this is fine, because myPrivate is accessed within the method #
+theChild.myChildMethod() # so is this #
+theChild.myMethod() # this is NOT FINE, because 'this' refers to the child object, which does not have access to myPrivate #

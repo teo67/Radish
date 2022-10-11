@@ -1,0 +1,17 @@
+# basic operations #
+# add # 1 + 1
+# subtract # 1 - 1
+# multiply # 1 * 1
+# divide # 1 / 1
+# modulo # 1 % 1
+# exponentiate # 1 ** 1
+# negative # -1
+
+# strings may also be added and multiplied #
+# add # "hello, " + "world!" # -> hello, world! #
+# multiply # "abc" * 3 # -> abcabcabc #
+
+# string interpolation #
+dig myValue plant 2
+holler("the value is 'myValue', and if I add 1 I get 'myValue + 1'!")
+# use single quotes to interpolate a non-string value inside of a string #

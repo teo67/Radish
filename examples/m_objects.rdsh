@@ -1,0 +1,16 @@
+# declare an object #
+dig myObj plant {
+    dig property1 plant 123 # store 123 in myObj.property1 #
+    dig property2 plant yes # store yes in myObj.property2 #
+    dig property3 plant { # objects can be stored in objects too #
+        dig innerProperty plant "hola"
+    }
+    dig method1 plant tool() {
+        holler("my first property is 'this.property1'")
+        # the 'this' keyword may be used in functions to refer to the object in question #
+    }
+}
+holler(myObj.property1) # get the value in property1 (123) #
+myObj.property1 plant 456 # change the value of a property #
+holler(myObj:property2) # get the value in property2 and remove it from the object #
+holler(myObj) # property2 no longer exists #

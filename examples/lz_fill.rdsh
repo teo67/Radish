@@ -1,0 +1,23 @@
+# the fill keyword #
+dig addAll plant tool(fill values) {
+    # inside of the function, the 'values' parameter is treated like an array #
+    dig sum plant 0
+    each value of values {
+        sum += value
+    }
+    harvest sum
+}
+
+# outside of the function, the user may pass in any number of parameters. 
+these will all be added to the 'values' array #
+holler(addAll(1, 2, 3, 4)) # values becomes [1, 2, 3, 4], and so 10 is returned #
+
+# other parameters may be added before the fill parameter, but not after #
+dig multiplySum plant tool(coefficient, fill values) {
+    dig sum plant 0
+    each value of values {
+        sum += value
+    }
+    harvest coefficient * sum
+}
+holler(multiplySum(3, 1, 2, 3, 4)) # 30 is returned #

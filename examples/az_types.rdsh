@@ -1,0 +1,13 @@
+# basic types in radish #
+dig myNumber plant 1 # Number #
+dig myString plant "abc" # String #
+dig myBool plant yes # Boolean #
+dig myFunc plant t() {
+    holler("RAHHHHHHHH") # Function (more on this later) #
+}
+dig myObject plant { # Object (more on this later) #
+    dig myProperty plant 111
+}
+dig myPoly plant (1, "abc", yes) # Poly (more on this later) #
+
+dig myNullValue plant null # null values are typeless #

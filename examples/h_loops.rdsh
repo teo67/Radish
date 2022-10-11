@@ -1,0 +1,31 @@
+# while loop (counts 0 1 2 3 4) #
+dig counter plant 0
+while counter < 5 {
+    holler(counter)
+    counter++
+}
+
+# for loop (same output) #
+for dig counter plant 0, counter < 5, counter++ {
+    holler(counter)
+}
+
+# repeat loop (same output) #
+dig counter2 plant 0
+repeat 5 {
+    holler(counter2)
+    counter2++
+}
+
+# print odd numbers up to 50 #
+for 0 => c, c < 100, c++ {
+    if c >= 50 {
+        cancel # 'cancel' ends the loop entirely #
+        # once c reaches 50, the loop stops and nothing is printed #
+    }
+    if c % 2 = 0 {
+        continue # 'continue' stops the current run of the loop #
+        # if c is even, the holler statement will not be reached, but the loop still continues afterward #
+    }
+    holler(c)
+}

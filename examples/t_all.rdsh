@@ -1,0 +1,13 @@
+# using the 'all' keyword #
+dig a plant "test123"
+dig b plant "test124"
+dig c plant 777
+dig f plant tool() {}
+
+holler(all) # 'all' collects all variables in the current scope and compiles them into an object. #
+# output: {
+    a: test123
+    b: test124
+    c: 777
+    f: {Function}
+} #

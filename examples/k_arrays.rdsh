@@ -1,0 +1,14 @@
+# declare an array #
+dig myArray plant [1, 2, 3, 4, 5]
+# get the first value and print it #
+holler(myArray[0])
+# change the first value #
+myArray[0] plant -1
+# append a value to the end of the array #
+myArray.push("test") # arrays can store multiply types of values #
+# remove the last value #
+myArray.pop()
+# remove the second value (index 1) #
+myArray.remove(1)
+# note that arrays are stored internally as objects,
+but they extend a special Array base object with specific methods attached #

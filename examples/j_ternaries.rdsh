@@ -1,0 +1,7 @@
+# ternary statement #
+dig myNumber plant 10
+# if the number is more than 5, the ternary evaluates to "large" #
+# otherwise, it evaluates to "small" #
+holler(myNumber > 5 ? "large", "small") # "large" is printed #
+
+holler(myNumber > 10 ? "very large", "meh") # "meh" is printed #

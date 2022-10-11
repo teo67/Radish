@@ -1,0 +1,18 @@
+# manually throw an error #
+dig divide plant tool(a, b) {
+    if b = 0 {
+        throw "Cannot divide by zero!"
+        # use the throw keyword to stop code execution and throw an error #
+    }
+    harvest a / b
+}
+divide(1, 0) # error is thrown #
+
+# what if we want the code to keep running after the error? #
+try {
+    divide(4, 0) # the error is thrown inside the try block #
+    holler("this code will not run.")
+} catch { # instead of stopping the program, the try block stops and the catch block runs #
+    holler(error) # the error thrown is stored in the 'error' variable within the catch block #
+    holler("so anyway, I approached infinity...") # code can continue running #
+}

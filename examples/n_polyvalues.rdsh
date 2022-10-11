@@ -1,0 +1,15 @@
+# poly values are WEIRD #
+# they can store up to 1 string, 1 number, and 1 boolean #
+# declared like this: # ("hello world", 3.14, no)
+# up to one value may be omitted: # ("hello world", 3.14)
+# if a value is omitted, it will default to the following: 
+    if it's a Number: 0.0
+    if it's a String: "" 
+    if it's a Boolean: no 
+#
+# when poly values are used, the appropriate component for the situation is used #
+# example #
+dig myPoly plant (123, yes, "def")
+holler("abc" + myPoly) # in this case, the value is interpreted as a string #
+holler(2 * myPoly) # in this case, it is interpreted as a number #
+holler(!myPoly) # in this case, it's a boolean #

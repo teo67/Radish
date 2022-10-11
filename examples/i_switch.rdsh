@@ -1,0 +1,14 @@
+# switch statement #
+dig fruit plant "orange"
+switch fruit {
+    case "apple" # check if the fruit is an apple (false) #
+        holler("the fruit is red") # if so, execute all of this code #
+        cancel # in this case, break the switch because the rest of these statements don't apply to apples #
+    case "orange" # check if the fruit is an orange (true) #
+        holler("the fruit is spherical") # execute all of this code #
+    case "banana" # because the switch hasn't been cancelled yet, execution continues even though the fruit isn't a banana #
+        holler("the fruit has a peel") # execute this too #
+        cancel # at this point the loop cancels so the default block doesn't run #
+    default # run this code no matter what the fruit is, unless the switch has been cancelled #
+        holler("... is that even a fruit???")
+}
