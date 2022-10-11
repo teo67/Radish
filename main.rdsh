@@ -1,3 +1,3 @@
-d drawing p new Drawing(100, 100, null, 24)
-drawing.printRaw()
-drawing.render("./out")
+d f p {}
+holler(f.deepClone() = f)
+holler(f = f)

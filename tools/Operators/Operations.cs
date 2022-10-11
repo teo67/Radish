@@ -601,6 +601,33 @@ namespace Tools {
             return current;
         }
 
+        private (IOperator?, IOperator?) ParseProperty() {
+            Print("parsing variable as property");
+            IOperator? give = null;
+            IOperator? _get = null;
+            for(int i = 0; i < 2; i++) {
+                LexEntry newType = Read();
+                if(newType.Type == TokenTypes.SYMBOL && newType.Val == "}") {
+                    Stored = newType;
+                    break;
+                }
+                if(newType.Type != TokenTypes.OPERATOR) {
+                    throw Error($"Expecting plant or harvest function instead of {newType.Val}!");
+                }
+                RequireSymbol("{");
+                if(newType.Val == "plant" || newType.Val == "p") {
+                    give = new Operators.FunctionDefinition(new List<string>() { "input" }, new List<IOperator?>() { null }, false, ParseScope(), Row, Col, reader.Filename);
+
+                } else if(newType.Val == "harvest" || newType.Val == "h") {
+                    _get = new Operators.FunctionDefinition(new List<string>(), new List<IOperator?>(), false, ParseScope(), Row, Col, reader.Filename);
+                } else {
+                    throw Error("Only plant and harvest functions are valid in this context!");
+                }
+                RequireSymbol("}");
+            }
+            return (give, _get);
+        }
+
         private IOperator ParseLowest(bool allowParens = true) {
             Print("begin lowest");
             LexEntry returned = Read();
@@ -616,31 +643,9 @@ namespace Tools {
                     if(next.Type == TokenTypes.KEYWORD && next.Val != "this") { // can't declare a variable named "this"
                         LexEntry afterNext = Read();
                         if(afterNext.Type == TokenTypes.SYMBOL && afterNext.Val == "{") {
-                            Print("parsing variable as property");
-                            IOperator? give = null;
-                            IOperator? _get = null;
-                            for(int i = 0; i < 2; i++) {
-                                LexEntry newType = Read();
-                                if(newType.Type == TokenTypes.SYMBOL && newType.Val == "}") {
-                                    Stored = newType;
-                                    break;
-                                }
-                                if(newType.Type != TokenTypes.OPERATOR) {
-                                    throw Error($"Expecting plant or harvest function instead of {newType.Val}!");
-                                }
-                                RequireSymbol("{");
-                                if(newType.Val == "plant" || newType.Val == "p") {
-                                    give = new Operators.FunctionDefinition(new List<string>() { "input" }, new List<IOperator?>() { null }, false, ParseScope(), Row, Col, reader.Filename);
-
-                                } else if(newType.Val == "harvest" || newType.Val == "h") {
-                                    _get = new Operators.FunctionDefinition(new List<string>(), new List<IOperator?>(), false, ParseScope(), Row, Col, reader.Filename);
-                                } else {
-                                    throw Error("Only plant and harvest functions are valid in this context!");
-                                }
-                                RequireSymbol("}");
-                            }
+                            (IOperator?, IOperator?) giveget = ParseProperty();
                             RequireSymbol("}");
-                            return new Operators.Property(next.Val, give, _get, modifiers, Row, Col);
+                            return new Operators.Property(next.Val, giveget.Item1, giveget.Item2, modifiers, Row, Col);
                         }
                         Stored = afterNext;
                         return new Operators.Declaration(next.Val, modifiers, Row, Col);
