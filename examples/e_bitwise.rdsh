@@ -1,7 +1,0 @@
-# bitwise operators #
-# bitwise or # 1 | 2
-# bitwise and # 1 & 2
-# bitwise not # ~1
-# bitwise xor # 1 ^ 2
-# left shift # 1 << 2
-# right shift # 1 >> 2

@@ -4,3 +4,6 @@
 [submodule "Radish-Examples"]
 	path = examples
 	url = https://github.com/teo67/Radish-Examples.git
+[submodule "examples"]
+	path = examples
+	url = https://github.com/teo67/Radish-Examples.git
