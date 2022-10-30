@@ -1,16 +1,23 @@
-# declare an enumerable value #
-dig myEnum plant enum {
-    STATE_1, 
-    STATE_2,
-    STATE_3
+dig test plant tool() {
+    holler("AAA")
 }
-# an enum is like a reverse array - 
-instead of numbers being keys to values, each value is the key to a unique number #
-holler(myEnum.STATE_1) # 0 #
-holler(myEnum.STATE_3) # 2 #
 
-# we can use enums like this #
-dig currentState plant myEnum.STATE_1
-holler(currentState = myEnum.STATE_2) # no #
-# enums make it easy to handle values that don't need to be human-readable strings on the inside
-but should still be readable to the programmer #
+# sample function f #
+dig f plant tool(x) x**2
+
+# get approx. derivative given function, x value, and delta x (_h) #
+dig getDerivative plant tool(f, x, _h) {
+    harvest (f(x + _h) - f(x)) / _h
+}
+
+# get approx. integral given function, a, b, and number of terms in sum (n) #
+dig getIntegral plant tool(f, a, b, n) {
+    dig sum plant 0
+    for 1 => i, i <= n, i++ {
+        sum += f(a + (b - a) * i/n)
+    }
+    harvest sum * (b - a)/n
+}
+
+holler(getDerivative(f, 3, 0.0001))
+holler(getIntegral(f, 0, 3, 10000))

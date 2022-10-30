@@ -1,6 +1,6 @@
 namespace Tools {
     class Lexer {
-        enum CharTypes {
+        protected enum CharTypes {
             letter,
             digit, 
             dot,
@@ -11,11 +11,11 @@ namespace Tools {
             operators,
             symbols, // these cant be chained and are immediately parsed when added
         }
-        private Dictionary<char, CharTypes> dict;
+        protected Dictionary<char, CharTypes> dict;
         private char dotChar;
         private char hashChar;
         private char semi;
-        private IReader reader { get; }
+        protected IReader reader { get; }
         public static Dictionary<char, char> backslashes;
         static Lexer() {
             backslashes = new Dictionary<char, char>() {
@@ -60,7 +60,7 @@ namespace Tools {
             dict.Add(semi, CharTypes.semis);
         }
         
-        private CharTypes GetCharType(char input) {
+        protected CharTypes GetCharType(char input) {
             try {
                 return dict[input];
             } catch {
@@ -68,7 +68,7 @@ namespace Tools {
             }
         }
 
-        private TokenTypes GetTokenType(TokenTypes current, CharTypes adding, string currentRaw) { // same = no change
+        protected TokenTypes GetTokenType(TokenTypes current, CharTypes adding, string currentRaw) { // same = no change
             if(current == TokenTypes.COMMENT && (currentRaw.Length == 1 || currentRaw[currentRaw.Length - 1] != hashChar)) { // being in a comment gets first priority
                 return TokenTypes.SAME;
             }
@@ -102,7 +102,7 @@ namespace Tools {
             }
         }
 
-        private LexEntry Convert(TokenTypes current, string currentRaw) {
+        protected LexEntry Convert(TokenTypes current, string currentRaw) {
             if(current == TokenTypes.KEYWORD) {
                 TokenTypes type = TokenTypes.KEYWORD;
                 if(currentRaw == "yes" || currentRaw == "no") {

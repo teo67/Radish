@@ -1,0 +1,1 @@
+d test p t{holler("AAA")}d f p t(x)x**2d getDerivative p t(f,x,_h){h(f(x+_h)-f(x))/_h}d getIntegral p t(f,a,b,n){d sum p 0for 1=>i,i<=n,i++{sum+=f(a+(b-a)*i/n)}h sum*(b-a)/n}holler(getDerivative(f,3,0.0001))holler(getIntegral(f,0,3,10000))

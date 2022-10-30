@@ -25,7 +25,9 @@
             bool lex = hasOption(new string[] { "l", "lex" }, args);
             bool parse = hasOption(new string[] { "p", "parse" }, args);
             bool minify = hasOption("minify", args);
-            if(lex) {
+            if(minify) {
+                radish.Minify();
+            } else if(lex) {
                 radish.Lex();
             } else if(parse) {
                 radish.Parse();

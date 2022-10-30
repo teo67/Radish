@@ -26,13 +26,13 @@
 
 namespace Tools {
     class Operations {
-        private static List<string> OpKeywords { get; }
-        private LexEntry? Stored { get; set; }
-        private int PrevRow { get; set; }
-        private int PrevCol { get; set; }
+        protected static List<string> OpKeywords { get; }
+        protected LexEntry? Stored { get; set; }
+        protected int PrevRow { get; set; }
+        protected int PrevCol { get; set; }
         private bool verbose { get; }
-        private IReader reader { get; }
-        private Lexer lexer { get; }
+        protected IReader reader { get; }
+        protected Lexer lexer { get; }
         public Stack stack { get; }
         private bool IsStandard { get; }
         private Librarian Librarian { get; }
@@ -88,14 +88,14 @@ namespace Tools {
             }
         }
 
-        private RadishException Error(string input) {
+        protected RadishException Error(string input) {
             if(Stored == null) {
                 return reader.Error(input);
             }
             return reader.Error(input, PrevRow, PrevCol);        
         }
 
-        private int Row {
+        protected int Row {
             get {
                 if(Stored == null) {
                     return reader.row;
@@ -104,7 +104,7 @@ namespace Tools {
             }
         }
 
-        private int Col {
+        protected int Col {
             get {
                 if(Stored == null) {
                     return reader.col;
@@ -113,7 +113,9 @@ namespace Tools {
             }
         }
 
-        private LexEntry Read() {
+        protected virtual void Handle(string input) {}
+
+        protected virtual LexEntry Read() {
             //Print("reading");
             if(Stored != null) {
                 LexEntry saved = Stored;
@@ -201,6 +203,7 @@ namespace Tools {
                     returning.AddValue(new Operators.ReturnType(read.Val, Row, Col));
                 } else if(read.Type == TokenTypes.OPERATOR && (read.Val == "harvest" || read.Val == "h")) {
                     Print("parsing out statement");
+                    Handle(read.Val);
                     IOperator carrying = ParseExpression();
                     returning.AddValue(new Operators.ReturnType("harvest", Row, Col, carrying));
                 } else if(read.Type == TokenTypes.OPERATOR && read.Val == "try") {
@@ -328,6 +331,7 @@ namespace Tools {
                 LexEntry next = Read();
                 IOperator? exp = null;
                 if(next.Val == "plant" || next.Val == "p") {
+                    Handle(next.Val);
                     exp = ParseExpression();
                 } else {
                     Stored = next;
@@ -338,7 +342,7 @@ namespace Tools {
             return (result.Item1, result.Item2, fill);
         }
 
-        private IOperator Parse(string name, Func<string, IOperator, Func<IOperator>, IOperator?> run, Func<IOperator> previous) {
+        protected IOperator Parse(string name, Func<string, IOperator, Func<IOperator>, IOperator?> run, Func<IOperator> previous) {
             Print($"Parsing {name}");
             IOperator current = previous();
             LexEntry? next = null;
@@ -359,12 +363,13 @@ namespace Tools {
             return current;
         }
 
-        private IOperator ParseExpression() {
+        protected virtual IOperator ParseExpression() {
             List<Func<string, IOperator, Func<IOperator>, Operators.SimpleOperator?>> others = new List<Func<string, IOperator, Func<IOperator>, Operators.SimpleOperator?>>() {
                     IsCombiners, IsComparators, IsShifts, IsTerms, IsFactors
             };
             return Parse("Expression", (string val, IOperator current, Func<IOperator> previous) => {
                 if(val == "plant" || val == "p") {
+                    Handle(val);
                     return new Operators.Assignment(current, previous(), Row, Col);
                 } else if(val.EndsWith("=")) {
                     string edited = val.Substring(0, val.Length - 1);
@@ -389,7 +394,7 @@ namespace Tools {
             }, ParseTernaries);
         }
 
-        private IOperator ParseTernaries() {
+        protected IOperator ParseTernaries() {
             IOperator cond = ParseCombiners();
             LexEntry next = Read();
             if(next.Type == TokenTypes.SYMBOL && next.Val == "?") {
@@ -405,7 +410,7 @@ namespace Tools {
             return cond;
         }
 
-        private Operators.SimpleOperator? IsCombiners(string val, IOperator current, Func<IOperator> previous) {
+        protected Operators.SimpleOperator? IsCombiners(string val, IOperator current, Func<IOperator> previous) {
             switch(val) {
                 case "&&":
                 case "and":
@@ -435,7 +440,7 @@ namespace Tools {
             return Parse("Combiners", IsCombiners, ParseComparators);
         }
 
-        private Operators.SimpleOperator? IsComparators(string val, IOperator current, Func<IOperator> previous) {
+        protected Operators.SimpleOperator? IsComparators(string val, IOperator current, Func<IOperator> previous) {
             switch(val) {
                 case "=":
                     return new Operators.EqualsEquals(current, previous(), Row, Col);
@@ -458,7 +463,7 @@ namespace Tools {
             return Parse("Comparators", IsComparators, ParseShifts);
         }
 
-        private Operators.SimpleOperator? IsShifts(string val, IOperator current, Func<IOperator> previous) {
+        protected Operators.SimpleOperator? IsShifts(string val, IOperator current, Func<IOperator> previous) {
             switch(val) {
                 case ">>":
                     return new Operators.RightShift(current, previous(), Row, Col);
@@ -473,7 +478,7 @@ namespace Tools {
             return Parse("Shifts", IsShifts, ParseTerms);
         }
 
-        private Operators.SimpleOperator? IsTerms(string val, IOperator current, Func<IOperator> previous) {
+        protected Operators.SimpleOperator? IsTerms(string val, IOperator current, Func<IOperator> previous) {
             switch(val) {
                 case "+":
                     return new Operators.Add(current, previous(), Row, Col);
@@ -488,7 +493,7 @@ namespace Tools {
             return Parse("Terms", IsTerms, ParseFactors);
         }
 
-        private Operators.SimpleOperator? IsFactors(string val, IOperator current, Func<IOperator> previous) {
+        protected Operators.SimpleOperator? IsFactors(string val, IOperator current, Func<IOperator> previous) {
             switch(val) {
                 case "*":
                     return new Operators.Multiply(current, previous(), Row, Col);
@@ -505,7 +510,7 @@ namespace Tools {
             return Parse("Factors", IsFactors, ParseExponents);
         }
 
-        private Operators.SimpleOperator? IsExponent(string val, IOperator current, Func<IOperator> previous) {
+        protected Operators.SimpleOperator? IsExponent(string val, IOperator current, Func<IOperator> previous) {
             if(val == "**") {
                 return new Operators.Exponent(current, previous(), Row, Col);
             }
@@ -616,9 +621,10 @@ namespace Tools {
                 }
                 RequireSymbol("{");
                 if(newType.Val == "plant" || newType.Val == "p") {
+                    Handle(newType.Val);
                     give = new Operators.FunctionDefinition(new List<string>() { "input" }, new List<IOperator?>() { null }, false, ParseScope(), Row, Col, reader.Filename);
-
                 } else if(newType.Val == "harvest" || newType.Val == "h") {
+                    Handle(newType.Val);
                     _get = new Operators.FunctionDefinition(new List<string>(), new List<IOperator?>(), false, ParseScope(), Row, Col, reader.Filename);
                 } else {
                     throw Error("Only plant and harvest functions are valid in this context!");
@@ -634,6 +640,7 @@ namespace Tools {
             if(returned.Type == TokenTypes.OPERATOR) {
                 if(returned.Val == "dig" || returned.Val == "d") {
                     Print("parsing variable definition");
+                    Handle(returned.Val);
                     LexEntry next = Read();
                     List<string> modifiers = new List<string>();
                     while(next.Type == TokenTypes.OPERATOR && (next.Val == "public" || next.Val == "private" || next.Val == "protected" || next.Val == "static")) {
@@ -658,12 +665,16 @@ namespace Tools {
                     return new Operators.Uproot(next.Val, Row, Col);
                 }
                 if(returned.Val == "tool" || returned.Val == "t") {
+                    Handle(returned.Val);
                     Print("parsing function definition");
                     bool next = OptionalSymbol("(");
                     (List<string>, List<IOperator?>, bool) args = (new List<string>(), new List<IOperator?>(), false);
                     if(next) {
                         args = ParseArgs();
                         RequireSymbol(")");
+                        if(args.Item1.Count == 0) {
+                            Handle("FUN");
+                        }
                     }
                     bool next1 = OptionalSymbol("{");
                     IOperator body = next1 ? ParseScope() : new Operators.ReturnType("harvest", Row, Col, ParseExpression());
