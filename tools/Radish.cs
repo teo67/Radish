@@ -21,6 +21,9 @@ namespace Tools {
             Console.Write("Please enter the path to the file to be written to (default: minified.rdsh): ");
             string? _path = Console.ReadLine();
             string path = (_path == null || _path.Length == 0) ? "minified.rdsh" : _path;
+            if(!path.EndsWith(".rdsh")) {
+                path += ".rdsh";
+            }
             Console.WriteLine("Working...");
             try {
                 Minifier minifier = new Minifier(reader, new Librarian(true), minifyOptions, verbose);

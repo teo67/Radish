@@ -1,5 +1,36 @@
-dig wefoiwbfoibwe plant {
-    dig wwnpn plant 123
+# create a class! #
+dig MyClass plant class {
+    dig value1 # the value1 property is added to MyClass's prototype object and will be inherited by all instances #
+    constructor plant tool(val1, val2) { # the constructor function runs whenever a new instance is created #
+        this.value1 plant val1 # based on the arguments given, the object's value1 property is changed. Note that MyClass's prototype property remains the same #
+        this.value2 plant val2 # properties don't have to be explicitly declared before being assigned #
+    }
+    dig printValues plant tool() { # printValues is another property of MyClass #
+        holler("the first value is 'this.value1', and the second value is 'this.value2'.")
+        # here, 'this' will refer to whatever object is in reference, not the class itself #
+        # because that object must extend MyClass in order to inherit this method, it will have value1 and value2 as properties #
+    }
 }
-holler(wefoiwbfoibwe)
-holler.read()
+
+dig myInstance plant new MyClass(5, 7) # make a new instance of MyClass (note the 'new' keyword) #
+# here, myInstance.value1 is set to 5 and myInstance.value2 is set to 7 #
+myInstance.printValues() # print the properties of myInstance #
+
+holler(MyClass.prototype) # the prototype object for MyClass stores properties like value1 and printValues that are inherited by all of the class's children #
+holler(MyClass) # MyClass itself is a function with a property called 'prototype.' What function, you ask? The constructor function! #
+
+dig MyChildClass plant class after MyClass { # classes can inherit from each other too! note that the 'after' keyword is placed before the class declaration itself.
+this is because classes are actually functions, and so using an after keyword in the usual place would result in inheritance from a function, which isn't very useful. #
+    dig value3
+    constructor plant tool(val1, val2, val3) {
+        super(val1, val2) # the 'super' keyword may be used in child constructors in order to call the parent constructor with given arguments #
+        this.value3 plant val3 # child constructors may also have code of their own #
+    }
+    dig printAllValues plant tool() {
+        this.printValues() # because MyChildClass inherits from MyClass, the object in question will also possess the printValues method #
+        holler("oh, and the third value is 'this.value3'!")
+    }
+}
+
+dig myChild plant new MyChildClass(1, 2, 4) # create a new child with 1, 2, and 4 as values #
+myChild.printAllValues() # print 'em out! #

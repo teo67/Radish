@@ -15,12 +15,14 @@ namespace Tools {
         private MinifyOptions Options { get; }
         private static string ValidChars { get; }
         private static string Nums { get; }
+        private static string[] NoNoWords { get; }
         private LexEntry? realStored;
         private MiniStackNode? LastVariable { get; set; }
         private int LastLength { get; set; }
         static Minifier() {
             ValidChars = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
             Nums = "0123456789";
+            NoNoWords = new string[4] { "this", "prototype", "super", "constructor" };
         }
         public Minifier(IReader reader, Librarian librarian, MinifyOptions options, bool verbose) : base(reader, verbose, false, librarian) {
             Output = "";
@@ -93,9 +95,8 @@ namespace Tools {
             string adding = "";
             if(ran.Type == TokenTypes.KEYWORD && LastVariable != null && LastVariable.Val == null) {
                 LastVariable.Val = ran.Val;
-                Console.WriteLine($"setting lastvar to {ran.Val}");
             }
-            if(Options.VariableNames && ran.Type == TokenTypes.KEYWORD && !Librarian.Standard.Contains(ran.Val) && (LastVariable == null || LastVariable.Val == null || !Librarian.Standard.Contains(LastVariable.Val))) {
+            if(Options.VariableNames && !NoNoWords.Contains(ran.Val) && ran.Type == TokenTypes.KEYWORD && !Librarian.Standard.Contains(ran.Val) && (LastVariable == null || LastVariable.Val == null || !Librarian.Standard.Contains(LastVariable.Val))) {
                 string? t = null;
                 bool got = VariableKey.TryGetValue(ran.Val, out t);
                 if(t != null && got) {
@@ -125,12 +126,9 @@ namespace Tools {
                 }
             } else if(input == "RESET") {
                 LastVariable = new MiniStackNode(LastVariable);
-                Console.WriteLine("pushing");
             } else if(input == "PROXY" && LastVariable != null && LastVariable.Val == null) {
                 LastVariable.Val = "";
-                Console.WriteLine("adding proxy");
             } else if(input == "POP" && LastVariable != null) {
-                Console.WriteLine("popping");
                 LastVariable = LastVariable.Next;
             }
         }

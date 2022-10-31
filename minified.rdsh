@@ -1,1 +1,1 @@
-d _ p{d a p 123}holler(_)holler.read()
+d _ p class{d a constructor p t(b,c){this.a p b this.e p c}d f p t{holler("the first value is 'this.a', and the second value is 'this.e'.")}}d g p new _(5,7)g.f()holler(_.prototype)holler(_)d i p class after _{d j constructor p t(b,c,k){super(b,c)this.j p k}d l p t{this.f()holler("oh, and the third value is 'this.j'!")}}d m p new i(1,2,4)m.l()
