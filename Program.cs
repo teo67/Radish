@@ -25,14 +25,14 @@
             bool lex = hasOption(new string[] { "l", "lex" }, args);
             bool parse = hasOption(new string[] { "p", "parse" }, args);
             bool minify = hasOption("minify", args);
+            bool verbose = hasOption(new string[] { "v", "verbose" }, args);
             if(minify) {
-                radish.Minify();
+                radish.Minify(verbose);
             } else if(lex) {
                 radish.Lex();
             } else if(parse) {
                 radish.Parse();
             } else {
-                bool verbose = hasOption(new string[] { "v", "verbose" }, args);
                 bool nolib = hasOption("nolib", args);
                 radish.Run(verbose, !nolib);
             }

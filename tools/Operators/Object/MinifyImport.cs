@@ -1,21 +1,17 @@
 namespace Tools.Operators {
-    class Import : FileOperator {
+    class MinifyImport : FileOperator {
         private IOperator FileName { get; }
-        private bool IsStandard { get; }
         private string Path { get; }
-        public Import(IOperator fileName, int row, int col, string path, Librarian librarian, bool isStandard) : base(librarian, row, col) {
-            this.IsStandard = isStandard;
+        private MinifyOptions Options { get; }
+        public MinifyImport(IOperator fileName, string path, Librarian librarian, MinifyOptions options) : base(librarian, -1, -1) {
             this.Path = path;
+            this.Options = options;
             this.FileName = fileName;
         }
         public override IValue Run(Stack Stack) {
             string realPath = Convert(FileName, Path, Stack);
             if(!realPath.EndsWith(".rdsh")) {
                 realPath += ".rdsh";
-            }
-            IValue? libd = Librarian.Import(realPath);
-            if(libd != null) {
-                return libd; // no need to import something twice
             }
             if(Librarian.CurrentlyImporting.Contains(realPath)) {
                 throw new RadishException($"Circular dependency detected at {realPath}!", Row, Col);
@@ -26,21 +22,19 @@ namespace Tools.Operators {
             } catch {
                 throw new RadishException($"Could not find file {realPath}", Row, Col);
             }
-            Operations operations = new Operations(reader, false, IsStandard, Librarian);
+            Minifier minifier = new Minifier(reader, Librarian, Options, false);
             string previous = RadishException.FileName;
             RadishException.FileName = realPath;
             Librarian.CurrentlyImporting.Push(realPath);
-            IValue returned = operations.ParseScope().Run(operations.stack);
+            minifier.ParseScope();
+            string returning = minifier.Output;
             RadishException.FileName = previous;
             Librarian.CurrentlyImporting.Pop();
-            if(returned.Default == BasicTypes.RETURN) { 
-                returned = returned.Function(new List<IValue>());
-            }
-            Librarian.Imports.Add(realPath, returned);
-            return returned;
+            
+            return new Values.StringLiteral(returning);
         }
         public override string Print() {
-            return $"(import {FileName})";
+            return $"(minify-import {FileName})";
         }
     }
 }

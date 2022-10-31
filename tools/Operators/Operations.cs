@@ -27,7 +27,7 @@
 namespace Tools {
     class Operations {
         protected static List<string> OpKeywords { get; }
-        protected LexEntry? Stored { get; set; }
+        protected virtual LexEntry? Stored { get; set; }
         protected int PrevRow { get; set; }
         protected int PrevCol { get; set; }
         private bool verbose { get; }
@@ -35,7 +35,7 @@ namespace Tools {
         protected Lexer lexer { get; }
         public Stack stack { get; }
         private bool IsStandard { get; }
-        private Librarian Librarian { get; }
+        protected Librarian Librarian { get; }
         static Operations() {
             OpKeywords = new List<string>() {
                 // keywords that should be parsed as operators
@@ -114,6 +114,7 @@ namespace Tools {
         }
 
         protected virtual void Handle(string input) {}
+        protected virtual IOperator ParseImport() => ParseExpression();
 
         protected virtual LexEntry Read() {
             //Print("reading");
@@ -564,7 +565,9 @@ namespace Tools {
 
         private IOperator ParseCalls(bool allowParens = true) {
             Print("begin calls");
+            Handle("RESET");
             IOperator current = ParseLowest(allowParens);
+            Handle("PROXY");
             LexEntry? next = null;
             bool done = false;
             while(!done) {
@@ -603,6 +606,7 @@ namespace Tools {
                 }
             }
             Stored = next;
+            Handle("POP");
             return current;
         }
 
@@ -708,7 +712,7 @@ namespace Tools {
                 }
                 if(returned.Val == "import") {
                     Print("parsing import");
-                    IOperator importing = ParseExpression();
+                    IOperator importing = ParseImport();
                     return new Operators.Import(importing, Row, Col, reader.Filename, Librarian, IsStandard);
                 }
                 if(returned.Val == "class") {
