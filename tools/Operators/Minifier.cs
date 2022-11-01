@@ -144,12 +144,13 @@ namespace Tools {
         public void HandleStandardLibraryUsage() {
             if(!IsStandard) {
                 string atTop = "";
+                Console.WriteLine(StandardsUsed.Count);
                 StandardsUsed.Insert(0, "PROTOTYPES");
                 for(int i = 0; i < StandardsUsed.Count; i++) {
                     string? val;
                     bool gotten = VariableKey.TryGetValue(StandardsUsed[i], out val);
                     if(val == null && StandardsUsed[i] != "PROTOTYPES") {
-                        continue;
+                        val = StandardsUsed[i];
                     }
                     string path = Librarian.GetPath(StandardsUsed[i], -1, -1);
                     IOperator importer = new Operators.StandardMinifyImport(path, Librarian, Options, VariableKey, Current, StandardsUsed);
