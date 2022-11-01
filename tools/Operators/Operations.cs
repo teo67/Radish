@@ -34,7 +34,7 @@ namespace Tools {
         protected IReader reader { get; }
         protected Lexer lexer { get; }
         public Stack stack { get; }
-        private bool IsStandard { get; }
+        protected bool IsStandard { get; set; }
         protected Librarian Librarian { get; }
         static Operations() {
             OpKeywords = new List<string>() {
@@ -136,7 +136,9 @@ namespace Tools {
             Operators.ExpressionSeparator returning = new Operators.ExpressionSeparator(Row, Col);
             LexEntry read = Read();
             while(read.Type != TokenTypes.ENDOFFILE && !(read.Type == TokenTypes.SYMBOL && read.Val == "}") && !(read.Type == TokenTypes.OPERATOR && (read.Val == "case" || read.Val == "default"))) {
-                if(read.Type == TokenTypes.OPERATOR && read.Val == "if") {
+                if(read.Type == TokenTypes.SYMBOL && read.Val == "`") {
+                    IsStandard = !IsStandard;
+                } else if(read.Type == TokenTypes.OPERATOR && read.Val == "if") {
                     Stored = read;
                     returning.AddValue(ParseIfs());
                 } else if(read.Type == TokenTypes.OPERATOR && read.Val == "while") {
@@ -565,9 +567,7 @@ namespace Tools {
 
         private IOperator ParseCalls(bool allowParens = true) {
             Print("begin calls");
-            Handle("RESET");
             IOperator current = ParseLowest(allowParens);
-            Handle("PROXY");
             LexEntry? next = null;
             bool done = false;
             while(!done) {
@@ -606,7 +606,6 @@ namespace Tools {
                 }
             }
             Stored = next;
-            Handle("POP");
             return current;
         }
 
@@ -775,6 +774,7 @@ namespace Tools {
                 return new Operators.Boolean(returned.Val == "yes", Row, Col);
             } else if(returned.Type == TokenTypes.KEYWORD) {
                 Print("parsing variable");
+                Handle("CHECK");
                 if(IsStandard && allowParens) {
                     LexEntry next = Read();
                     List<IOperator>? args = null;

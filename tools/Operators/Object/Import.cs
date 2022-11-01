@@ -40,7 +40,7 @@ namespace Tools.Operators {
             return returned;
         }
         public override string Print() {
-            return $"(import {FileName})";
+            return $"(import {FileName.Print()})";
         }
     }
 }

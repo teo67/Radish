@@ -44,7 +44,7 @@ namespace Tools {
             for(int i = 0; i < ops.Length; i++) {
                 dict.Add(ops[i], CharTypes.operators);
             }
-            string symbols = "(){}[],:?\\";
+            string symbols = "(){}[],:?\\`";
             for(int i = 0; i < symbols.Length; i++) {
                 dict.Add(symbols[i], CharTypes.symbols);
             }
@@ -102,7 +102,7 @@ namespace Tools {
             }
         }
 
-        protected LexEntry Convert(TokenTypes current, string currentRaw) {
+        protected LexEntry Convert(TokenTypes current, string currentRaw, string realRaw) {
             if(current == TokenTypes.KEYWORD) {
                 TokenTypes type = TokenTypes.KEYWORD;
                 if(currentRaw == "yes" || currentRaw == "no") {
@@ -112,16 +112,17 @@ namespace Tools {
                     type = TokenTypes.OPERATOR;
                 }
                 //Console.WriteLine($"Lexer returning {type}: {currentRaw}");
-                return new LexEntry(type, currentRaw);
+                return new LexEntry(type, currentRaw, realRaw);
             }
-            return new LexEntry(current, currentRaw);
+            return new LexEntry(current, currentRaw, realRaw);
         }
 
         public LexEntry Run() {
             if(reader.EndOfStream) {
-                return new LexEntry(TokenTypes.ENDOFFILE, "");
+                return new LexEntry(TokenTypes.ENDOFFILE, "", "");
             }
             string currentRaw = "";
+            string realRaw = "";
             TokenTypes current = TokenTypes.NONE;
             bool skip = false;
             do {
@@ -130,6 +131,7 @@ namespace Tools {
                     reader.Read();
                     char next = reader.Peek();
                     reader.Read();
+                    realRaw += Char.ToString(read) + next;
                     if(backslashes.ContainsKey(next)) {
                         currentRaw += backslashes[next];
                     } else {
@@ -142,20 +144,22 @@ namespace Tools {
                         skip = false;
                         reader.Read();
                         currentRaw += read;
+                        realRaw += read;
                     } else {
                         if(current != TokenTypes.COMMENT && current != TokenTypes.NONE && current != TokenTypes.SEMIS) {
-                            return Convert(current, currentRaw);
+                            return Convert(current, currentRaw, realRaw);
                         }
                         reader.Read();
                         current = newToken;
                         currentRaw = Char.ToString(read);
+                        realRaw = currentRaw;
                     }
                 }
             } while(!reader.EndOfStream);
             if(current == TokenTypes.COMMENT || current == TokenTypes.NONE || current == TokenTypes.SEMIS) {
-                return new LexEntry(TokenTypes.ENDOFFILE, "");
+                return new LexEntry(TokenTypes.ENDOFFILE, "", "");
             }
-            return Convert(current, currentRaw);
+            return Convert(current, currentRaw, realRaw);
         }
     }
 }

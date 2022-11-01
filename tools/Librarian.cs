@@ -8,8 +8,8 @@ namespace Tools { // adds basic prototypes to call stack
         public Dictionary<string, IValue> Imports { get; }
         public StackNode FirstLayer { get; }
         public List<string> Standard { get; }
-        private string? PathToLibrary { get; }
-        private Dictionary<string, IOperator> StandardSpecials { get; }
+        public string? PathToLibrary { get; }
+        public Dictionary<string, IOperator> StandardSpecials { get; }
         public Stack<string> CurrentlyImporting { get; }
         public Librarian(bool uselib = true) {
             CurrentlyImporting = new Stack<string>();
@@ -26,27 +26,6 @@ namespace Tools { // adds basic prototypes to call stack
             Standard = new List<string>();
             PathToLibrary = null;
             StandardSpecials = new Dictionary<string, IOperator>();
-            if(uselib) {
-                DirectoryInfo? returned = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
-                if(returned == null) {
-                    throw new RadishException("Radish is not running in a valid directory!", -1, -1);
-                }
-                returned = Directory.GetParent(returned.FullName);
-                if(returned == null) {
-                    throw new RadishException("Radish is not installed correctly! Make sure that the bin folder is located in the Radish folder and contains an executable file.", -1, -1);
-                }
-                PathToLibrary = Path.Combine(returned.FullName, "lib");
-                if(!Directory.Exists(PathToLibrary)) {
-                    throw new RadishException("The Radish standard library has not been installed properly! It should be located in the lib folder within Radish.", -1, -1);
-                }
-                string[] fullPaths = Directory.GetDirectories(PathToLibrary);
-                
-                foreach(string path in fullPaths) {
-                    string? dirName = Path.GetFileName(path);
-                    if(dirName != null && dirName != "PROTOTYPES") { // prototypes gets executed immediately
-                        Standard.Add(dirName);
-                    }
-                }
                 StandardSpecials.Add("OUTPUT", new Operators.Output(this));
                 StandardSpecials.Add("LOG", new Operators.Log(this));
                 StandardSpecials.Add("ARRLEN", new Operators.ArrayLength(this));
@@ -106,6 +85,27 @@ namespace Tools { // adds basic prototypes to call stack
                 StandardSpecials.Add("POLYMULTIPLYSTRING", new Operators.PolyMultiplyString(this));
                 StandardSpecials.Add("ROUND", new Operators.Round(this));
                 StandardSpecials.Add("DEFINEPROPERTY", new Operators.DefineProperty(this));
+            if(uselib) {
+                DirectoryInfo? returned = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
+                if(returned == null) {
+                    throw new RadishException("Radish is not running in a valid directory!", -1, -1);
+                }
+                returned = Directory.GetParent(returned.FullName);
+                if(returned == null) {
+                    throw new RadishException("Radish is not installed correctly! Make sure that the bin folder is located in the Radish folder and contains an executable file.", -1, -1);
+                }
+                PathToLibrary = Path.Combine(returned.FullName, "lib");
+                if(!Directory.Exists(PathToLibrary)) {
+                    throw new RadishException("The Radish standard library has not been installed properly! It should be located in the lib folder within Radish.", -1, -1);
+                }
+                string[] fullPaths = Directory.GetDirectories(PathToLibrary);
+                
+                foreach(string path in fullPaths) {
+                    string? dirName = Path.GetFileName(path);
+                    if(dirName != null && dirName != "PROTOTYPES") { // prototypes gets executed immediately
+                        Standard.Add(dirName);
+                    }
+                }
                 Lookup("PROTOTYPES", -1, -1); // we lookup prototypes at the beginning to add properties to literal classes
                 //this will directly edit the first layer of the stack
             } else {
@@ -132,12 +132,16 @@ namespace Tools { // adds basic prototypes to call stack
             throw new RadishException($"No special variable found for {varName}!");
         }
 
-        public IValue Lookup(string varName, int row, int col) {
+        public string GetPath(string varName, int row, int col) {
             if(PathToLibrary == null) {
                 throw new RadishException("Radish is currently being run without a standard library!", row, col);
             }
             //Console.WriteLine("looking up...");
-            string path = Path.Combine(PathToLibrary, varName).Replace('\\', '/') + "/main.rdsh";
+            return Path.Combine(PathToLibrary, varName).Replace('\\', '/') + "/main.rdsh";
+        }
+
+        public IValue Lookup(string varName, int row, int col) {
+            string path = GetPath(varName, row, col);
             //Console.WriteLine($"path: {path}");
             IValue? already = Import(path);
             if(already != null) {
