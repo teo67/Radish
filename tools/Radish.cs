@@ -27,7 +27,7 @@ namespace Tools {
             }
             Console.WriteLine("Working...");
             try {
-                Minifier minifier = new Minifier(reader, new Librarian(true), minifyOptions, verbose);
+                Minifier minifier = new Minifier(reader, new Librarian(reader.Peek() != '`'), minifyOptions, verbose);
                 minifier.ParseScope();
                 minifier.HandleStandardLibraryUsage();
                 File.WriteAllText(path, minifier.Output);

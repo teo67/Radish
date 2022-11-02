@@ -59,8 +59,10 @@ namespace Tools {
             return returning;
         }
         private void AddEntry(LexEntry ran) {
+            bool isLastWord = IsWord(Last);
+            bool isRanWord = IsWord(ran);
             if(
-                (IsWord(Last) && IsWord(ran)) || (IsWord(Last) && ran.Type == TokenTypes.NUMBER) || (Last.Type == TokenTypes.OPERATOR && ran.Type == TokenTypes.OPERATOR)
+                (isLastWord && isRanWord) || (isLastWord && ran.Type == TokenTypes.NUMBER) || (Last.Type == TokenTypes.OPERATOR && ran.Type == TokenTypes.OPERATOR && isLastWord == isRanWord)
             ) {
                 Output += " ";
             }
@@ -142,9 +144,8 @@ namespace Tools {
             return exp;
         }
         public void HandleStandardLibraryUsage() {
-            if(!IsStandard) {
+            if(!IsStandard && Librarian.PathToLibrary != null) {
                 string atTop = "";
-                Console.WriteLine(StandardsUsed.Count);
                 StandardsUsed.Insert(0, "PROTOTYPES");
                 for(int i = 0; i < StandardsUsed.Count; i++) {
                     string? val;

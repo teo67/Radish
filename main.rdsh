@@ -1,3 +1,1 @@
-dig myDrawing plant new Drawing(200, 100)
-myDrawing.string("james", 0, 50, 20, new Drawing.RGB(255, 0, 0))
-myDrawing.render("./circle")
+ `OUTPUT("abc")`
