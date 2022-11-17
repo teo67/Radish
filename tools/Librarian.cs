@@ -85,6 +85,7 @@ namespace Tools { // adds basic prototypes to call stack
                 StandardSpecials.Add("POLYMULTIPLYSTRING", new Operators.PolyMultiplyString(this));
                 StandardSpecials.Add("ROUND", new Operators.Round(this));
                 StandardSpecials.Add("DEFINEPROPERTY", new Operators.DefineProperty(this));
+                StandardSpecials.Add("IMPORTDLL", new Operators.ImportDLL(this));
             if(uselib) {
                 DirectoryInfo? returned = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
                 if(returned == null) {

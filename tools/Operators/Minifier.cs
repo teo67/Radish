@@ -154,8 +154,8 @@ namespace Tools {
                         val = StandardsUsed[i];
                     }
                     string path = Librarian.GetPath(StandardsUsed[i], -1, -1);
-                    IOperator importer = new Operators.StandardMinifyImport(path, Librarian, Options, VariableKey, Current, StandardsUsed);
-                    string newOutput = importer._Run(CreateEmptyStack()).String;
+                    IOperator importer = new Operators.StandardMinifyImport(path, Librarian, new MinifyOptions(new bool[] { true, true, Options.VariableNames, true, true }), VariableKey, Current, StandardsUsed);
+                    string newOutput = importer._Run(CreateEmptyStack()).String; // ^ all options can be reset except for variableNames, because the file probly relies on true names for std properties if !varNameShorten
                     if(i > 1) {
                         atTop += " ";
                     }
