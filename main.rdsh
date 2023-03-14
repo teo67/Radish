@@ -1,7 +1,4 @@
-dig myArray plant []
-repeat 504 {
-    myArray.push(math.floor(math.random() * 10))
+dig test plant [2, 3, 5, 7, 11]
+each(l keyto test) {
+    holler(l)
 }
-holler(myArray)
-dig converted plant DLL.toMultiDimensionalArray(myArray, [9, 8, 7])
-holler(converted)

@@ -45,7 +45,7 @@ namespace Tools {
                 "harvest", "h", "cancel", "continue", "end", "fill",
                 "new", "null", "class",
                 "public", "private", "protected", "static", "type", "after", "and", "or", "not", "nor", "xor", "nand", "xnor",
-                "try", "catch", "throw", "import", "all", "PATH", "enum", "each", "of", "switch", "case", "default"
+                "try", "catch", "throw", "import", "all", "PATH", "enum", "each", "of", "switch", "case", "default", "keyto"
             };
         }
         public Operations(IReader reader, bool verbose, bool isStandard, Librarian librarian) {
@@ -167,9 +167,10 @@ namespace Tools {
                     bool next = OptionalSymbol("(");
                     LexEntry newRead = Read();
                     LexEntry of = Read();
-                    if(of.Type != TokenTypes.OPERATOR || of.Val != "of") {
-                        throw Error($"Expecting 'of' instead of '{of.Val}'!");
+                    if(of.Type != TokenTypes.OPERATOR || (of.Val != "of" && of.Val != "keyto")) {
+                        throw Error($"Expecting 'of' or 'keyto' instead of '{of.Val}'!");
                     }
+                    bool isOf = of.Val == "of";
                     IOperator li = ParseExpression();
                     if(next) {
                         RequireSymbol(")");
@@ -177,7 +178,9 @@ namespace Tools {
                     RequireSymbol("{");
                     IOperator body = ParseScope();
                     RequireSymbol("}");
-                    returning.AddValue(new Operators.Each(newRead.Val, li, body, Row, Col));
+                    returning.AddValue(new Operators.Each(newRead.Val, li, body, Row, Col, isOf ? "of" : "keyto", 
+                        isOf ? (KeyValuePair<string, Values.Variable> pair) => pair.Value.Var :
+                        (KeyValuePair<string, Values.Variable> pair) => new Values.StringLiteral(pair.Key)));
                 } else if(read.Type == TokenTypes.OPERATOR && read.Val == "switch") {
                     IOperator eval = ParseExpression();
                     RequireSymbol("{");
